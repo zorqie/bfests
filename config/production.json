@@ -1,7 +1,8 @@
 {
-  "host": "bfest-app.feathersjs.com",
+  "host": "fathomless-gorge-78924.herokuapp.com",
   "port": 80,
   "nedb": "NEDB_BASE_PATH",
+  "mongoose": "MONGODB_URI",
   "public": "../public/",
   "auth": {
     "token": {
