@@ -14,9 +14,14 @@ const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const services = require('./services');
 
+const mongoose = require('mongoose');
+
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
+
+mongoose.Promise = global.Promise;
+mongoose.connect(app.get('mongoose'));
 
 app.use(compress())
   .options('*', cors())
