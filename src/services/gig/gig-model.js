@@ -9,7 +9,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const gigSchema = new Schema({
-  text: { type: String, required: true },
+  name: 		{ type: String, required: true },
+  description: 	{ type: String },
+  type: 		{ type: String, required: true },
+  start: 		{ type: Date, required: true},
+  end:   		{ type: Date, required: true},
+  venue: 		{ type: Schema.Types.ObjectId },
+  owner: 		{ type: Schema.Types.ObjectId },
+
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
 });

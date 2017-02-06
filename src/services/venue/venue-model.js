@@ -10,12 +10,15 @@ const Schema = mongoose.Schema;
 
 const venueSchema = new Schema({
   name: { type: String, required: true },
+  description: String,
   capacity: { 
   	type: Number, 
   	required: true, 
   	min: [0, "Don't be negative"] 
   },
   parent: { type: String, required: false }, // should be required
+  owner: Schema.Types.ObjectId, 
+  
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
 });
