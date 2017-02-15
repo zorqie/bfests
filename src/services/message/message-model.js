@@ -12,6 +12,7 @@ const MessageSchema = new Schema({
 	body: { type: String, required: true },
 	from: { type: String, required: true },
 	to:   { type: String, 'default': 'all' },
+	// cc:   { type: [String] },
 	createdAt: { type: Date, 'default': Date.now },
 	updatedAt: { type: Date, 'default': Date.now }
 });

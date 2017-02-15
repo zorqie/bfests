@@ -12,10 +12,11 @@ const gigSchema = new Schema({
   name: 		{ type: String, required: true },
   description: 	{ type: String },
   type: 		{ type: String, required: true },
+  public: 		{ type: Boolean, 'default': false },
   start: 		{ type: Date, required: true},
   end:   		{ type: Date, required: true},
-  venue: 		{ type: Schema.Types.ObjectId },
-  owner: 		{ type: Schema.Types.ObjectId },
+  venue: 		{ type: Schema.Types.ObjectId, ref: 'Venue' },
+  owner: 		{ type: Schema.Types.ObjectId, ref: 'User' },
 
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }

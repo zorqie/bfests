@@ -6,6 +6,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+
 const Schema = mongoose.Schema;
 
 const venueSchema = new Schema({
@@ -17,7 +18,7 @@ const venueSchema = new Schema({
   	min: [0, "Don't be negative"] 
   },
   parent: { type: String, required: false }, // should be required
-  owner: Schema.Types.ObjectId, 
+  owner: { type: Schema.Types.ObjectId, ref: 'User'}, 
   
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
