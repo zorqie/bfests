@@ -5,11 +5,13 @@
   "mongoose": "MONGODB_URI",
   "public": "/public/",
   "auth": {
+    "shouldSetupSuccessRoute": false,
     "token": {
       "secret": "FEATHERS_AUTH_SECRET"
     },
     "local": {},
     "facebook": {
+      "strategy": "FacebookStrategy",
       "clientID": "FB_CLIENT",
       "clientSecret": "FB_SECRET",
       "permissions": {
