@@ -17,7 +17,8 @@ const venueSchema = new Schema({
   	required: true, 
   	min: [0, "Don't be negative"] 
   },
-  parent: { type: String, required: false }, // should be required
+  type: String,
+  parent: { type: String, required: false }, 
   owner: { type: Schema.Types.ObjectId, ref: 'User'}, 
   
   createdAt: { type: Date, 'default': Date.now },
