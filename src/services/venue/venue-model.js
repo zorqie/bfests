@@ -19,10 +19,10 @@ const venueSchema = new Schema({
   },
   type: String,
   parent: { type: String, required: false }, 
-  owner: { type: Schema.Types.ObjectId, ref: 'User'}, 
-  
-  createdAt: { type: Date, 'default': Date.now },
-  updatedAt: { type: Date, 'default': Date.now }
+  owner: { type: Schema.Types.ObjectId, ref: 'User'}
+  // , 
+  // createdAt: { type: Date, 'default': Date.now },
+  // updatedAt: { type: Date, 'default': Date.now }
 });
 
 venueSchema.methods.findChildren = function(cb) {

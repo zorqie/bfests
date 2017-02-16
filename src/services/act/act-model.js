@@ -10,8 +10,11 @@ const Schema = mongoose.Schema;
 
 const ActSchema = new Schema({
   name: { type: String, required: true },
-  createdAt: { type: Date, 'default': Date.now },
-  updatedAt: { type: Date, 'default': Date.now }
+  type: String,
+  user: { type: Schema.Types.ObjectId, ref: 'User' }
+  // ,
+  // createdAt: { type: Date, 'default': Date.now },
+  // updatedAt: { type: Date, 'default': Date.now }
 });
 
 const ActModel = mongoose.model('act', ActSchema);

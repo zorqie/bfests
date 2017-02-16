@@ -16,10 +16,10 @@ const gigSchema = new Schema({
   start: 		{ type: Date, required: true},
   end:   		{ type: Date, required: true},
   venue: 		{ type: Schema.Types.ObjectId, ref: 'Venue' },
-  owner: 		{ type: Schema.Types.ObjectId, ref: 'User' },
-
-  createdAt: { type: Date, 'default': Date.now },
-  updatedAt: { type: Date, 'default': Date.now }
+  owner: 		{ type: Schema.Types.ObjectId, ref: 'User' }
+  // ,
+  // createdAt: { type: Date, 'default': Date.now },
+  // updatedAt: { type: Date, 'default': Date.now }
 });
 
 const gigModel = mongoose.model('gig', gigSchema);
