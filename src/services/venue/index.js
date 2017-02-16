@@ -10,8 +10,8 @@ module.exports = function() {
   const options = {
     Model: venue,
     paginate: {
-      default: 5,
-      max: 25
+      default: 25,
+      max: 250
     },
     lean: true
   };
