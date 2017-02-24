@@ -13,6 +13,7 @@ const UserSchema = new Schema({
 	password: { type: String },
 	name: { type: String, required: true },
 	online: { type: Boolean, 'default': false },
+	roles: [String],
 	createdAt: { type: Date, 'default': Date.now },
 	updatedAt: { type: Date, 'default': Date.now }
 });

@@ -12,10 +12,14 @@ const gigSchema = new Schema({
   name: 		{ type: String, required: true },
   description: 	{ type: String },
   type: 		{ type: String, required: true },
-  public: 		{ type: Boolean, 'default': false },
+  public: 	{ type: Boolean, 'default': false },
   start: 		{ type: Date, required: true},
-  end:   		{ type: Date, required: true},
-  venue: 		{ type: Schema.Types.ObjectId, ref: 'Venue' },
+  end:   		{ type: Date },
+
+  parent:   { type: Schema.Types.ObjectId, ref: 'Gig' },
+  venue:    { type: Schema.Types.ObjectId, ref: 'Venue' },
+  act:      { type: Schema.Types.ObjectId, ref: 'Act' },
+
   owner: 		{ type: Schema.Types.ObjectId, ref: 'User' }
   // ,
   // createdAt: { type: Date, 'default': Date.now },
