@@ -3,7 +3,7 @@
   "port": 80,
   "nedb": "NEDB_BASE_PATH",
   "mongoose": "MONGODB_URI",
-  "public": "/public/",
+  "public": "../public/",
   "auth": {
     "shouldSetupSuccessRoute": false,
     "token": {
