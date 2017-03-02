@@ -5,12 +5,9 @@ import mongoose from 'mongoose';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import Dialog from 'material-ui/Dialog';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import IconButton from 'material-ui/IconButton';
-import FontIcon from 'material-ui/FontIcon';
 import FlatButton from 'material-ui/FlatButton';
 import {List, ListItem} from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
-import SvgIcon from 'material-ui/SvgIcon';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
 

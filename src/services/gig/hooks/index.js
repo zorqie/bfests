@@ -1,7 +1,8 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
+// const hooks = require('feathers-hooks');
+const hooks = require('feathers-hooks-common');
 const auth = require('feathers-authentication').hooks;
 
 exports.before = {
@@ -16,16 +17,19 @@ exports.before = {
   get: [
     auth.verifyOrRestrict({restrict: {public: true}})
   ],
-  create: [],
-  update: [],
-  patch: [],
-  remove: []
+  create: [auth.verifyToken()],
+  update: [auth.verifyToken()],
+  patch: [auth.verifyToken()],
+  remove: [auth.verifyToken()]
 };
 
 exports.after = {
   all: [],
   find: [],
-  get: [],
+  get: [hooks.populate('acts', {
+      service: 'acts',
+      field: 'act_id'  
+    })],
   create: [],
   update: [],
   patch: [],

@@ -9,6 +9,7 @@ import SignupForm from './mui/signup-form.jsx'
 
 import EventsList from './mui/events-list.jsx'
 import EventPage from './mui/event-page.jsx'
+import GigPage from './mui/gig-page.jsx'
 import Lineup from './mui/lineup.jsx'
 
 // touchy-screen stuff 
@@ -23,8 +24,8 @@ const io = require('socket.io-client');
 
 // FIXME this should be in configuration somewhere.
 // Establish a Socket.io connection
-const socket = io('http://localhost:2017');
-// const socket = io('https://fathomless-gorge-78924.herokuapp.com/');
+// const socket = io('http://localhost:2017');
+const socket = io('https://fathomless-gorge-78924.herokuapp.com/');
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 const app = feathers()
@@ -67,6 +68,8 @@ const routes = <Router history={browserHistory}>
 						<Route path='events/:eventId' component={EventPage} />
 
 						<Route path='lineup' component={Lineup} />
+
+						<Route path='gig/:gigId' component={GigPage} />
 						{/*<Route path='venues' component={VenueForm} />
 						<Route path='venues/:venueId' component={VenuePage} />
 

@@ -11,6 +11,7 @@ import app from '../main.jsx'
 const styles = {
 	date: {
 		fontFamily: 'Roboto, sans-serif',
+		fontWeight: 300,
 		fontSize: '24px'
 	}
 }
@@ -30,14 +31,14 @@ export default class Lineup extends React.Component {
 								.map(s => moment(s, 'YYYY-MM-DD'))
 								// a little hacky format -> parse but
 								// works better than 0-ing time
-				console.log("Dates", dates)
+				// console.log("Dates", dates)
 				this.setState({tickets: result.data, dates})
 			}
 		})
 		.catch(err => console.error)
 	}
-	select = e => {
-		browserHistory.push('/gyps/tickets/'+e._id)
+	select = t => {
+		browserHistory.push('/gyps/gig/'+t.gig_id)
 	}
 	render() {
 		return <div>

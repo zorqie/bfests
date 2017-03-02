@@ -121,7 +121,7 @@ export default class Layout extends React.Component {
 					open={this.state.drawerOpen}
 					onRequestChange={this.handleDrawer}
 				>
-					{ user && <UserCard user={user} /> }
+					{ user && <UserCard user={user} onNavigate={this.closeDrawer}/> }
 					{this.sections.map( section => 
 						<MenuItem onTouchTap={this.handleMenu.bind(this, section)} primaryText={section.text} key={section.path}/>
 					)}

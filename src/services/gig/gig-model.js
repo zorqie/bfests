@@ -18,9 +18,10 @@ const gigSchema = new Schema({
 
   parent:   { type: Schema.Types.ObjectId, ref: 'Gig' },
   venue:    { type: Schema.Types.ObjectId, ref: 'Venue' },
-  act:      { type: Schema.Types.ObjectId, ref: 'Act' },
+  act_id:   { type: [Schema.Types.ObjectId], ref: 'Act' },
 
-  owner: 		{ type: Schema.Types.ObjectId, ref: 'User' }
+  owner: 		{ type: Schema.Types.ObjectId, ref: 'User' } 
+  // TODO this is currently and likely to remain unused
   // ,
   // createdAt: { type: Date, 'default': Date.now },
   // updatedAt: { type: Date, 'default': Date.now }

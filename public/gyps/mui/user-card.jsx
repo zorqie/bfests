@@ -27,10 +27,10 @@ export default class UserCard extends React.Component {
 		// })
 		// .catch(err => console.error("Failed.",err))
 	}
-	goLineup = () => browserHistory.push('/gyps/lineup')
-	goTasks = () => browserHistory.push('/gyps/tasks')
-	goPerf = () => browserHistory.push('/gyps/performances')
-	goWorkshops = () => browserHistory.push('/gyps/workshops')
+	goLineup = () => browserHistory.push('/gyps/lineup') & this.props.onNavigate() // hacksy
+	goTasks = () => browserHistory.push('/gyps/tasks') & this.props.onNavigate()
+	goPerf = () => browserHistory.push('/gyps/performances') & this.props.onNavigate()
+	goWorkshops = () => browserHistory.push('/gyps/workshops') & this.props.onNavigate()
 	
 	
 	render() {

@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f9c16ecb88786368a8a5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "3bc72ef714dd96762cda"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -15119,6 +15119,10 @@ var _eventPage = __webpack_require__(431);
 
 var _eventPage2 = _interopRequireDefault(_eventPage);
 
+var _gigPage = __webpack_require__(856);
+
+var _gigPage2 = _interopRequireDefault(_gigPage);
+
 var _lineup = __webpack_require__(434);
 
 var _lineup2 = _interopRequireDefault(_lineup);
@@ -15142,8 +15146,8 @@ var io = __webpack_require__(430);
 
 // FIXME this should be in configuration somewhere.
 // Establish a Socket.io connection
-var socket = io('http://localhost:2017');
-// const socket = io('https://fathomless-gorge-78924.herokuapp.com/');
+// const socket = io('http://localhost:2017');
+var socket = io('https://fathomless-gorge-78924.herokuapp.com/');
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 var app = feathers().configure(socketio(socket)).configure(hooks())
@@ -15197,6 +15201,7 @@ var routes = _react2.default.createElement(
 		_react2.default.createElement(_reactRouter.Route, { path: 'events', component: _eventsList2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'events/:eventId', component: _eventPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'lineup', component: _lineup2.default }),
+		_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: '*', component: NotFound })
 	)
 );
@@ -57068,14 +57073,6 @@ var _FloatingActionButton = __webpack_require__(629);
 
 var _FloatingActionButton2 = _interopRequireDefault(_FloatingActionButton);
 
-var _IconButton = __webpack_require__(115);
-
-var _IconButton2 = _interopRequireDefault(_IconButton);
-
-var _FontIcon = __webpack_require__(114);
-
-var _FontIcon2 = _interopRequireDefault(_FontIcon);
-
 var _FlatButton = __webpack_require__(113);
 
 var _FlatButton2 = _interopRequireDefault(_FlatButton);
@@ -57085,10 +57082,6 @@ var _List = __webpack_require__(161);
 var _Subheader = __webpack_require__(249);
 
 var _Subheader2 = _interopRequireDefault(_Subheader);
-
-var _SvgIcon = __webpack_require__(38);
-
-var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
 
 var _Tabs = __webpack_require__(650);
 
@@ -57638,7 +57631,7 @@ var Layout = function (_React$Component) {
 							open: this.state.drawerOpen,
 							onRequestChange: this.handleDrawer
 						},
-						user && _react2.default.createElement(_userCard2.default, { user: user }),
+						user && _react2.default.createElement(_userCard2.default, { user: user, onNavigate: this.closeDrawer }),
 						this.sections.map(function (section) {
 							return _react2.default.createElement(_MenuItem2.default, { onTouchTap: _this2.handleMenu.bind(_this2, section), primaryText: section.text, key: section.path });
 						})
@@ -57718,6 +57711,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var styles = {
 	date: {
 		fontFamily: 'Roboto, sans-serif',
+		fontWeight: 300,
 		fontSize: '24px'
 	}
 };
@@ -57739,8 +57733,8 @@ var Lineup = function (_React$Component) {
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Lineup.__proto__ || Object.getPrototypeOf(Lineup)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			tickets: [],
 			dates: []
-		}, _this.select = function (e) {
-			_reactRouter.browserHistory.push('/gyps/tickets/' + e._id);
+		}, _this.select = function (t) {
+			_reactRouter.browserHistory.push('/gyps/gig/' + t.gig_id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -57760,7 +57754,7 @@ var Lineup = function (_React$Component) {
 					});
 					// a little hacky format -> parse but
 					// works better than 0-ing time
-					console.log("Dates", dates);
+					// console.log("Dates", dates)
 					_this2.setState({ tickets: result.data, dates: dates });
 				}
 			}).catch(function (err) {
@@ -114421,13 +114415,13 @@ var UserCard = function (_React$Component) {
 		}
 
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = UserCard.__proto__ || Object.getPrototypeOf(UserCard)).call.apply(_ref, [this].concat(args))), _this), _this.goLineup = function () {
-			return _reactRouter.browserHistory.push('/gyps/lineup');
+			return _reactRouter.browserHistory.push('/gyps/lineup') & _this.props.onNavigate();
 		}, _this.goTasks = function () {
-			return _reactRouter.browserHistory.push('/gyps/tasks');
+			return _reactRouter.browserHistory.push('/gyps/tasks') & _this.props.onNavigate();
 		}, _this.goPerf = function () {
-			return _reactRouter.browserHistory.push('/gyps/performances');
+			return _reactRouter.browserHistory.push('/gyps/performances') & _this.props.onNavigate();
 		}, _this.goWorkshops = function () {
-			return _reactRouter.browserHistory.push('/gyps/workshops');
+			return _reactRouter.browserHistory.push('/gyps/workshops') & _this.props.onNavigate();
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -114444,7 +114438,8 @@ var UserCard = function (_React$Component) {
 
 			// })
 			// .catch(err => console.error("Failed.",err))
-		}
+		} // hacksy
+
 	}, {
 		key: 'render',
 		value: function render() {
@@ -114817,6 +114812,129 @@ function _interopRequireDefault(obj) {
 }
 
 exports.default = _Divider2.default;
+
+/***/ }),
+/* 856 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _moment = __webpack_require__(0);
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _mongoose = __webpack_require__(682);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _Card = __webpack_require__(159);
+
+var _FlatButton = __webpack_require__(113);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _List = __webpack_require__(161);
+
+var _Subheader = __webpack_require__(249);
+
+var _Subheader2 = _interopRequireDefault(_Subheader);
+
+var _gigTimespan = __webpack_require__(200);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+var _main = __webpack_require__(50);
+
+var _main2 = _interopRequireDefault(_main);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var GigPage = function (_React$Component) {
+	_inherits(GigPage, _React$Component);
+
+	function GigPage() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, GigPage);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GigPage.__proto__ || Object.getPrototypeOf(GigPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			pals: [], // but how to get them, tickets are restricted to owner_id
+			gig: {},
+			venue: {}
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(GigPage, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			var _this2 = this;
+
+			var gigId = this.props.params.gigId;
+
+			_main2.default.service('gigs').get(gigId).then(function (gig) {
+				return _main2.default.service('venues').get(gig.venue).then(function (venue) {
+					return _this2.setState({ gig: gig, venue: venue });
+				});
+			}).catch(function (err) {
+				return console.error("It can't be: ", err);
+			});
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _state = this.state,
+			    gig = _state.gig,
+			    venue = _state.venue;
+
+			console.log("GIIG", gig);
+			return _react2.default.createElement(
+				_Card.Card,
+				null,
+				_react2.default.createElement(_Card.CardHeader, { title: gig.name }),
+				_react2.default.createElement(
+					_Card.CardText,
+					null,
+					_react2.default.createElement(
+						'p',
+						null,
+						gig.acts && gig.acts.map(function (a) {
+							return a.name;
+						}).join(','),
+						' at the ',
+						venue.name
+					)
+				)
+			);
+		}
+	}]);
+
+	return GigPage;
+}(_react2.default.Component);
+
+exports.default = GigPage;
 
 /***/ })
 /******/ ]);
