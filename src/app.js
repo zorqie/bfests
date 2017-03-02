@@ -16,6 +16,16 @@ const services = require('./services');
 
 const mongoose = require('mongoose');
 
+const gypsing = function (request, response, next){
+  // console.log("Routing ", request.originalUrl);
+  // console.log("Nexting ", next);
+  if(request.originalUrl.indexOf('/bundle/') < 0) {
+    response.sendFile(path.resolve(__dirname, app.get('public') + '/gyps/', 'index.html'))
+  } else {
+    next();
+  }
+};
+
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
@@ -27,6 +37,7 @@ app.use(compress())
   .options('*', cors())
   .use(cors())
   // .use(favicon( path.join(app.get('public'), 'favicon.ico') ))
+  .use('/gyps/*', gypsing)
   .use('/', serveStatic( app.get('public') ))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))

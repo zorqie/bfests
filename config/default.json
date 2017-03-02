@@ -1,7 +1,8 @@
 {
   "host": "localhost",
-  "port": 3017,
-  "mongoose": "mongodb://localhost:27017/test",
+  "port": 2017,
+  "mongoose": "mongodb://heroku_7mdwht5j:2tl93s75r110gghl0qe5onhqgh@ds133279.mlab.com:33279/heroku_7mdwht5j",
+  "mongo_local": "mongodb://localhost:27017/test",
   "public": "../public/",
   "auth": {
     "token": {

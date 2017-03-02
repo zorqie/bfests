@@ -1,4 +1,5 @@
 'use strict';
+const tickets = require('./tickets');
 const gig = require('./gig');
 const act = require('./act');
 const venue = require('./venue');
@@ -16,4 +17,5 @@ module.exports = function() {
   app.configure(venue);
   app.configure(act);
   app.configure(gig);
+  app.configure(tickets);
 };
