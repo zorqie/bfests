@@ -36,7 +36,7 @@ module.exports = {
 		]
 	},
 	plugins: [
-		new ExtractTextPlugin({filename: 'b[name].css', allChunks: true }),
+		new ExtractTextPlugin({filename: '[name].css', allChunks: true }),
 		// new webpack.optimize.OccurenceOrderPlugin(),
 		// new webpack.optimize.CommonsChunkPlugin({
 		// 	name: 'vendor',

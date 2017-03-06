@@ -1,5 +1,5 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
+import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
 import { List, ListItem } from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
@@ -41,12 +41,17 @@ export default class Lineup extends React.Component {
 		browserHistory.push('/gyps/gig/'+t.gig_id)
 	}
 	render() {
+		const { dates, tickets } = this.state
 		return <div>
-			{this.state.dates.map(d =>
+			{ tickets.length==0 ?
+				<Subheader>You haven't joined any events. <Link to='/gyps/events'>Choose some</Link></Subheader> 
+				: ''
+			}
+			{dates.map(d =>
 			<List key={d}>
 				<Subheader style={styles.date}>{d.format('MMM D, dddd')}</Subheader>
 				<Divider/>
-				{this.state.tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
+				{tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
 					.map(
 					t => <ListItem
 							key={t._id}

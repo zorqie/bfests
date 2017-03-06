@@ -1,29 +1,29 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const Act = require('./act-model');
+const Ticket = require('../tickets/ticket-model');
 const hooks = require('./hooks');
 
 module.exports = function() {
   const app = this;
 
   const options = {
-    Model: Act,
+    Model: Ticket,
     paginate: {
-      default: 25,
+      default: 50,
       max: 250
     }
   };
 
   // Initialize our service with any options it requires
-  app.use('/acts', service(options));
+  app.use('/fans', service(options));
 
   // Get our initialize service to that we can bind hooks
-  const actService = app.service('/acts');
+  const fansService = app.service('/fans');
 
   // Set up our before hooks
-  actService.before(hooks.before);
+  fansService.before(hooks.before);
 
   // Set up our after hooks
-  actService.after(hooks.after);
+  fansService.after(hooks.after);
 };

@@ -26,10 +26,16 @@ exports.before = {
 exports.after = {
   all: [],
   find: [],
-  get: [hooks.populate('acts', {
+  get: [
+    hooks.populate('acts', {
       service: 'acts',
       field: 'act_id'  
-    })],
+    }),
+    hooks.populate('venue', {
+      service: 'venues',
+      field: 'venue_id'  
+    })
+  ],
   create: [],
   update: [],
   patch: [],

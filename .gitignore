@@ -31,5 +31,5 @@ lib/
 data/
 
 # Fonts
-public\fonts\
-public\gyps\bundle\
+public/fonts/
+public/gyps/bundle/*.hot-update.*

@@ -59,6 +59,7 @@ export default class EventPage extends React.Component {
 			app.service('gigs').find({
 				query: {
 					parent: new mongoose.Types.ObjectId(eventId),
+					type: {$ne: 'Volunteer'},
 					$sort: { start: 1 },
 					// $limit: this.props.limit || 7
 				}
@@ -198,7 +199,7 @@ export default class EventPage extends React.Component {
 				</CardText>
 				
 				<CardActions>
-					<FlatButton label="Actionize"/>
+					<FlatButton label="Actionize" secondary={true}/>
 				</CardActions>
 			</Card>
 		);

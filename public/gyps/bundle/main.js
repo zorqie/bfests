@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3bc72ef714dd96762cda"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "90eea0e14f68f7d996a8"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -57227,6 +57227,7 @@ var EventPage = function (_React$Component) {
 				_main2.default.service('gigs').find({
 					query: {
 						parent: new _mongoose2.default.Types.ObjectId(eventId),
+						type: { $ne: 'Volunteer' },
 						$sort: { start: 1 }
 					}
 				}).then(function (page) {
@@ -57326,7 +57327,7 @@ var EventPage = function (_React$Component) {
 				_react2.default.createElement(
 					_Card.CardActions,
 					null,
-					_react2.default.createElement(_FlatButton2.default, { label: 'Actionize' })
+					_react2.default.createElement(_FlatButton2.default, { label: 'Actionize', secondary: true })
 				)
 			);
 		}
@@ -57456,6 +57457,12 @@ var _MuiThemeProvider = __webpack_require__(663);
 
 var _MuiThemeProvider2 = _interopRequireDefault(_MuiThemeProvider);
 
+var _getMuiTheme = __webpack_require__(665);
+
+var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+var _colors = __webpack_require__(162);
+
 var _AppBar = __webpack_require__(613);
 
 var _AppBar2 = _interopRequireDefault(_AppBar);
@@ -57497,6 +57504,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var theme = {
+	palette: {
+		primary1Color: _colors.lightGreen700, // normal
+		primary2Color: _colors.lightGreen900, // date & time picker
+		primary3Color: _colors.grey100, // slider & toggle
+
+		accent1Color: _colors.red900, //secondary flat button text
+		accent2Color: _colors.grey100, //table row, toggle & toolbar
+		accent3Color: _colors.grey500 }
+};
 
 var Layout = function (_React$Component) {
 	_inherits(Layout, _React$Component);
@@ -57579,7 +57597,7 @@ var Layout = function (_React$Component) {
 
 		_this.sections = [
 		// { text: "Venues", path: "/gyps/venues"},
-		{ text: "Events", path: "/gyps/events" }, { text: "Users", path: "/gyps/users" }];
+		{ text: "Events", path: "/gyps/events" }];
 		return _this;
 	}
 
@@ -57610,7 +57628,7 @@ var Layout = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_MuiThemeProvider2.default,
-				null,
+				{ muiTheme: (0, _getMuiTheme2.default)(theme) },
 				_react2.default.createElement(
 					'div',
 					null,
@@ -57639,8 +57657,8 @@ var Layout = function (_React$Component) {
 					this.props.children,
 					_react2.default.createElement(
 						'footer',
-						null,
-						'Footering business goes here'
+						{ style: { position: 'fixed', bottom: 0, right: 0, fontSize: 'smaller' } },
+						'\xA9 2017 Intergalactic Balkan Festivals Unlimited'
 					),
 					_react2.default.createElement(_Snackbar2.default, {
 						open: this.state.snackbarOpen,
@@ -57766,10 +57784,24 @@ var Lineup = function (_React$Component) {
 		value: function render() {
 			var _this3 = this;
 
+			var _state = this.state,
+			    dates = _state.dates,
+			    tickets = _state.tickets;
+
 			return _react2.default.createElement(
 				'div',
 				null,
-				this.state.dates.map(function (d) {
+				tickets.length == 0 ? _react2.default.createElement(
+					_Subheader2.default,
+					null,
+					'You haven\'t joined any events. ',
+					_react2.default.createElement(
+						_reactRouter.Link,
+						{ to: '/gyps/events' },
+						'Choose some'
+					)
+				) : '',
+				dates.map(function (d) {
 					return _react2.default.createElement(
 						_List.List,
 						{ key: d },
@@ -57779,7 +57811,7 @@ var Lineup = function (_React$Component) {
 							d.format('MMM D, dddd')
 						),
 						_react2.default.createElement(_Divider2.default, null),
-						_this3.state.tickets.filter(function (t) {
+						tickets.filter(function (t) {
 							return (0, _moment2.default)(t.gig.start).isSame(d, 'day');
 						}).map(function (t) {
 							return _react2.default.createElement(_List.ListItem, {
@@ -114884,21 +114916,22 @@ var GigPage = function (_React$Component) {
 			pals: [], // but how to get them, tickets are restricted to owner_id
 			gig: {},
 			venue: {}
+		}, _this.fetchData = function () {
+			var gigId = _this.props.params.gigId;
+
+
+			return _main2.default.service('gigs').get(gigId).then(function (gig) {
+				return _main2.default.service('venues').get(gig.venue).then(function (venue) {
+					return _this.setState({ gig: gig, venue: venue });
+				});
+			});
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
 	_createClass(GigPage, [{
 		key: 'componentWillMount',
 		value: function componentWillMount() {
-			var _this2 = this;
-
-			var gigId = this.props.params.gigId;
-
-			_main2.default.service('gigs').get(gigId).then(function (gig) {
-				return _main2.default.service('venues').get(gig.venue).then(function (venue) {
-					return _this2.setState({ gig: gig, venue: venue });
-				});
-			}).catch(function (err) {
+			_main2.default.authenticate().then(this.fetchData).catch(function (err) {
 				return console.error("It can't be: ", err);
 			});
 		}

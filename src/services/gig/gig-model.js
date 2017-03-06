@@ -17,7 +17,7 @@ const gigSchema = new Schema({
   end:   		{ type: Date },
 
   parent:   { type: Schema.Types.ObjectId, ref: 'Gig' },
-  venue:    { type: Schema.Types.ObjectId, ref: 'Venue' },
+  venue_id: { type: Schema.Types.ObjectId, ref: 'Venue' },
   act_id:   { type: [Schema.Types.ObjectId], ref: 'Act' },
 
   owner: 		{ type: Schema.Types.ObjectId, ref: 'User' } 

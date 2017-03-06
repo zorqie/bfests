@@ -1,5 +1,6 @@
 'use strict';
 const tickets = require('./tickets');
+const fans = require('./fans');
 const gig = require('./gig');
 const act = require('./act');
 const venue = require('./venue');
@@ -18,4 +19,5 @@ module.exports = function() {
   app.configure(act);
   app.configure(gig);
   app.configure(tickets);
+  app.configure(fans); // read-only view of tickets
 };

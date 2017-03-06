@@ -15,7 +15,11 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' })
+    // auth.restrictToOwner({ ownerField: '_id' })
+    auth.restrictToRoles({
+        roles: ['sysadmin', 'master'],
+        owner: true
+    })
   ],
   create: [
     auth.hashPassword()
@@ -30,7 +34,12 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' })
+    // auth.restrictToOwner({ ownerField: '_id' })
+    // allow only sysadmin and owner to modify
+    auth.restrictToRoles({
+        roles: ['sysadmin'],
+        owner: true
+    })
   ],
   remove: [
     auth.verifyToken(),
@@ -46,7 +55,7 @@ exports.before = {
 };
 
 exports.after = {
-  all: [hooks.remove('password')],
+  all: [hooks.remove('password', 'createdAt', 'updatedAt')],
   find: [],
   get: [],
   create: [],

@@ -16,15 +16,19 @@ export default class GigPage extends React.Component {
 		gig: {},
 		venue: {},
 	}
-	componentWillMount() {
+	fetchData = () => {
 		const { gigId } = this.props.params;
-		app.service('gigs').get(gigId)
+
+		return app.service('gigs').get(gigId)
 		.then(gig =>
 			app.service('venues').get(gig.venue)
 			.then(venue => 
 				this.setState({gig, venue})
 			)
 		)
+	}
+	componentWillMount() {
+		app.authenticate().then(this.fetchData)
 		.catch(err => console.error("It can't be: ", err))
 	}
 	render() {

@@ -3,6 +3,11 @@ import React from 'react';
 import { Link, browserHistory } from 'react-router';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { 
+	red900, red700, 
+	grey100, grey400, grey500, 
+	lightGreen700, lightGreen900 } from 'material-ui/styles/colors';
 
 import AppBar from 'material-ui/AppBar';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
@@ -14,6 +19,18 @@ import Snackbar from 'material-ui/Snackbar';
 import app from '../main.jsx';
 import errorHandler from './err'
 import UserCard from './user-card.jsx'
+
+const theme = {
+	palette: {
+		primary1Color: lightGreen700,	// normal
+		primary2Color: lightGreen900,	// date & time picker
+		primary3Color: grey100, 		// slider & toggle
+
+		accent1Color: red900, //secondary flat button text
+		accent2Color: grey100, //table row, toggle & toolbar
+		accent3Color: grey500, //slider, table footer & tablce column header
+	}
+}
 
 export default class Layout extends React.Component {
 	constructor(props) {
@@ -28,8 +45,9 @@ export default class Layout extends React.Component {
 
 		this.sections = [
 			// { text: "Venues", path: "/gyps/venues"},
-			{ text: "Events", path: "/gyps/events"},
-			{ text: "Users", path: "/gyps/users"},
+			{ text: "Events", path: "/gyps/events"},		//TODO with only one section
+															// do we need them?
+			// { text: "Users", path: "/gyps/users"},
 		]
 	}
 	componentDidMount() {
@@ -103,7 +121,7 @@ export default class Layout extends React.Component {
 	render() { 
 		const {user} = this.state;
 		return ( 
-		<MuiThemeProvider>
+		<MuiThemeProvider muiTheme={getMuiTheme(theme)}>
 			<div>
 				<AppBar 
 					title={this.state.section}
@@ -127,8 +145,8 @@ export default class Layout extends React.Component {
 					)}
 				</Drawer>
 				{this.props.children}
-				<footer>
-					Footering business goes here
+				<footer style={{position:'fixed', bottom: 0, right: 0, fontSize: 'smaller'}}>
+					© 2017 Intergalactic Balkan Festivals Unlimited
 				</footer>
 				<Snackbar
 					open={this.state.snackbarOpen}
