@@ -1,0 +1,14 @@
+html, body, * {
+	margin: 0;
+	font-family: Roboto, sans-serif;
+}
+.gig-timespan {
+	margin-left: 1em;
+	font-weight: 300;
+}
+.gig-timespan::before {
+	content: '(';
+}
+.gig-timespan::after {
+	content: ')';
+}

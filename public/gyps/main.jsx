@@ -10,7 +10,7 @@ import SignupForm from './mui/signup-form.jsx'
 import EventsList from './mui/events-list.jsx'
 import EventPage from './mui/event-page.jsx'
 import EventInfo from './mui/event-info.jsx'
-import GigPage from './mui/gig-page.jsx'
+import GigDetailsPage from './mui/gig-details-page.jsx'
 import Lineup from './mui/lineup.jsx'
 
 // touchy-screen stuff 
@@ -74,7 +74,7 @@ const routes = <Router history={browserHistory}>
 
 						<Route path='lineup' component={Lineup} />
 
-						<Route path='gig/:gigId' component={GigPage} />
+						<Route path='gig/:gigId' component={GigDetailsPage} />
 						{/*<Route path='venues' component={VenueForm} />
 						<Route path='venues/:venueId' component={VenuePage} />
 

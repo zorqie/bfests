@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "8fe909488eef8a869a9e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "4fa97969ba2122bd7dfd"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -14124,9 +14124,9 @@ var _eventInfo = __webpack_require__(857);
 
 var _eventInfo2 = _interopRequireDefault(_eventInfo);
 
-var _gigPage = __webpack_require__(435);
+var _gigDetailsPage = __webpack_require__(859);
 
-var _gigPage2 = _interopRequireDefault(_gigPage);
+var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
 
 var _lineup = __webpack_require__(437);
 
@@ -14211,7 +14211,7 @@ var routes = _react2.default.createElement(
 		_react2.default.createElement(_reactRouter.Route, { path: 'events/:eventId', component: _eventPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'eventinfo/:eventId', component: _eventInfo2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'lineup', component: _lineup2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigPage2.default }),
+		_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigDetailsPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: '*', component: NotFound })
 	)
 );
@@ -26245,8 +26245,9 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 var GigTimespan = function GigTimespan(_ref) {
 	var gig = _ref.gig,
 	    showRelative = _ref.showRelative,
+	    showDuration = _ref.showDuration,
 	    hideDates = _ref.hideDates,
-	    others = _objectWithoutProperties(_ref, ['gig', 'showRelative', 'hideDates']);
+	    others = _objectWithoutProperties(_ref, ['gig', 'showRelative', 'showDuration', 'hideDates']);
 
 	var mNow = (0, _moment2.default)();
 	var mStart = (0, _moment2.default)(gig.start);
@@ -26255,6 +26256,11 @@ var GigTimespan = function GigTimespan(_ref) {
 	var endDate = gig.end && (0, _moment2.default)(gig.end).format(dateFormat);
 	var relative = showRelative ? ' (' + (0, _moment2.default)().to(mStart) + ')' : '';
 
+	var duration = showDuration && gig.end ? _react2.default.createElement(
+		'span',
+		{ className: 'gig-duration' },
+		_moment2.default.duration((0, _moment2.default)(gig.end).diff(mStart)).humanize()
+	) : '';
 	// {...others} passes the styling on
 	return _react2.default.createElement(
 		'span',
@@ -26276,7 +26282,8 @@ var GigTimespan = function GigTimespan(_ref) {
 			endDate === startDate ? '' : endDate + ' at ',
 			(0, _moment2.default)(gig.end).format('h:mm a')
 		),
-		relative
+		relative,
+		duration
 	);
 };
 
@@ -57530,17 +57537,13 @@ var _mongoose = __webpack_require__(365);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
-var _add = __webpack_require__(673);
+var _reactRouter = __webpack_require__(39);
 
-var _add2 = _interopRequireDefault(_add);
+var _Card = __webpack_require__(114);
 
 var _Dialog = __webpack_require__(626);
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
-
-var _FloatingActionButton = __webpack_require__(634);
-
-var _FloatingActionButton2 = _interopRequireDefault(_FloatingActionButton);
 
 var _FlatButton = __webpack_require__(87);
 
@@ -57553,8 +57556,6 @@ var _Subheader = __webpack_require__(116);
 var _Subheader2 = _interopRequireDefault(_Subheader);
 
 var _Tabs = __webpack_require__(655);
-
-var _Card = __webpack_require__(114);
 
 var _gigTimespan = __webpack_require__(131);
 
@@ -57586,24 +57587,6 @@ var Kspan = function Kspan(_ref) {
 	return _react2.default.createElement('span', others);
 };
 
-// <IconButton iconClassName="material-icons" >add</IconButton>;
-
-var Subgig = function Subgig(_ref2) {
-	var gig = _ref2.gig,
-	    onEdit = _ref2.onEdit,
-	    onDelete = _ref2.onDelete;
-	return _react2.default.createElement(_List.ListItem, {
-		primaryText: gig.name,
-		secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig }),
-		rightIconButton: _react2.default.createElement(
-			Kspan,
-			null,
-			_react2.default.createElement(_FlatButton2.default, { label: 'Edit', onTouchTap: onEdit }),
-			_react2.default.createElement(_FlatButton2.default, { label: 'Delete', onTouchTap: onDelete })
-		)
-	});
-};
-
 var styles = {
 	overlay: {
 		color: 'white',
@@ -57615,7 +57598,7 @@ var EventPage = function (_React$Component) {
 	_inherits(EventPage, _React$Component);
 
 	function EventPage() {
-		var _ref3;
+		var _ref2;
 
 		var _temp, _this, _ret;
 
@@ -57625,7 +57608,7 @@ var EventPage = function (_React$Component) {
 			args[_key] = arguments[_key];
 		}
 
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref3 = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref3, [this].concat(args))), _this), _this.state = {
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
 			gigs: [],
 			tickets: {},
 			gig: {},
@@ -57634,6 +57617,24 @@ var EventPage = function (_React$Component) {
 			dialogOpen: false,
 			dialogGig: {},
 			errors: {}
+		}, _this.fetchData = function () {
+			var eventId = _this.props.params.eventId;
+
+			_main2.default.service('gigs').get(eventId).then(function (gig) {
+				document.title = gig.name;
+				_main2.default.service('gigs').find({
+					query: {
+						parent: new _mongoose2.default.Types.ObjectId(eventId),
+						type: { $ne: 'Volunteer' },
+						$sort: { start: 1 }
+					}
+				}).then(function (page) {
+					// console.log("Got result: ", page);			
+					_this.setState(_extends({}, _this.state, { gigs: page.data, gig: gig }));
+				});
+			}).catch(function (err) {
+				return console.error("ERAR: ", err);
+			});
 		}, _this.handleDialogCancel = function (e) {
 			// console.log("Canceling...");
 			_this.setState({ dialogOpen: false });
@@ -57680,33 +57681,16 @@ var EventPage = function (_React$Component) {
 		}, _this.gigPatched = function (gig) {
 			// console.log("Updated: ", gig);
 			// do something to reflect update
-			// this.setState({...this.state, dialogOpen: false, errors:{}});
+			_this.fetchData();
+		}, _this.viewGigDetails = function (gig) {
+			return _reactRouter.browserHistory.push('/gyps/gig/' + gig._id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
 	_createClass(EventPage, [{
 		key: 'componentWillMount',
 		value: function componentWillMount() {
-			var _this2 = this;
-
-			var eventId = this.props.params.eventId;
-
-			_main2.default.service('gigs').get(eventId).then(function (gig) {
-				document.title = gig.name;
-				_main2.default.service('gigs').find({
-					query: {
-						parent: new _mongoose2.default.Types.ObjectId(eventId),
-						type: { $ne: 'Volunteer' },
-						$sort: { start: 1 }
-					}
-				}).then(function (page) {
-					// console.log("Got result: ", page);			
-					_this2.setState(_extends({}, _this2.state, { gigs: page.data, gig: gig }));
-				});
-			}).catch(function (err) {
-				return console.error("ERAR: ", err);
-			});
-
+			_main2.default.authenticate().then(this.fetchData);
 			_main2.default.service('gigs').on('removed', this.gigRemoved);
 			_main2.default.service('gigs').on('created', this.gigCreated);
 			_main2.default.service('gigs').on('patched', this.gigPatched);
@@ -57716,14 +57700,14 @@ var EventPage = function (_React$Component) {
 	}, {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var _this3 = this;
+			var _this2 = this;
 
 			_main2.default.service('tickets').find().then(function (result) {
 				console.log("Got tickets", result);
 				var tickets = result.data.reduce(function (o, t) {
 					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
 				}, {});
-				_this3.setState(_extends({}, _this3.state, { tickets: tickets }));
+				_this2.setState(_extends({}, _this2.state, { tickets: tickets }));
 			});
 		}
 	}, {
@@ -57740,7 +57724,7 @@ var EventPage = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this4 = this;
+			var _this3 = this;
 
 			var _state = this.state,
 			    gig = _state.gig,
@@ -57780,15 +57764,16 @@ var EventPage = function (_React$Component) {
 						return _react2.default.createElement(_List.ListItem, {
 							key: gig._id,
 							primaryText: gig.name,
+							onTouchTap: _this3.viewGigDetails.bind(_this3, gig),
 							secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig }),
-							rightIconButton: _this4.isAttending(gig) ? _react2.default.createElement(_FlatButton2.default, {
+							rightIconButton: _this3.isAttending(gig) ? _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.minusBox,
 								title: 'Leave',
-								onTouchTap: _this4.handleLeave.bind(_this4, gig)
+								onTouchTap: _this3.handleLeave.bind(_this3, gig)
 							}) : _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.plusOutline,
 								title: 'Join',
-								onTouchTap: _this4.handleJoin.bind(_this4, gig)
+								onTouchTap: _this3.handleJoin.bind(_this3, gig)
 							})
 						});
 					})
@@ -57911,130 +57896,7 @@ var EventsList = function (_React$Component) {
 exports.default = EventsList;
 
 /***/ }),
-/* 435 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _moment = __webpack_require__(0);
-
-var _moment2 = _interopRequireDefault(_moment);
-
-var _mongoose = __webpack_require__(365);
-
-var _mongoose2 = _interopRequireDefault(_mongoose);
-
-var _Card = __webpack_require__(114);
-
-var _FlatButton = __webpack_require__(87);
-
-var _FlatButton2 = _interopRequireDefault(_FlatButton);
-
-var _List = __webpack_require__(115);
-
-var _Subheader = __webpack_require__(116);
-
-var _Subheader2 = _interopRequireDefault(_Subheader);
-
-var _gigTimespan = __webpack_require__(131);
-
-var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
-
-var _main = __webpack_require__(40);
-
-var _main2 = _interopRequireDefault(_main);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var GigPage = function (_React$Component) {
-	_inherits(GigPage, _React$Component);
-
-	function GigPage() {
-		var _ref;
-
-		var _temp, _this, _ret;
-
-		_classCallCheck(this, GigPage);
-
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GigPage.__proto__ || Object.getPrototypeOf(GigPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-			pals: [], // but how to get them, tickets are restricted to owner_id
-			gig: {},
-			venue: {}
-		}, _this.fetchData = function () {
-			var gigId = _this.props.params.gigId;
-
-
-			return _main2.default.service('gigs').get(gigId).then(function (gig) {
-				return _main2.default.service('venues').get(gig.venue).then(function (venue) {
-					return _this.setState({ gig: gig, venue: venue });
-				});
-			});
-		}, _temp), _possibleConstructorReturn(_this, _ret);
-	}
-
-	_createClass(GigPage, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			_main2.default.authenticate().then(this.fetchData).catch(function (err) {
-				return console.error("It can't be: ", err);
-			});
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _state = this.state,
-			    gig = _state.gig,
-			    venue = _state.venue;
-
-			console.log("GIIG", gig);
-			return _react2.default.createElement(
-				_Card.Card,
-				null,
-				_react2.default.createElement(_Card.CardHeader, { title: gig.name }),
-				_react2.default.createElement(
-					_Card.CardText,
-					null,
-					_react2.default.createElement(
-						'p',
-						null,
-						gig.acts && gig.acts.map(function (a) {
-							return a.name;
-						}).join(','),
-						' at the ',
-						venue.name
-					)
-				)
-			);
-		}
-	}]);
-
-	return GigPage;
-}(_react2.default.Component);
-
-exports.default = GigPage;
-
-/***/ }),
+/* 435 */,
 /* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -58150,14 +58012,10 @@ var Layout = function (_React$Component) {
 		};
 
 		_this.handleLogout = function () {
-			console.log('Laaging out...', _main2.default.get('user'));
 			_main2.default.service('users').patch(_this.state.user._id, { online: false }).then(function (u) {
-				console.log('User offline', u);
 				_this.setState({ user: null });
 				_main2.default.logout();
 				_reactRouter.browserHistory.push('/out');
-			}).catch(function (err) {
-				console.error("AHA!", err);console.error("GOTCHA", JSON.stringify(err));
 			});
 		};
 
@@ -58170,13 +58028,11 @@ var Layout = function (_React$Component) {
 		_this.loginListener = function (u) {
 			var user = _main2.default.get('user');
 			if (!_this.state.user && user) {
-				console.log("-=-=- AUTHENTICATED (app.user) -=-=-", user);
 				_this.setState({ user: user });
 			}
 		};
 
 		_this.patchedListener = function (u) {
-			console.log("Patched user", u);
 			if (u) {
 				var message = u.name + ' signed ' + (u.online ? 'in' : 'out');
 				_this.setState({ snackbarOpen: true, message: message });
@@ -91113,42 +90969,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 673 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _pure = __webpack_require__(59);
-
-var _pure2 = _interopRequireDefault(_pure);
-
-var _SvgIcon = __webpack_require__(45);
-
-var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
-
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
-
-var ContentAdd = function ContentAdd(props) {
-  return _react2.default.createElement(_SvgIcon2.default, props, _react2.default.createElement('path', { d: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z' }));
-};
-ContentAdd = (0, _pure2.default)(ContentAdd);
-ContentAdd.displayName = 'ContentAdd';
-ContentAdd.muiName = 'SvgIcon';
-
-exports.default = ContentAdd;
-
-/***/ }),
+/* 673 */,
 /* 674 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -114451,7 +114272,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.Icons = exports.minusBox = exports.plusOutline = exports.removeBox = exports.addBoxIcon = exports.addIcon = exports.addBoxOutline = undefined;
+exports.Icons = exports.minusBox = exports.plusOutline = exports.removeBox = exports.removeIcon = exports.addBoxIcon = exports.addIcon = exports.addBoxOutline = undefined;
 
 var _react = __webpack_require__(1);
 
@@ -114485,6 +114306,11 @@ var addBoxIcon = exports.addBoxIcon = _react2.default.createElement(
 	'add_box'
 );
 
+var removeIcon = exports.removeIcon = _react2.default.createElement(
+	_FontIcon2.default,
+	{ className: 'material-icons' },
+	'remove'
+);
 var removeBox = exports.removeBox = _react2.default.createElement(
 	_SvgIcon2.default,
 	{ viewBox: '0 0 455 455' },
@@ -114931,6 +114757,963 @@ var EventInfo = function EventInfo(props) {
 };
 
 exports.default = EventInfo;
+
+/***/ }),
+/* 858 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _FloatingActionButton = __webpack_require__(634);
+
+var _FloatingActionButton2 = _interopRequireDefault(_FloatingActionButton);
+
+var _FlatButton = __webpack_require__(87);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _List = __webpack_require__(115);
+
+var _icons = __webpack_require__(853);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+//hack because Material-UI forces a onKeyboardFocus onto the span and React complains
+var Kspan = function Kspan(_ref) {
+	var onKeyboardFocus = _ref.onKeyboardFocus,
+	    others = _objectWithoutProperties(_ref, ['onKeyboardFocus']);
+
+	return _react2.default.createElement('span', others);
+};
+
+var ActsList = function (_React$Component) {
+	_inherits(ActsList, _React$Component);
+
+	function ActsList() {
+		var _ref2;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, ActsList);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = ActsList.__proto__ || Object.getPrototypeOf(ActsList)).call.apply(_ref2, [this].concat(args))), _this), _this.edit = function (act) {
+			return _this.props.onEdit(act);
+		}, _this.delete = function (act) {
+			return _this.props.onDelete(act);
+		}, _this.select = function (act) {
+			return _this.props.onSelect && _this.props.onSelect(act);
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(ActsList, [{
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var _props = this.props,
+			    acts = _props.acts,
+			    allowAdd = _props.allowAdd,
+			    compact = _props.compact,
+			    onEdit = _props.onEdit,
+			    onDelete = _props.onDelete;
+
+			return _react2.default.createElement(
+				_List.List,
+				null,
+				acts.map(function (act) {
+					return _react2.default.createElement(_List.ListItem, {
+						key: act._id,
+						primaryText: act.name,
+						onTouchTap: _this2.select.bind(_this2, act),
+						secondaryText: compact ? '' : act.description || ' ',
+						rightIconButton: _react2.default.createElement(
+							Kspan,
+							null,
+							onEdit && _react2.default.createElement(_FlatButton2.default, { label: 'Edit', onTouchTap: _this2.edit.bind(_this2, act) }),
+							onDelete && _react2.default.createElement(_FlatButton2.default, { label: 'Delete', onTouchTap: _this2.delete.bind(_this2, act) })
+						)
+					});
+				})
+			);
+		}
+	}]);
+
+	return ActsList;
+}(_react2.default.Component);
+
+exports.default = ActsList;
+
+/***/ }),
+/* 859 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _moment = __webpack_require__(0);
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _mongoose = __webpack_require__(365);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _reactRouter = __webpack_require__(39);
+
+var _Avatar = __webpack_require__(618);
+
+var _Avatar2 = _interopRequireDefault(_Avatar);
+
+var _Card = __webpack_require__(114);
+
+var _FlatButton = __webpack_require__(87);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _List = __webpack_require__(115);
+
+var _Subheader = __webpack_require__(116);
+
+var _Subheader2 = _interopRequireDefault(_Subheader);
+
+var _Divider = __webpack_require__(628);
+
+var _Divider2 = _interopRequireDefault(_Divider);
+
+var _Dialog = __webpack_require__(626);
+
+var _Dialog2 = _interopRequireDefault(_Dialog);
+
+var _actsList = __webpack_require__(858);
+
+var _actsList2 = _interopRequireDefault(_actsList);
+
+var _gigTimespan = __webpack_require__(131);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+var _performanceCard = __webpack_require__(860);
+
+var _performanceCard2 = _interopRequireDefault(_performanceCard);
+
+var _workshopCard = __webpack_require__(863);
+
+var _workshopCard2 = _interopRequireDefault(_workshopCard);
+
+var _volunteerCard = __webpack_require__(862);
+
+var _volunteerCard2 = _interopRequireDefault(_volunteerCard);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var GigDetailsPage = function (_React$Component) {
+	_inherits(GigDetailsPage, _React$Component);
+
+	function GigDetailsPage() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, GigDetailsPage);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GigDetailsPage.__proto__ || Object.getPrototypeOf(GigDetailsPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			fans: [],
+			gig: {},
+			venue: {},
+			ticket: {}
+		}, _this.fetchData = function () {
+			var gigId = _this.props.params.gigId;
+
+
+			_main2.default.service('gigs').get(gigId).then(function (gig) {
+				document.title = gig.name;
+				_main2.default.service('tickets').find({ query: { gig_id: gig._id } }).then(function (result) {
+					return _this.setState({ venue: gig.venue, gig: gig, ticket: result.total && result.data[0] });
+				});
+			});
+			// not authorized
+			// .then(() => app.service('fans')
+			// 	.find({query:{gig_id:gigId, status: 'Attending'}})
+			// 	.then(result => this.setState({fans: result.data})))
+		}, _this.viewActDetails = function (act) {
+			return _reactRouter.browserHistory.push('/acts/' + act._id);
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(GigDetailsPage, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			_main2.default.authenticate().then(this.fetchData).catch(function (err) {
+				return console.error("It can't be, an erro: ", err);
+			});
+		}
+	}, {
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			// attach listeners
+			_main2.default.service('gigs').on('patched', this.fetchData);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			// remove listners
+			_main2.default.service('gigs').removeListener('patched', this.fetchData);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _state = this.state,
+			    gig = _state.gig,
+			    venue = _state.venue,
+			    fans = _state.fans,
+			    ticket = _state.ticket;
+
+			console.log("GIIG", this.state);
+			var card = gig.type === 'Workshop' ? _react2.default.createElement(_workshopCard2.default, {
+				gig: gig,
+				fans: fans,
+				ticket: ticket,
+				onMasterSelect: this.viewActDetails
+			}) : gig.type === 'Volunteer' ? _react2.default.createElement(_volunteerCard2.default, { gig: gig }) : _react2.default.createElement(_performanceCard2.default, {
+				gig: gig,
+				ticket: ticket,
+				onPerformerSelect: this.viewActDetails
+			});
+			var gigTitle = _react2.default.createElement(
+				'span',
+				null,
+				_react2.default.createElement(
+					'span',
+					{ className: 'acts' },
+					gig.acts && gig.acts.map(function (a) {
+						return a.name;
+					}).join(', ')
+				),
+				venue && _react2.default.createElement(
+					'span',
+					null,
+					' at the ',
+					venue.name
+				)
+			);
+			return _react2.default.createElement(
+				_Card.Card,
+				null,
+				_react2.default.createElement(_Card.CardHeader, {
+					title: gigTitle,
+					subtitle: _react2.default.createElement(_gigTimespan2.default, { gig: gig, showDuration: true }),
+					avatar: _react2.default.createElement(
+						_Avatar2.default,
+						null,
+						gig.type && gig.type.charAt(0)
+					) }),
+				_react2.default.createElement(
+					_Card.CardText,
+					null,
+					card
+				),
+				_react2.default.createElement(_Card.CardActions, null)
+			);
+		}
+	}]);
+
+	return GigDetailsPage;
+}(_react2.default.Component);
+
+exports.default = GigDetailsPage;
+
+/***/ }),
+/* 860 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Divider = __webpack_require__(628);
+
+var _Divider2 = _interopRequireDefault(_Divider);
+
+var _actsList = __webpack_require__(858);
+
+var _actsList2 = _interopRequireDefault(_actsList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PerformanceCard = function PerformanceCard(_ref) {
+	var gig = _ref.gig,
+	    onPerformerEdit = _ref.onPerformerEdit,
+	    onPerformerDelete = _ref.onPerformerDelete,
+	    onPerformerSelect = _ref.onPerformerSelect;
+	return _react2.default.createElement(
+		'div',
+		null,
+		_react2.default.createElement(
+			'h2',
+			null,
+			gig.name
+		),
+		_react2.default.createElement(_Divider2.default, { style: { marginTop: '1em' } }),
+		gig.acts && gig.acts.length ? _react2.default.createElement(
+			'div',
+			null,
+			'Featuring:',
+			_react2.default.createElement(_actsList2.default, {
+				acts: gig.acts,
+				onSelect: onPerformerSelect,
+				onEdit: onPerformerEdit,
+				onDelete: onPerformerDelete
+			})
+		) : ''
+	);
+};
+
+exports.default = PerformanceCard;
+
+/***/ }),
+/* 861 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Dialog = __webpack_require__(626);
+
+var _Dialog2 = _interopRequireDefault(_Dialog);
+
+var _FlatButton = __webpack_require__(87);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _RaisedButton = __webpack_require__(249);
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+var _TextField = __webpack_require__(250);
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
+var _moment = __webpack_require__(0);
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var blankGig = function blankGig() {
+	return {
+		name: '',
+		description: '',
+		venue: '',
+		act: '',
+		type: '',
+		start: new Date(),
+		end: new Date()
+	};
+};
+
+var focus = function focus(input) {
+	return input && input.focus();
+};
+
+var ShiftDialog = function (_React$Component) {
+	_inherits(ShiftDialog, _React$Component);
+
+	function ShiftDialog() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, ShiftDialog);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ShiftDialog.__proto__ || Object.getPrototypeOf(ShiftDialog)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			gig: _this.props.shift || blankGig()
+		}, _this.handleChange = function (e) {
+			// TODO: ensure end is after start
+			// TODO: keep the time if the date changes
+
+			var _e$target = e.target,
+			    name = _e$target.name,
+			    value = _e$target.value;
+			var gig = _this.state.gig;
+			// console.log("Changed: " + name + " -> " + JSON.stringify(value));
+
+			if (name.indexOf("Time") > -1) {
+				//handle time changes
+				var dateName = name.substr(0, name.indexOf("Time"));
+				var date = _this.state.gig[dateName];
+				var hours = (0, _moment2.default)(value, 'HH:mm');
+				var newDate = (0, _moment2.default)(date).hours(hours.hours()).minutes(hours.minutes()).toDate();
+				// console.log("Changing: " + dateName + " = " + (date) + "\n--> " + newDate);
+				Object.assign(gig, _defineProperty({}, dateName, newDate));
+			} else {
+				Object.assign(gig, _defineProperty({}, name, value));
+			}
+			// this.validate(gig);
+			_this.setState(_extends({}, _this.state, { gig: gig }));
+			// console.log("State: " + JSON.stringify(this.state));
+		}, _this.dialogActions = [_react2.default.createElement(_FlatButton2.default, {
+			label: 'Cancel',
+			primary: true,
+			onTouchTap: _this.props.onCancel
+		}), _react2.default.createElement(_RaisedButton2.default, {
+			label: 'Save',
+			primary: true,
+			onTouchTap: _this.props.onSubmit
+		})], _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(ShiftDialog, [{
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			this.setState({ gig: nextProps.shift });
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			// console.log("Props", this.props)
+			var gig = this.state.gig;
+			var _props = this.props,
+			    errors = _props.errors,
+			    open = _props.open;
+
+			return _react2.default.createElement(
+				_Dialog2.default,
+				{
+					title: (gig._id ? '' : 'Add ') + gig.type + ' shift',
+					open: open,
+					actions: this.dialogActions,
+					onRequestClose: this.props.onCancel
+				},
+				_react2.default.createElement(
+					'form',
+					null,
+					_react2.default.createElement(
+						'div',
+						null,
+						_react2.default.createElement(_TextField2.default, {
+							name: 'name',
+							floatingLabelText: 'Name',
+							value: gig.name || '',
+							maxLength: 30
+						}),
+						_react2.default.createElement(_TextField2.default, {
+							name: 'venue',
+							floatingLabelText: 'Location',
+							value: gig.venue && gig.venue.name || ''
+						})
+					),
+					_react2.default.createElement(_TextField2.default, {
+						name: 'description',
+						floatingLabelText: 'Short description',
+						value: gig.description || '',
+						fullWidth: true,
+						maxLength: 60,
+						onChange: this.handleChange
+					}),
+					_react2.default.createElement(
+						'div',
+						null,
+						_react2.default.createElement(_TextField2.default, {
+							type: 'date',
+							name: 'start',
+							floatingLabelFixed: true,
+							floatingLabelText: 'Start date',
+							value: gig.start && (0, _moment2.default)(gig.start).format('YYYY-MM-DD') || '',
+							errorText: errors.start && errors.start.message || '',
+							onChange: this.handleChange,
+							ref: focus
+						}),
+						_react2.default.createElement(_TextField2.default, {
+							type: 'time',
+							name: 'startTime',
+							floatingLabelFixed: true,
+							floatingLabelText: 'Start time',
+							value: gig.start && (0, _moment2.default)(gig.start).format('HH:mm') || '',
+							onChange: this.handleChange
+						})
+					),
+					_react2.default.createElement(
+						'div',
+						null,
+						_react2.default.createElement(_TextField2.default, {
+							type: 'date',
+							name: 'end',
+							floatingLabelFixed: true,
+							floatingLabelText: 'End date',
+							value: gig.end && (0, _moment2.default)(gig.end).format('YYYY-MM-DD') || '',
+							errorText: errors.end && errors.end.message || '',
+							onChange: this.handleChange
+						}),
+						_react2.default.createElement(_TextField2.default, {
+							type: 'time',
+							name: 'endTime',
+							floatingLabelFixed: true,
+							floatingLabelText: 'End time',
+							value: gig.end && (0, _moment2.default)(gig.end).format('HH:mm') || '',
+							onChange: this.handleChange
+						})
+					)
+				)
+			);
+		}
+	}]);
+
+	return ShiftDialog;
+}(_react2.default.Component);
+
+exports.default = ShiftDialog;
+
+/***/ }),
+/* 862 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = __webpack_require__(39);
+
+var _Divider = __webpack_require__(628);
+
+var _Divider2 = _interopRequireDefault(_Divider);
+
+var _FlatButton = __webpack_require__(87);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _FloatingActionButton = __webpack_require__(634);
+
+var _FloatingActionButton2 = _interopRequireDefault(_FloatingActionButton);
+
+var _List = __webpack_require__(115);
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+var _icons = __webpack_require__(853);
+
+var _actsList = __webpack_require__(858);
+
+var _actsList2 = _interopRequireDefault(_actsList);
+
+var _gigTimespan = __webpack_require__(131);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+var _shiftDialog = __webpack_require__(861);
+
+var _shiftDialog2 = _interopRequireDefault(_shiftDialog);
+
+var _hacks = __webpack_require__(864);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var styles = {
+	gigType: {
+		fontSize: '12dp',
+		fontWeight: '300',
+		float: 'right'
+	}
+};
+
+var VolunteerCard = function (_React$Component) {
+	_inherits(VolunteerCard, _React$Component);
+
+	function VolunteerCard() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, VolunteerCard);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = VolunteerCard.__proto__ || Object.getPrototypeOf(VolunteerCard)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			shifts: [],
+			dialog: {
+				open: false,
+				shift: {},
+				errors: {}
+			}
+		}, _this.fetchData = function () {
+			_main2.default.service('gigs').find({
+				query: {
+					parent: _this.props.gig._id,
+					$sort: { start: 1 }
+				}
+			}).then(function (result) {
+				return _this.setState({ shifts: result.data });
+			});
+		}, _this.createdListener = function (shift) {
+			console.log("Created", shift);
+			console.log("THIS IS", _this.props.gig);
+			if (shift.parent === _this.props.gig._id) {
+				_this.setState(_extends({}, _this.state, { shifts: _this.state.shifts.concat(shift) }));
+			}
+		}, _this.removedListener = function (shift) {
+			if (shift.parent === _this.props.gig._id) {
+				_this.setState(_extends({}, _this.state, { shifts: _this.state.shifts.filter(function (s) {
+						return s._id !== shift._id;
+					}) }));
+			}
+		}, _this.patchedListener = function (shift) {
+			if (shift.parent === _this.props.gig._id) {
+				_this.fetchData();
+			}
+		}, _this.viewShift = function (shift) {
+			return _reactRouter.browserHistory.push('/shifts/' + shift._id);
+		}, _this.editShift = function (shift) {
+			console.log("Editshifting", shift);
+			var dialog = _this.state.dialog;
+			var gig = _this.props.gig;
+
+			var dialogShift = shift || Object.assign({}, gig, { parent: gig._id });
+			if (!shift) {
+				// only if clone of gig, delete its id
+				delete dialogShift._id;
+			}
+			Object.assign(dialog, { open: true, errors: {}, shift: dialogShift });
+			_this.setState(_extends({}, _this.state, { dialog: dialog }));
+		}, _this.deleteShift = function (shift) {
+			_main2.default.service('gigs').remove(shift._id);
+		}, _this.dialogCancel = function () {
+			_this.setState(_extends({}, _this.state, { dialog: { open: false, shift: {}, errors: {} } }));
+		}, _this.dialogSubmit = function (e) {
+			var dialog = _this.state.dialog;
+			var shift = dialog.shift;
+
+			Object.assign(dialog, { open: false, errors: {} });
+			_this.setState(_extends({}, _this.state, { dialog: dialog }));
+			if (shift._id) {
+				//patch
+				_main2.default.service('gigs').patch(shift._id, shift);
+				// .then(shift =>)
+			} else {
+				//create
+				_main2.default.service('gigs').create(shift);
+			}
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(VolunteerCard, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			_main2.default.authenticate().then(this.fetchData);
+		}
+	}, {
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			//setup listeners
+			_main2.default.service('gigs').on('created', this.createdListener);
+			_main2.default.service('gigs').on('removed', this.removedListener);
+			_main2.default.service('gigs').on('patched', this.patchedListener);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			//remove listeners
+			if (_main2.default) {
+				_main2.default.service('gigs').removeListener('created', this.createdListener);
+				_main2.default.service('gigs').removeListener('removed', this.removedListener);
+				_main2.default.service('gigs').removeListener('patched', this.patchedListener);
+			}
+		}
+
+		// Listeners
+
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var gig = this.props.gig;
+			var _state = this.state,
+			    shifts = _state.shifts,
+			    dialog = _state.dialog;
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'span',
+					{ style: styles.gigType },
+					'Volunteer opportunity'
+				),
+				_react2.default.createElement(
+					'h2',
+					null,
+					gig.name
+				),
+				_react2.default.createElement(
+					'h3',
+					null,
+					gig.description
+				),
+				_react2.default.createElement(
+					'ul',
+					null,
+					shifts.map(function (shift) {
+						return _react2.default.createElement(_List.ListItem, {
+							key: shift._id,
+							primaryText: _react2.default.createElement(_gigTimespan2.default, { gig: shift }),
+							onTouchTap: _this2.viewShift.bind(_this2, shift),
+							rightIconButton: _react2.default.createElement(
+								_hacks.Kspan,
+								null,
+								_react2.default.createElement(_FlatButton2.default, { label: 'Edit', onTouchTap: _this2.editShift.bind(_this2, shift) }),
+								_react2.default.createElement(_FlatButton2.default, { label: 'Delete', onTouchTap: _this2.deleteShift.bind(_this2, shift) })
+							)
+
+						});
+					})
+				),
+				_react2.default.createElement(
+					_FloatingActionButton2.default,
+					{ onTouchTap: this.editShift.bind(this, null) },
+					_icons.addIcon
+				),
+				_react2.default.createElement(_shiftDialog2.default, _extends({}, dialog, { onCancel: this.dialogCancel, onSubmit: this.dialogSubmit }))
+			);
+		}
+	}]);
+
+	return VolunteerCard;
+}(_react2.default.Component);
+
+exports.default = VolunteerCard;
+
+/***/ }),
+/* 863 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Divider = __webpack_require__(628);
+
+var _Divider2 = _interopRequireDefault(_Divider);
+
+var _FlatButton = __webpack_require__(87);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _RaisedButton = __webpack_require__(249);
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+var _actsList = __webpack_require__(858);
+
+var _actsList2 = _interopRequireDefault(_actsList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var styles = {
+	acts: {
+		fontSize: '18dp',
+		fontWeight: 300
+	},
+	gigType: {
+		fontSize: '12dp',
+		fontWeight: '300',
+		float: 'right'
+	},
+	leave: {
+		marginLeft: '1em',
+		border: '2px solid grey'
+	}
+};
+
+var WorkshopCard = function WorkshopCard(_ref) {
+	var gig = _ref.gig,
+	    acts = _ref.acts,
+	    fans = _ref.fans,
+	    ticket = _ref.ticket,
+	    onMasterSelect = _ref.onMasterSelect;
+	return _react2.default.createElement(
+		'div',
+		null,
+		_react2.default.createElement(
+			'span',
+			{ style: styles.gigType },
+			gig.type
+		),
+		_react2.default.createElement(
+			'h2',
+			null,
+			gig.name
+		),
+		_react2.default.createElement(
+			'p',
+			null,
+			gig.description
+		),
+		_react2.default.createElement(_Divider2.default, { style: { marginTop: '1em' } }),
+		'Taught by:',
+		gig.acts && gig.acts.length ? _react2.default.createElement(_actsList2.default, {
+			acts: gig.acts,
+			onSelect: onMasterSelect
+		}) : ' Unknown master',
+		_react2.default.createElement(_Divider2.default, { style: { marginTop: '1em' } }),
+		_react2.default.createElement(
+			'div',
+			null,
+			ticket && ticket.status && ticket.status === 'Attending' ? _react2.default.createElement(
+				'span',
+				null,
+				'You are attending ',
+				_react2.default.createElement(_FlatButton2.default, { style: styles.leave, label: 'Leave' })
+			) : _react2.default.createElement(
+				'span',
+				null,
+				_react2.default.createElement(_RaisedButton2.default, { primary: true, label: 'Join' })
+			)
+		)
+	);
+};
+
+exports.default = WorkshopCard;
+
+/***/ }),
+/* 864 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.hacks = exports.Kspan = undefined;
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var Kspan = function Kspan(_ref) {
+  var onKeyboardFocus = _ref.onKeyboardFocus,
+      others = _objectWithoutProperties(_ref, ['onKeyboardFocus']);
+
+  return _react2.default.createElement('span', others);
+};
+
+exports.Kspan = Kspan;
+var hacks = exports.hacks = { Kspan: Kspan };
+
+exports.default = hacks;
 
 /***/ })
 /******/ ]);

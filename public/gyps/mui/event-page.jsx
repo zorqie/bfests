@@ -1,17 +1,14 @@
-import React from 'react';
+import React from 'react'
 import moment from 'moment'
-import mongoose from 'mongoose'; 
+import mongoose from 'mongoose'
+import {browserHistory} from 'react-router'
 
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import Dialog from 'material-ui/Dialog';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import FlatButton from 'material-ui/FlatButton';
-import {List, ListItem} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import {Tabs, Tab} from 'material-ui/Tabs';
-
-
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import Dialog from 'material-ui/Dialog'
+import FlatButton from 'material-ui/FlatButton'
+import {List, ListItem} from 'material-ui/List'
+import Subheader from 'material-ui/Subheader'
+import {Tabs, Tab} from 'material-ui/Tabs'
 
 import GigTimespan from './gig-timespan.jsx'
 import app from '../main.jsx';
@@ -19,17 +16,6 @@ import { plusOutline, minusBox } from './icons.jsx';
 
 //hack because Material-UI forces a onKeyboardFocus onto the span and React complains
 const Kspan = ({onKeyboardFocus, ...others}) => <span {...others}/>; 
-
-	// <IconButton iconClassName="material-icons" >add</IconButton>;
-
-const Subgig = ({ gig, onEdit, onDelete }) => <ListItem 
-		primaryText={gig.name} 
-		secondaryText={<GigTimespan gig={gig} />} 
-		rightIconButton={<Kspan>
-			<FlatButton label="Edit" onTouchTap={onEdit}/>
-			<FlatButton label="Delete" onTouchTap={onDelete}/>
-		</Kspan>}
-	/>;
 
 const styles = {
 	overlay: {
@@ -51,25 +37,7 @@ export default class EventPage extends React.Component {
 	}
 	
 	componentWillMount() {
-		const eventId = this.props.params.eventId;
-
-		app.service('gigs').get(eventId)
-		.then(gig => {
-			document.title = gig.name;			
-			app.service('gigs').find({
-				query: {
-					parent: new mongoose.Types.ObjectId(eventId),
-					type: {$ne: 'Volunteer'},
-					$sort: { start: 1 },
-					// $limit: this.props.limit || 7
-				}
-			})
-			.then(page => {
-				// console.log("Got result: ", page);			
-				this.setState({...this.state, gigs: page.data, gig});
-			})})
-		.catch(err => console.error("ERAR: ", err));
-
+		app.authenticate().then(this.fetchData)
 		app.service('gigs').on('removed', this.gigRemoved);
 		app.service('gigs').on('created', this.gigCreated);
 		app.service('gigs').on('patched', this.gigPatched);
@@ -92,6 +60,27 @@ export default class EventPage extends React.Component {
 			app.service('tickets').removeListener('patched', this.ticketPatched);
 			app.service('tickets').removeListener('created', this.ticketCreated);
 		}
+	}
+
+	fetchData = () => {
+		const eventId = this.props.params.eventId;
+
+		app.service('gigs').get(eventId)
+		.then(gig => {
+			document.title = gig.name;			
+			app.service('gigs').find({
+				query: {
+					parent: new mongoose.Types.ObjectId(eventId),
+					type: {$ne: 'Volunteer'},
+					$sort: { start: 1 },
+					// $limit: this.props.limit || 7
+				}
+			})
+			.then(page => {
+				// console.log("Got result: ", page);			
+				this.setState({...this.state, gigs: page.data, gig})
+			})})
+		.catch(err => console.error("ERAR: ", err))
 	}
 
 	handleDialogCancel = e => {
@@ -127,6 +116,7 @@ export default class EventPage extends React.Component {
 			app.service('tickets').create({gig_id: gig._id, status: "Attending"})
 		}
 	}
+	
 	handleLeave = gig => {
 		console.log("Leaving gig", gig)
 		if(this.isAttending(gig)) {
@@ -134,26 +124,28 @@ export default class EventPage extends React.Component {
 		}
 	}
 	
-
 	gigRemoved = gig => {
 		// console.log("Removed: ", gig);
 		this.setState({
 			...this.state, 
 			gigs: this.state.gigs.filter(g => g._id !== gig._id),
-		});
+		})
 	}
 	gigCreated = gig => {
 		// console.log("Added: ", gig);
 		this.setState({
 			...this.state, 
 			gigs: this.state.gigs.concat(gig),
-		});
+		})
 	}
 	gigPatched = gig => {
 		// console.log("Updated: ", gig);
 		// do something to reflect update
-		// this.setState({...this.state, dialogOpen: false, errors:{}});
+		this.fetchData()
 	}
+
+	viewGigDetails = gig => browserHistory.push('/gyps/gig/'+gig._id)
+
 	render() {
 		const {gig, venue} = this.state;
 		// console.log("GIGGGINGING: ", this.state);
@@ -180,6 +172,7 @@ export default class EventPage extends React.Component {
 						gig => <ListItem 
 									key={gig._id} 
 									primaryText={gig.name} 
+									onTouchTap={this.viewGigDetails.bind(this, gig)}
 									secondaryText={<GigTimespan gig={gig} />} 
 									rightIconButton={
 										this.isAttending(gig) ?

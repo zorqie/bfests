@@ -11,6 +11,7 @@ export const addBoxOutline = <SvgIcon viewBox="0 0 60 60">
 export const addIcon = <FontIcon className="material-icons" >add</FontIcon>
 export const addBoxIcon = <FontIcon className="material-icons" >add_box</FontIcon>
 
+export const removeIcon = <FontIcon className="material-icons" >remove</FontIcon>
 export const removeBox = <SvgIcon viewBox="0 0 455 455">
 	<path d="M0,0v455h455V0H0z M358.865,242.5h-263v-30h263V242.5z" />
 	<polygon points="29,51 31,51 31,31 51,31 51,29 31,29 31,9 29,9 29,29 9,29 9,31 29,31 	"/>
