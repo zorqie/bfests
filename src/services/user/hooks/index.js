@@ -18,7 +18,8 @@ exports.before = {
     // auth.restrictToOwner({ ownerField: '_id' })
     auth.restrictToRoles({
         roles: ['sysadmin', 'master'],
-        owner: true
+        owner: true,
+        ownerField: '_id'
     })
   ],
   create: [
@@ -38,7 +39,8 @@ exports.before = {
     // allow only sysadmin and owner to modify
     auth.restrictToRoles({
         roles: ['sysadmin'],
-        owner: true
+        owner: true,
+        ownerField: '_id'
     })
   ],
   remove: [
@@ -48,8 +50,8 @@ exports.before = {
     // auth.restrictToOwner({ ownerField: '_id' })
     auth.restrictToRoles({
         roles: ['sysadmin'],
-        ownerField: '_id',
-        owner: true
+        owner: true,
+        ownerField: '_id'
     })
   ]
 };

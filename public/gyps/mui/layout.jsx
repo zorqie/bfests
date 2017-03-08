@@ -85,13 +85,15 @@ export default class Layout extends React.Component {
 	}
 
 	handleLogout = () => {
+		console.log('Laaging out...', app.get('user'))
 		app.service('users').patch(this.state.user._id, {online: false})
 		.then(u => {
 			console.log('User offline', u);
 			this.setState({user: null});
 			app.logout();
 			browserHistory.push('/out');
-		});
+		})
+		.catch(err => {console.error("AHA!", err);console.error("GOTCHA", JSON.stringify(err))})
 	}
 	errorListener = error => {
 		console.log("ERRORED out.", error);
@@ -113,7 +115,7 @@ export default class Layout extends React.Component {
 		}
 	}
 	handleDrawer = (open, reason) => {
-		console.log(`Drawer: open: ${open} for ${reason}`);
+		// console.log(`Drawer: open: ${open} for ${reason}`);
 		this.setState({...this.state, drawerOpen: open})
 	}
 	handleSnackbarClose = () => this.setState({ snackbarOpen: false, message: ''});

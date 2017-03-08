@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "62a866aac6ccc35fe3ff"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "8fe909488eef8a869a9e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -58150,11 +58150,14 @@ var Layout = function (_React$Component) {
 		};
 
 		_this.handleLogout = function () {
+			console.log('Laaging out...', _main2.default.get('user'));
 			_main2.default.service('users').patch(_this.state.user._id, { online: false }).then(function (u) {
 				console.log('User offline', u);
 				_this.setState({ user: null });
 				_main2.default.logout();
 				_reactRouter.browserHistory.push('/out');
+			}).catch(function (err) {
+				console.error("AHA!", err);console.error("GOTCHA", JSON.stringify(err));
 			});
 		};
 
@@ -58181,7 +58184,7 @@ var Layout = function (_React$Component) {
 		};
 
 		_this.handleDrawer = function (open, reason) {
-			console.log('Drawer: open: ' + open + ' for ' + reason);
+			// console.log(`Drawer: open: ${open} for ${reason}`);
 			_this.setState(_extends({}, _this.state, { drawerOpen: open }));
 		};
 
@@ -58517,11 +58520,8 @@ var LoginForm = function (_React$Component) {
 				email: email,
 				password: password
 			}).then(function () {
-				// const handler = this.props.onSuccess || this.props.route.onSuccess;
-				// if(handler) {
-				// 	handler();
-				// }
 				var user = _main2.default.get('user');
+				console.log("Authenticated.then", user);
 				_main2.default.service('users').patch(user._id, { online: true }).then(function (u) {
 					_main2.default.emit('authenticated', user);
 					_reactRouter.browserHistory.push('home');

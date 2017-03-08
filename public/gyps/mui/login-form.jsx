@@ -36,11 +36,8 @@ class LoginForm extends React.Component {
 			password,
 		})
 		.then(() => {
-			// const handler = this.props.onSuccess || this.props.route.onSuccess;
-			// if(handler) {
-			// 	handler();
-			// }
 			const user = app.get('user');
+			console.log("Authenticated.then", user)
 			app.service('users').patch(user._id, {online: true})
 			.then(u => {
 				app.emit('authenticated', user);
