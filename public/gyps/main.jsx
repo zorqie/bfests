@@ -9,6 +9,7 @@ import SignupForm from './mui/signup-form.jsx'
 
 import EventsList from './mui/events-list.jsx'
 import EventPage from './mui/event-page.jsx'
+import EventInfo from './mui/event-info.jsx'
 import GigPage from './mui/gig-page.jsx'
 import Lineup from './mui/lineup.jsx'
 
@@ -58,14 +59,18 @@ const handleRouteEnter = (nextState, replace, callback) => {
 }
 
 const routes = <Router history={browserHistory}>
-					<Route path="/gyps" component={Layout}  >
+					<Route path='/' component={Layout}>
+						<Route path='login' component={LoginForm} />
+						<Route path='signup' component={SignupForm} />
+					</Route>
+					<Route path="/gyps/" component={Layout}  >
 						<IndexRoute component={Home} />
 
-						<Route path='/login' component={LoginForm} />
-						<Route path='signup' component={SignupForm} />
+						
 						
 						<Route path='events' component={EventsList} />
 						<Route path='events/:eventId' component={EventPage} />
+						<Route path='eventinfo/:eventId' component={EventInfo} />
 
 						<Route path='lineup' component={Lineup} />
 
@@ -77,6 +82,7 @@ const routes = <Router history={browserHistory}>
 						
 						<Route path='*' component={NotFound} />
 					</Route>
+					
 				</Router>;
 
 // FIXME hack to make app available to pages when not going through / first

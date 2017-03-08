@@ -46,11 +46,9 @@ module.exports = {
 		new webpack.HotModuleReplacementPlugin(),
 		new webpack.NoEmitOnErrorsPlugin(),
 		new webpack.DefinePlugin({
-			'typeof window': "\"object\""
-		}),
-		// new webpack.DefinePlugin({
-		// 	'process.env.NODE_ENV': JSON.stringify('development')
-		// })
+			'typeof window': "\"object\"",
+			'process.env.NODE_ENV': JSON.stringify('development')
+		})
 	],
 	node: {
 		fs: "empty"

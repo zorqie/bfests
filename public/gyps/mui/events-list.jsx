@@ -1,5 +1,7 @@
 import React from 'react'
 import { browserHistory } from 'react-router'
+
+import FlatButton from 'material-ui/FlatButton'
 import { List, ListItem } from 'material-ui/List'
 
 import GigTimespan from './gig-timespan.jsx'
@@ -15,7 +17,11 @@ export default class EventsList extends React.Component {
 		.catch(err => console.error)
 	}
 	select = e => {
-		browserHistory.push('/gyps/events/'+e._id)
+		if(app.get('user')) {
+			browserHistory.push('/gyps/events/'+e._id)
+		} else {
+			browserHistory.push('/gyps/eventinfo/'+e._id)
+		}
 	}
 	render() {
 		return <List>
@@ -25,6 +31,7 @@ export default class EventsList extends React.Component {
 						primaryText={e.name}
 						secondaryText={<GigTimespan gig={e} showRelative={true} />}
 						onTouchTap={this.select.bind(this, e)}
+						rightIconButton={<FlatButton label='Get tickets' />}
 					/>
 			)}
 		</List>
