@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4fa97969ba2122bd7dfd"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "977a4240f48d78e47af1"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -57587,13 +57587,6 @@ var Kspan = function Kspan(_ref) {
 	return _react2.default.createElement('span', others);
 };
 
-var styles = {
-	overlay: {
-		color: 'white',
-		margin: '1em'
-	}
-};
-
 var EventPage = function (_React$Component) {
 	_inherits(EventPage, _React$Component);
 
@@ -57741,7 +57734,7 @@ var EventPage = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Card.Card,
-				null,
+				{ initiallyExpanded: true },
 				_react2.default.createElement(_Card.CardTitle, {
 					title: title,
 					subtitle: subtitle,
@@ -57749,17 +57742,8 @@ var EventPage = function (_React$Component) {
 					showExpandableButton: true
 				}),
 				_react2.default.createElement(
-					_Card.CardMedia,
-					{ overlay: _react2.default.createElement(
-							'p',
-							{ style: styles.overlay },
-							gig.description
-						), expandable: true },
-					_react2.default.createElement('img', { src: '/img/' + gig._id + '_poster.jpg' })
-				),
-				_react2.default.createElement(
 					_Card.CardText,
-					null,
+					{ expandable: true },
 					this.state.gigs.map(function (gig) {
 						return _react2.default.createElement(_List.ListItem, {
 							key: gig._id,
@@ -57781,7 +57765,7 @@ var EventPage = function (_React$Component) {
 				_react2.default.createElement(
 					_Card.CardActions,
 					null,
-					_react2.default.createElement(_FlatButton2.default, { label: 'Actionize', secondary: true })
+					_react2.default.createElement(_FlatButton2.default, { label: 'Volunteer', secondary: true })
 				)
 			);
 		}
@@ -57811,6 +57795,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = __webpack_require__(39);
 
+var _Card = __webpack_require__(114);
+
 var _FlatButton = __webpack_require__(87);
 
 var _FlatButton2 = _interopRequireDefault(_FlatButton);
@@ -57832,6 +57818,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var styles = {
+	overlay: {
+		color: 'white',
+		margin: '1em'
+	},
+	card: {
+		margin: '2em'
+	},
+	titleRight: {
+		float: 'right'
+	}
+};
 
 var EventsList = function (_React$Component) {
 	_inherits(EventsList, _React$Component);
@@ -57871,20 +57870,67 @@ var EventsList = function (_React$Component) {
 		}
 	}, {
 		key: 'render',
+
+		/*	render() {
+  		return <div>
+  			{this.state.events.map(
+  				e => <ListItem
+  						key={e._id}
+  						primaryText={e.name}
+  						secondaryText={<GigTimespan gig={e} showRelative={true} />}
+  						onTouchTap={this.select.bind(this, e)}
+  						rightIconButton={<FlatButton label='Get tickets' />}
+  					/>
+  			)}
+  		</div>
+  	}*/
 		value: function render() {
 			var _this3 = this;
 
 			return _react2.default.createElement(
-				_List.List,
+				'div',
 				null,
-				this.state.events.map(function (e) {
-					return _react2.default.createElement(_List.ListItem, {
-						key: e._id,
-						primaryText: e.name,
-						secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: e, showRelative: true }),
-						onTouchTap: _this3.select.bind(_this3, e),
-						rightIconButton: _react2.default.createElement(_FlatButton2.default, { label: 'Get tickets' })
-					});
+				this.state.events.map(function (event) {
+					return _react2.default.createElement(
+						_Card.Card,
+						{ key: event._id, style: styles.card, initiallyExpanded: true },
+						_react2.default.createElement(_Card.CardTitle, {
+							title: _react2.default.createElement(
+								'span',
+								null,
+								_react2.default.createElement(
+									'b',
+									null,
+									event.name
+								),
+								_react2.default.createElement(_FlatButton2.default, { style: styles.titleRight, label: 'View details', onTouchTap: _this3.select.bind(_this3, event) })
+							),
+							subtitle: _react2.default.createElement(_gigTimespan2.default, { gig: event, showRelative: true }),
+							actAsExpander: true
+						}),
+						_react2.default.createElement(
+							_Card.CardMedia,
+							{
+
+								expandable: true
+							},
+							_react2.default.createElement('img', { src: '/img/' + event._id + '_poster.jpg' })
+						),
+						_react2.default.createElement(
+							_Card.CardText,
+							{ actAsExpander: true },
+							_react2.default.createElement(
+								'p',
+								null,
+								event.description
+							)
+						),
+						_react2.default.createElement(
+							_Card.CardActions,
+							null,
+							_react2.default.createElement(_FlatButton2.default, { label: 'Get tickets', secondary: true })
+						)
+					);
 				})
 			);
 		}
@@ -115052,7 +115098,7 @@ var GigDetailsPage = function (_React$Component) {
 					avatar: _react2.default.createElement(
 						_Avatar2.default,
 						null,
-						gig.type && gig.type.charAt(0)
+						gig.type && gig.type.charAt(0) || ' '
 					) }),
 				_react2.default.createElement(
 					_Card.CardText,
@@ -115106,6 +115152,11 @@ var PerformanceCard = function PerformanceCard(_ref) {
 			'h2',
 			null,
 			gig.name
+		),
+		_react2.default.createElement(
+			'h3',
+			null,
+			gig.description
 		),
 		_react2.default.createElement(_Divider2.default, { style: { marginTop: '1em' } }),
 		gig.acts && gig.acts.length ? _react2.default.createElement(
@@ -115628,7 +115679,7 @@ var styles = {
 		float: 'right'
 	},
 	leave: {
-		marginLeft: '1em',
+		margin: '1em',
 		border: '2px solid grey'
 	}
 };
@@ -115671,6 +115722,7 @@ var WorkshopCard = function WorkshopCard(_ref) {
 				'span',
 				null,
 				'You are attending ',
+				_react2.default.createElement('br', null),
 				_react2.default.createElement(_FlatButton2.default, { style: styles.leave, label: 'Leave' })
 			) : _react2.default.createElement(
 				'span',

@@ -87,7 +87,7 @@ export default class GigDetailsPage extends React.Component {
 			<CardHeader 
 				title={gigTitle} 
 				subtitle={<GigTimespan gig={gig} showDuration={true} />}
-				avatar={<Avatar>{gig.type && gig.type.charAt(0)}</Avatar>}>
+				avatar={<Avatar>{(gig.type && gig.type.charAt(0)) || ' '}</Avatar>}>
 			</CardHeader>
 			<CardText>
 				{card}

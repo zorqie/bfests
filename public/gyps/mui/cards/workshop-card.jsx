@@ -17,7 +17,7 @@ const styles = {
 		float: 'right'
 	},
 	leave: {
-		marginLeft: '1em',
+		margin: '1em',
 		border: '2px solid grey'
 	}
 }
@@ -38,7 +38,7 @@ const WorkshopCard = ({gig, acts, fans, ticket, onMasterSelect}) => <div>
 	<Divider style={{marginTop:'1em'}} />
 	<div>
 		{(ticket && ticket.status && ticket.status==='Attending') ?
-			<span>You are attending <FlatButton style={styles.leave} label='Leave' /></span> :
+			<span>You are attending <br/><FlatButton style={styles.leave} label='Leave' /></span> :
 			<span><RaisedButton primary={true} label='Join' /></span> 
 		}
 	</div>

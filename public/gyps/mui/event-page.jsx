@@ -17,13 +17,6 @@ import { plusOutline, minusBox } from './icons.jsx';
 //hack because Material-UI forces a onKeyboardFocus onto the span and React complains
 const Kspan = ({onKeyboardFocus, ...others}) => <span {...others}/>; 
 
-const styles = {
-	overlay: {
-		color:'white',
-		margin: '1em'
-	}
-}
-
 export default class EventPage extends React.Component {
 	state = {
 		gigs:[], 
@@ -116,7 +109,7 @@ export default class EventPage extends React.Component {
 			app.service('tickets').create({gig_id: gig._id, status: "Attending"})
 		}
 	}
-	
+
 	handleLeave = gig => {
 		console.log("Leaving gig", gig)
 		if(this.isAttending(gig)) {
@@ -154,7 +147,7 @@ export default class EventPage extends React.Component {
 		const subtitle = <GigTimespan gig={gig} showRelative={true}/>;
 
 		return (
-			<Card>
+			<Card initiallyExpanded={true}>
 			    {/*<CardHeader title={v.name} subtitle="gig" />*/}
 			    <CardTitle 
 			    	title={title} 
@@ -162,10 +155,7 @@ export default class EventPage extends React.Component {
 			    	actAsExpander={true} 
 			    	showExpandableButton={true}
 			    />
-			    <CardMedia overlay={<p style={styles.overlay}>{gig.description}</p>}  expandable={true}>
-					<img src={`/img/${gig._id}_poster.jpg`} />
-				</CardMedia>
-				<CardText >
+				<CardText expandable={true}>
 					
 
 					{this.state.gigs.map(
@@ -192,7 +182,7 @@ export default class EventPage extends React.Component {
 				</CardText>
 				
 				<CardActions>
-					<FlatButton label="Actionize" secondary={true}/>
+					<FlatButton label="Volunteer" secondary={true}/>
 				</CardActions>
 			</Card>
 		);
