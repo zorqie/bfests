@@ -16,14 +16,6 @@ import app from '../main.jsx'
 import { gigJoin, gigLeave } from './utils.jsx'
 import { plusOutline, minusBox } from './icons.jsx'
 
-// TODO move this
-const access = [
-	'Registered',
-	'Paid',
-	'Volnteered',
-	'Trained',
-	'Attending',
-]
 
 //hack because Material-UI forces a onKeyboardFocus onto the span and React complains
 const Kspan = ({onKeyboardFocus, ...others}) => <span {...others}/>; 
@@ -38,7 +30,7 @@ export default class EventPage extends React.Component {
 		dialog: {
 			open: false,
 			gig: {},
-		}
+		},
 	}
 	
 	componentWillMount() {
@@ -52,7 +44,7 @@ export default class EventPage extends React.Component {
 	componentDidMount() {
 		app.service('tickets').find()
 		.then(result => {
-			console.log("Got tickets", result)
+			// console.log("Got tickets", result)
 			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
 			this.setState({...this.state, tickets})
 		})
@@ -82,7 +74,7 @@ export default class EventPage extends React.Component {
 			app.service('gigs').find({
 				query: {
 					parent: new mongoose.Types.ObjectId(eventId),
-					type: {$ne: 'Volunteer'},
+					type: 'Volunteer',
 					$sort: { start: 1 },
 					// $limit: this.props.limit || 7
 				}
@@ -98,9 +90,33 @@ export default class EventPage extends React.Component {
 		// console.log("Canceling...");
 		this.setState({dialogOpen: false})
 	}
+
+	isVolunteering = gig => {
+		return this.state.tickets[gig._id] === "Volunteering" 
+	}
+
+	handleGigJoin = gig => {
+		app.service('gigs').find({query: {parent: gig._id}})
+		.then(result => {
+			if(result.total) {
+				// has children
+				this.viewGigDetails(gig)
+			} else {
+				console.log("Go join the gig")
+				gigJoin(gig, 'Volunteering')
+			}
+		})
+	}
+
+	handleGigLeave = gig => {
+		gigLeave(gig)
+	}
 	
-	isAttending = gig => {
-		return this.state.tickets[gig._id] === "Attending" 
+	viewGigDetails = gig => {
+		// browserHistory.push('/gyps/gig/'+gig._id)
+		const { dialog } = this.state
+		Object.assign(dialog, {open: true, gig})
+		this.setState({...this.state, dialog})
 	}
 
 	ticketCreated = t => {
@@ -141,12 +157,6 @@ export default class EventPage extends React.Component {
 		this.setState({...this.state, dialog:{open:false, gig:{}}})
 	}
 
-	viewGigDetails = gig => {
-		// browserHistory.push('/gyps/gig/'+gig._id)
-		const { dialog } = this.state
-		Object.assign(dialog, {open: true, gig})
-		this.setState({...this.state, dialog})
-	}
 
 	render() {
 		const {gig, dialog} = this.state;
@@ -174,17 +184,17 @@ export default class EventPage extends React.Component {
 									onTouchTap={this.viewGigDetails.bind(this, gig)}
 									secondaryText={<GigTimespan gig={gig} />} 
 									rightIconButton={
-										this.isAttending(gig) ?
+										this.isVolunteering(gig) ?
 										<FlatButton 
 											icon={minusBox}
 											title="Leave" 
-											onTouchTap={gigLeave.bind(this, gig)}
+											onTouchTap={this.handleGigLeave.bind(this, gig)}
 										/>
 										:
 										<FlatButton 
 											icon={plusOutline}
 											title="Join" 
-											onTouchTap={gigJoin.bind(this, gig)}
+											onTouchTap={this.handleGigJoin.bind(this, gig)}
 										/>
 									}
 					/>)}
@@ -198,9 +208,7 @@ export default class EventPage extends React.Component {
 						status={this.state.tickets[dialog.gig._id]}
 					/>
 				</Dialog>
-
-				<CardActions>
-					<FlatButton label="Volunteer" secondary={true}/>
+				<CardActions>					
 				</CardActions>
 			</Card>
 		)

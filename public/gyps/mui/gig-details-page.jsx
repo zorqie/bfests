@@ -64,24 +64,30 @@ export default class GigDetailsPage extends React.Component {
 	}
 
 	fetchData = () => {
-		const gigId = (this.props.params && this.props.params.gigId) || this.state.gig._id
-		// console.log("Fetching ", gigId)
-		app.service('gigs').get(gigId)
-		.then(gig => {	
-			if(this.props.params) {
-				// if not inside another page
-				document.title=gig.name	
-			}
-			app.service('tickets').find({query: {gig_id: gig._id, status:'Attending'}})
-			.then(result => {
-				this.setState({venue: gig.venue, gig, ticket:result.data[0]})
-			})
-		})
+		if(this.props.params) {
+			// if not inside another page
+			const {gigId} = this.props.params
+			// console.log("Fetching ", gigId)
+			app.service('gigs').get(gigId)
+			.then(gig => {
+					this.fetchTickets(gig)
+				}
+			)
+		} else {
+			// already have our gig in props
+			this.fetchTickets(this.props.gig)
+		}
 		// not authorized
 		// .then(() => app.service('fans')
 		// 	.find({query:{gig_id:gigId, status: 'Attending'}})
 		// 	.then(result => this.setState({fans: result.data})))
 	} 
+	fetchTickets = gig => {
+		app.service('tickets').find({query: {gig_id: gig._id, status:'Attending'}})
+		.then(result => {
+			this.setState({venue: gig.venue, gig, ticket:result.data[0]})
+		})
+	}
 
 	viewActDetails = act => browserHistory.push('/gyps/acts/'+act._id)
 
@@ -92,12 +98,12 @@ export default class GigDetailsPage extends React.Component {
 		const handleLeave = onLeave || gigLeave
 		
 		const attending = (status || (ticket && ticket.status)) === 'Attending'
+		const volunteering = (status || (ticket && ticket.status)) === 'Volunteering'
 
 		const card = 
 			gig.type==='Workshop' ? 
 				<WorkshopCard 
 					gig={gig} 
-					fans={fans}
 					onMasterSelect={this.viewActDetails}
 				/> : 
 				gig.type==='Volunteer' ?
@@ -119,7 +125,7 @@ export default class GigDetailsPage extends React.Component {
 			<CardText>
 				{card}
 			</CardText>
-			
+			{ gig.type && gig.type !== 'Volunteer' && 
 				<CardActions>
 					{attending &&
 						<span>
@@ -131,7 +137,7 @@ export default class GigDetailsPage extends React.Component {
 						<RaisedButton primary={true} label='Join' onTouchTap={handleJoin.bind(this, gig)}/>
 					}
 				</CardActions>
-			
+			}
 		</div>
 	}
 }

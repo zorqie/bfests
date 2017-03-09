@@ -17,7 +17,7 @@ const styles = {
 	}
 }
 
-export default class Lineup extends React.Component {
+export default class Tasks extends React.Component {
 	state = {
 		tickets: [],
 		dates: [],
@@ -26,11 +26,11 @@ export default class Lineup extends React.Component {
 		app.authenticate().then(this.fetchData)
 	}
 	fetchData = () => {
-		app.service('tickets').find({query: {status:'Attending'}})
+		app.service('tickets').find({query: {status:'Volunteering'}})
 		.then(result => {
 			
 			if(result.total) {
-				// console.log("Teekets:", result)
+				console.log("Teekets:", result)
 				const formated = result.data.map(t => {
 					console.log("t=", t)
 					return moment(t.gig.start).format('YYYY-MM-DD')
@@ -41,7 +41,7 @@ export default class Lineup extends React.Component {
 				const dates = unique.map(s => moment(s, 'YYYY-MM-DD'))
 								// a little hacky format -> parse but
 								// works better than 0-ing time
-				console.log("Dates", dates)
+				// console.log("Dates", dates)
 				this.setState({tickets: result.data, dates})
 			}
 		})

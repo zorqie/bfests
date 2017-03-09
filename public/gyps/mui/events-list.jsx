@@ -7,6 +7,7 @@ import { List, ListItem } from 'material-ui/List'
 
 import GigTimespan from './gig-timespan.jsx'
 import app from '../main.jsx'
+import { gigJoin } from './utils.jsx'
 
 const styles = {
 	overlay: {
@@ -50,7 +51,8 @@ export default class EventsList extends React.Component {
 			)}
 		</div>
 	}*/
-	render() {
+	render() {		
+
 		return <div>
 			{this.state.events.map(event => 
 				<Card key={event._id} style={styles.card} initiallyExpanded={true} >
@@ -72,7 +74,11 @@ export default class EventsList extends React.Component {
 					</CardText>
 					
 					<CardActions>
-						<FlatButton label="Get tickets" secondary={true} />
+						<FlatButton 
+							label="Get tickets" 
+							secondary={true}
+							onTouchTap={gigJoin.bind(this, event, 'Registered')}
+						/>
 					</CardActions>
 				</Card>
 			)}

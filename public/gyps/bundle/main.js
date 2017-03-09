@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "129e989832513deff936"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "fd9414d50508e9bd25e1"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -14089,6 +14089,7 @@ exports.createMemoryHistory = _createMemoryHistory3.default;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.access = undefined;
 
 var _react = __webpack_require__(1);
 
@@ -14124,6 +14125,10 @@ var _eventPage = __webpack_require__(433);
 
 var _eventPage2 = _interopRequireDefault(_eventPage);
 
+var _eventVolunteerPage = __webpack_require__(867);
+
+var _eventVolunteerPage2 = _interopRequireDefault(_eventVolunteerPage);
+
 var _eventInfo = __webpack_require__(857);
 
 var _eventInfo2 = _interopRequireDefault(_eventInfo);
@@ -14135,6 +14140,10 @@ var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
 var _lineup = __webpack_require__(437);
 
 var _lineup2 = _interopRequireDefault(_lineup);
+
+var _tasks = __webpack_require__(869);
+
+var _tasks2 = _interopRequireDefault(_tasks);
 
 var _reactTapEventPlugin = __webpack_require__(431);
 
@@ -14198,6 +14207,48 @@ var handleRouteEnter = function handleRouteEnter(nextState, replace, callback) {
 	callback();
 };
 
+var onEventEnter = function onEventEnter(nextState, replace, callback) {
+	console.log("Entering", nextState);
+	if (nextState.location.action !== 'REPLACE') {
+		// not already replaced
+
+		var eventId = nextState.params.eventId;
+
+		app.service('tickets').find({ query: { gig_id: eventId } }).then(function (result) {
+			console.log("Pass it", result);
+			if (result.total == 0) {
+				console.log("we don't even know you");
+				replace({ pathname: 'events' });
+			} else {
+				var pass = result.data[0].status;
+				var level = access.indexOf(pass);
+				console.log("Passed", pass);
+				switch (pass) {
+					case 'Registered':
+						replace({ pathname: '/gyps/volunteer/' + eventId });
+						console.log("Replaced, now what");
+						callback();
+						break;
+				}
+			}
+		}).catch(function (err) {
+			return console.error("No pasaran", err);
+		});
+	} else {
+		callback();
+	}
+};
+
+// TODO move this
+var access = exports.access = ['Registered', 'Volnteered', 'Trained', 'Paid', 'Attending'];
+
+var paths = {
+	'Registered': 'volunteer',
+	'Volnteered': 'train',
+	'Trained': 'payment',
+	'Paid': 'attend',
+	'Attending': 'events'
+};
 var routes = _react2.default.createElement(
 	_reactRouter.Router,
 	{ history: _reactRouter.browserHistory },
@@ -14213,9 +14264,12 @@ var routes = _react2.default.createElement(
 		_react2.default.createElement(_reactRouter.IndexRoute, { component: Home }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'acts/:actId', component: _actDetailsPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'events', component: _eventsList2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'events/:eventId', component: _eventPage2.default }),
+		_react2.default.createElement(_reactRouter.Route, { path: 'events/:eventId', component: _eventPage2.default, onEnter: onEventEnter }),
+		_react2.default.createElement(_reactRouter.Route, { path: 'volunteer/:eventId', component: _eventVolunteerPage2.default, onEnter: onEventEnter }),
+		_react2.default.createElement(_reactRouter.Route, { path: 'train/:eventId', component: _eventVolunteerPage2.default, onEnter: onEventEnter }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'eventinfo/:eventId', component: _eventInfo2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'lineup', component: _lineup2.default }),
+		_react2.default.createElement(_reactRouter.Route, { path: 'tasks', component: _tasks2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigDetailsPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: '*', component: NotFound })
 	)
@@ -57591,6 +57645,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+// TODO move this
+var access = ['Registered', 'Paid', 'Volnteered', 'Trained', 'Attending'];
+
 //hack because Material-UI forces a onKeyboardFocus onto the span and React complains
 var Kspan = function Kspan(_ref) {
 	var onKeyboardFocus = _ref.onKeyboardFocus,
@@ -57614,11 +57671,11 @@ var EventPage = function (_React$Component) {
 		}
 
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
+			event: {},
+			pass: {},
 			gigs: [],
 			tickets: {},
-			gig: {},
-			venue: {},
-			sites: [],
+			tasks: [],
 			dialog: {
 				open: false,
 				gig: {}
@@ -57626,8 +57683,14 @@ var EventPage = function (_React$Component) {
 		}, _this.fetchData = function () {
 			var eventId = _this.props.params.eventId;
 
-			_main2.default.service('gigs').get(eventId).then(function (gig) {
-				document.title = gig.name;
+			_main2.default.service('gigs').get(eventId).then(function (event) {
+				document.title = event.name;
+				// app.service('tickets').find({query:{gig_id: event._id}})
+				// .then(pass => {
+				// 	if(access.indexOf(pass.status) <access.length-1) {
+
+				// 	}
+				// })
 				_main2.default.service('gigs').find({
 					query: {
 						parent: new _mongoose2.default.Types.ObjectId(eventId),
@@ -57636,7 +57699,7 @@ var EventPage = function (_React$Component) {
 					}
 				}).then(function (page) {
 					// console.log("Got result: ", page);			
-					_this.setState(_extends({}, _this.state, { gigs: page.data, gig: gig }));
+					_this.setState(_extends({}, _this.state, { gigs: page.data, event: event }));
 				});
 			}).catch(function (err) {
 				return console.error("ERAR: ", err);
@@ -57646,14 +57709,6 @@ var EventPage = function (_React$Component) {
 			_this.setState({ dialogOpen: false });
 		}, _this.isAttending = function (gig) {
 			return _this.state.tickets[gig._id] === "Attending";
-		}, _this.ticketPatched = function (t) {
-			console.log("Ticket", t);
-			// if(this.isAttending(t.gig_id) && t.status !== "Attending") {
-			var tickets = _this.state.tickets;
-
-			Object.assign(tickets, _defineProperty({}, t.gig_id, t.status));
-			_this.setState(_extends({}, _this.state, { tickets: tickets }));
-			// }
 		}, _this.ticketCreated = function (t) {
 			console.log("Ticket created", t);
 			var tickets = _this.state.tickets;
@@ -57665,7 +57720,7 @@ var EventPage = function (_React$Component) {
 			var tickets = _this.state.tickets;
 
 			Object.assign(tickets, _defineProperty({}, t.gig_id, null));
-			_this.setState(_extends({}, _this.state, { ticket: tickets.filter }));
+			_this.setState(_extends({}, _this.state, { ticket: tickets }));
 		}, _this.gigRemoved = function (gig) {
 			// console.log("Removed: ", gig);
 			_this.setState(_extends({}, _this.state, {
@@ -57700,7 +57755,6 @@ var EventPage = function (_React$Component) {
 			_main2.default.service('gigs').on('removed', this.gigRemoved);
 			_main2.default.service('gigs').on('created', this.gigCreated);
 			_main2.default.service('gigs').on('patched', this.gigPatched);
-			_main2.default.service('tickets').on('patched', this.ticketPatched);
 			_main2.default.service('tickets').on('created', this.ticketCreated);
 			_main2.default.service('tickets').on('removed', this.ticketRemoved);
 		}
@@ -57725,7 +57779,6 @@ var EventPage = function (_React$Component) {
 				_main2.default.service('gigs').removeListener('created', this.gigCreated);
 				_main2.default.service('gigs').removeListener('patched', this.gigPatched);
 				_main2.default.service('tickets').removeListener('removed', this.ticketRemoved);
-				_main2.default.service('tickets').removeListener('patched', this.ticketPatched);
 				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
 			}
 		}
@@ -57736,17 +57789,16 @@ var EventPage = function (_React$Component) {
 
 			var _state = this.state,
 			    gig = _state.gig,
-			    venue = _state.venue,
 			    dialog = _state.dialog;
 			// console.log("GIGGGINGING: ", this.state);
 
 			var title = _react2.default.createElement(
 				'b',
 				null,
-				gig.name
+				event.name
 			);
 
-			var subtitle = _react2.default.createElement(_gigTimespan2.default, { gig: gig, showRelative: true });
+			var subtitle = _react2.default.createElement(_gigTimespan2.default, { gig: event, showRelative: true });
 
 			return _react2.default.createElement(
 				_Card.Card,
@@ -57836,6 +57888,8 @@ var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
 var _main = __webpack_require__(40);
 
 var _main2 = _interopRequireDefault(_main);
+
+var _utils = __webpack_require__(866);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57954,7 +58008,11 @@ var EventsList = function (_React$Component) {
 						_react2.default.createElement(
 							_Card.CardActions,
 							null,
-							_react2.default.createElement(_FlatButton2.default, { label: 'Get tickets', secondary: true })
+							_react2.default.createElement(_FlatButton2.default, {
+								label: 'Get tickets',
+								secondary: true,
+								onTouchTap: _utils.gigJoin.bind(_this3, event, 'Registered')
+							})
 						)
 					);
 				})
@@ -58288,16 +58346,16 @@ var Lineup = function (_React$Component) {
 			_main2.default.service('tickets').find({ query: { status: 'Attending' } }).then(function (result) {
 
 				if (result.total) {
-					console.log("Teekets:", result);
+					// console.log("Teekets:", result)
 					var formated = result.data.map(function (t) {
 						console.log("t=", t);
 						return (0, _moment2.default)(t.gig.start).format('YYYY-MM-DD');
 					});
-					console.log("Formated", formated);
+					// console.log("Formated", formated)
 					var unique = formated.filter(function (e, i, a) {
 						return a.indexOf(e) === i;
 					});
-					console.log("Unique", unique);
+					// console.log("Unique", unique)
 					var dates = unique.map(function (s) {
 						return (0, _moment2.default)(s, 'YYYY-MM-DD');
 					});
@@ -115104,21 +115162,26 @@ var GigDetailsPage = function (_React$Component) {
 			// no need to check owner_id, it's hooked on service
 			t.gig_id === _this.state.gig._id && _this.fetchData();
 		}, _this.fetchData = function () {
-			var gigId = _this.props.params && _this.props.params.gigId || _this.state.gig._id;
-			// console.log("Fetching ", gigId)
-			_main2.default.service('gigs').get(gigId).then(function (gig) {
-				if (_this.props.params) {
-					// if not inside another page
-					document.title = gig.name;
-				}
-				_main2.default.service('tickets').find({ query: { gig_id: gig._id, status: 'Attending' } }).then(function (result) {
-					_this.setState({ venue: gig.venue, gig: gig, ticket: result.data[0] });
+			if (_this.props.params) {
+				// if not inside another page
+				var gigId = _this.props.params.gigId;
+				// console.log("Fetching ", gigId)
+
+				_main2.default.service('gigs').get(gigId).then(function (gig) {
+					_this.fetchTickets(gig);
 				});
-			});
+			} else {
+				// already have our gig in props
+				_this.fetchTickets(_this.props.gig);
+			}
 			// not authorized
 			// .then(() => app.service('fans')
 			// 	.find({query:{gig_id:gigId, status: 'Attending'}})
 			// 	.then(result => this.setState({fans: result.data})))
+		}, _this.fetchTickets = function (gig) {
+			_main2.default.service('tickets').find({ query: { gig_id: gig._id, status: 'Attending' } }).then(function (result) {
+				_this.setState({ venue: gig.venue, gig: gig, ticket: result.data[0] });
+			});
 		}, _this.viewActDetails = function (act) {
 			return _reactRouter.browserHistory.push('/gyps/acts/' + act._id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
@@ -115164,10 +115227,10 @@ var GigDetailsPage = function (_React$Component) {
 			var handleLeave = onLeave || _utils.gigLeave;
 
 			var attending = (status || ticket && ticket.status) === 'Attending';
+			var volunteering = (status || ticket && ticket.status) === 'Volunteering';
 
 			var card = gig.type === 'Workshop' ? _react2.default.createElement(_workshopCard2.default, {
 				gig: gig,
-				fans: fans,
 				onMasterSelect: this.viewActDetails
 			}) : gig.type === 'Volunteer' ? _react2.default.createElement(_volunteerCard2.default, { gig: gig }) : _react2.default.createElement(_performanceCard2.default, {
 				gig: gig,
@@ -115207,7 +115270,7 @@ var GigDetailsPage = function (_React$Component) {
 					null,
 					card
 				),
-				_react2.default.createElement(
+				gig.type && gig.type !== 'Volunteer' && _react2.default.createElement(
 					_Card.CardActions,
 					null,
 					attending && _react2.default.createElement(
@@ -115563,6 +115626,8 @@ var _shiftDialog2 = _interopRequireDefault(_shiftDialog);
 
 var _hacks = __webpack_require__(864);
 
+var _utils = __webpack_require__(866);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -115710,33 +115775,23 @@ var VolunteerCard = function (_React$Component) {
 					gig.name
 				),
 				_react2.default.createElement(
-					'h3',
+					'p',
 					null,
 					gig.description
 				),
-				_react2.default.createElement(
-					'ul',
-					null,
-					shifts.map(function (shift) {
-						return _react2.default.createElement(_List.ListItem, {
-							key: shift._id,
-							primaryText: _react2.default.createElement(_gigTimespan2.default, { gig: shift }),
-							onTouchTap: _this2.viewShift.bind(_this2, shift),
-							rightIconButton: _react2.default.createElement(
-								_hacks.Kspan,
-								null,
-								_react2.default.createElement(_FlatButton2.default, { label: 'Edit', onTouchTap: _this2.editShift.bind(_this2, shift) }),
-								_react2.default.createElement(_FlatButton2.default, { label: 'Delete', onTouchTap: _this2.deleteShift.bind(_this2, shift) })
-							)
+				shifts.map(function (shift) {
+					return _react2.default.createElement(_List.ListItem, {
+						key: shift._id,
+						primaryText: _react2.default.createElement(_gigTimespan2.default, { gig: shift }),
+						onTouchTap: _this2.viewShift.bind(_this2, shift),
+						rightIconButton: _react2.default.createElement(
+							_hacks.Kspan,
+							null,
+							_react2.default.createElement(_FlatButton2.default, { label: 'Join' })
+						)
 
-						});
-					})
-				),
-				_react2.default.createElement(
-					_FloatingActionButton2.default,
-					{ onTouchTap: this.editShift.bind(this, null) },
-					_icons.addIcon
-				),
+					});
+				}),
 				_react2.default.createElement(_shiftDialog2.default, _extends({}, dialog, { onCancel: this.dialogCancel, onSubmit: this.dialogSubmit }))
 			);
 		}
@@ -116064,8 +116119,10 @@ var _main2 = _interopRequireDefault(_main);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var gigJoin = exports.gigJoin = function gigJoin(gig) {
+	var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Attending';
+
 	console.log("Joining gig", gig);
-	_main2.default.service('tickets').create({ gig_id: gig._id, status: "Attending" });
+	_main2.default.service('tickets').create({ gig_id: gig._id, status: status });
 };
 
 var gigLeave = exports.gigLeave = function gigLeave(gig) {
@@ -116077,6 +116134,460 @@ var gigLeave = exports.gigLeave = function gigLeave(gig) {
 		}
 	});
 };
+
+/***/ }),
+/* 867 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _moment = __webpack_require__(0);
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _mongoose = __webpack_require__(365);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _reactRouter = __webpack_require__(39);
+
+var _Card = __webpack_require__(114);
+
+var _Dialog = __webpack_require__(626);
+
+var _Dialog2 = _interopRequireDefault(_Dialog);
+
+var _FlatButton = __webpack_require__(87);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _List = __webpack_require__(115);
+
+var _Subheader = __webpack_require__(116);
+
+var _Subheader2 = _interopRequireDefault(_Subheader);
+
+var _Tabs = __webpack_require__(655);
+
+var _gigDetailsPage = __webpack_require__(859);
+
+var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
+
+var _gigTimespan = __webpack_require__(131);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+var _utils = __webpack_require__(866);
+
+var _icons = __webpack_require__(853);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+//hack because Material-UI forces a onKeyboardFocus onto the span and React complains
+var Kspan = function Kspan(_ref) {
+	var onKeyboardFocus = _ref.onKeyboardFocus,
+	    others = _objectWithoutProperties(_ref, ['onKeyboardFocus']);
+
+	return _react2.default.createElement('span', others);
+};
+
+var EventPage = function (_React$Component) {
+	_inherits(EventPage, _React$Component);
+
+	function EventPage() {
+		var _ref2;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, EventPage);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
+			event: {},
+			pass: {},
+			gigs: [],
+			tickets: {},
+			tasks: [],
+			dialog: {
+				open: false,
+				gig: {}
+			}
+		}, _this.fetchData = function () {
+			var eventId = _this.props.params.eventId;
+
+			_main2.default.service('gigs').get(eventId).then(function (event) {
+				document.title = event.name;
+				// app.service('tickets').find({query:{gig_id: event._id}})
+				// .then(pass => {
+				// 	if(access.indexOf(pass.status) <access.length-1) {
+
+				// 	}
+				// })
+				_main2.default.service('gigs').find({
+					query: {
+						parent: new _mongoose2.default.Types.ObjectId(eventId),
+						type: 'Volunteer',
+						$sort: { start: 1 }
+					}
+				}).then(function (page) {
+					// console.log("Got result: ", page);			
+					_this.setState(_extends({}, _this.state, { gigs: page.data, event: event }));
+				});
+			}).catch(function (err) {
+				return console.error("ERAR: ", err);
+			});
+		}, _this.handleDialogCancel = function (e) {
+			// console.log("Canceling...");
+			_this.setState({ dialogOpen: false });
+		}, _this.isVolunteering = function (gig) {
+			return _this.state.tickets[gig._id] === "Volunteering";
+		}, _this.handleGigJoin = function (gig) {
+			_main2.default.service('gigs').find({ query: { parent: gig._id } }).then(function (result) {
+				if (result.total) {
+					// has children
+					_this.viewGigDetails(gig);
+				} else {
+					console.log("Go join the gig");
+					(0, _utils.gigJoin)(gig, 'Volunteering');
+				}
+			});
+		}, _this.handleGigLeave = function (gig) {
+			(0, _utils.gigLeave)(gig);
+		}, _this.viewGigDetails = function (gig) {
+			// browserHistory.push('/gyps/gig/'+gig._id)
+			var dialog = _this.state.dialog;
+
+			Object.assign(dialog, { open: true, gig: gig });
+			_this.setState(_extends({}, _this.state, { dialog: dialog }));
+		}, _this.ticketCreated = function (t) {
+			console.log("Ticket created", t);
+			var tickets = _this.state.tickets;
+
+			Object.assign(tickets, _defineProperty({}, t.gig_id, t.status));
+			_this.setState(_extends({}, _this.state, { tickets: tickets }));
+		}, _this.ticketRemoved = function (t) {
+			console.log("Ticket removed", t);
+			var tickets = _this.state.tickets;
+
+			Object.assign(tickets, _defineProperty({}, t.gig_id, null));
+			_this.setState(_extends({}, _this.state, { ticket: tickets }));
+		}, _this.gigRemoved = function (gig) {
+			// console.log("Removed: ", gig);
+			_this.setState(_extends({}, _this.state, {
+				gigs: _this.state.gigs.filter(function (g) {
+					return g._id !== gig._id;
+				})
+			}));
+		}, _this.gigCreated = function (gig) {
+			// console.log("Added: ", gig);
+			_this.setState(_extends({}, _this.state, {
+				gigs: _this.state.gigs.concat(gig)
+			}));
+		}, _this.gigPatched = function (gig) {
+			// console.log("Updated: ", gig);
+			// do something to reflect update
+			_this.fetchData();
+		}, _this.dialogClose = function () {
+			_this.setState(_extends({}, _this.state, { dialog: { open: false, gig: {} } }));
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(EventPage, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			_main2.default.authenticate().then(this.fetchData);
+			_main2.default.service('gigs').on('removed', this.gigRemoved);
+			_main2.default.service('gigs').on('created', this.gigCreated);
+			_main2.default.service('gigs').on('patched', this.gigPatched);
+			_main2.default.service('tickets').on('created', this.ticketCreated);
+			_main2.default.service('tickets').on('removed', this.ticketRemoved);
+		}
+	}, {
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			var _this2 = this;
+
+			_main2.default.service('tickets').find().then(function (result) {
+				// console.log("Got tickets", result)
+				var tickets = result.data.reduce(function (o, t) {
+					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
+				}, {});
+				_this2.setState(_extends({}, _this2.state, { tickets: tickets }));
+			});
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			if (_main2.default) {
+				_main2.default.service('gigs').removeListener('removed', this.gigRemoved);
+				_main2.default.service('gigs').removeListener('created', this.gigCreated);
+				_main2.default.service('gigs').removeListener('patched', this.gigPatched);
+				_main2.default.service('tickets').removeListener('removed', this.ticketRemoved);
+				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this3 = this;
+
+			var _state = this.state,
+			    gig = _state.gig,
+			    dialog = _state.dialog;
+			// console.log("GIGGGINGING: ", this.state);
+
+			var title = _react2.default.createElement(
+				'b',
+				null,
+				event.name
+			);
+
+			var subtitle = _react2.default.createElement(_gigTimespan2.default, { gig: event, showRelative: true });
+
+			return _react2.default.createElement(
+				_Card.Card,
+				{ initiallyExpanded: true },
+				_react2.default.createElement(_Card.CardTitle, {
+					title: title,
+					subtitle: subtitle,
+					actAsExpander: true,
+					showExpandableButton: true
+				}),
+				_react2.default.createElement(
+					_Card.CardText,
+					{ expandable: true },
+					this.state.gigs.map(function (gig) {
+						return _react2.default.createElement(_List.ListItem, {
+							key: gig._id,
+							primaryText: gig.name,
+							onTouchTap: _this3.viewGigDetails.bind(_this3, gig),
+							secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig }),
+							rightIconButton: _this3.isVolunteering(gig) ? _react2.default.createElement(_FlatButton2.default, {
+								icon: _icons.minusBox,
+								title: 'Leave',
+								onTouchTap: _this3.handleGigLeave.bind(_this3, gig)
+							}) : _react2.default.createElement(_FlatButton2.default, {
+								icon: _icons.plusOutline,
+								title: 'Join',
+								onTouchTap: _this3.handleGigJoin.bind(_this3, gig)
+							})
+						});
+					})
+				),
+				_react2.default.createElement(
+					_Dialog2.default,
+					{ title: dialog.title, open: dialog.open, onRequestClose: this.dialogClose },
+					_react2.default.createElement(_gigDetailsPage2.default, {
+						gig: dialog.gig,
+						onJoin: _utils.gigJoin,
+						onLeave: _utils.gigLeave,
+						status: this.state.tickets[dialog.gig._id]
+					})
+				),
+				_react2.default.createElement(_Card.CardActions, null)
+			);
+		}
+	}]);
+
+	return EventPage;
+}(_react2.default.Component);
+
+exports.default = EventPage;
+
+/***/ }),
+/* 868 */,
+/* 869 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = __webpack_require__(39);
+
+var _moment = __webpack_require__(0);
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _List = __webpack_require__(115);
+
+var _Subheader = __webpack_require__(116);
+
+var _Subheader2 = _interopRequireDefault(_Subheader);
+
+var _Divider = __webpack_require__(628);
+
+var _Divider2 = _interopRequireDefault(_Divider);
+
+var _gigTimespan = __webpack_require__(131);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var styles = {
+	date: {
+		fontFamily: 'Roboto, sans-serif',
+		fontWeight: 300,
+		fontSize: '24px'
+	}
+};
+
+var Tasks = function (_React$Component) {
+	_inherits(Tasks, _React$Component);
+
+	function Tasks() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, Tasks);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Tasks.__proto__ || Object.getPrototypeOf(Tasks)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			tickets: [],
+			dates: []
+		}, _this.fetchData = function () {
+			_main2.default.service('tickets').find({ query: { status: 'Volunteering' } }).then(function (result) {
+
+				if (result.total) {
+					console.log("Teekets:", result);
+					var formated = result.data.map(function (t) {
+						console.log("t=", t);
+						return (0, _moment2.default)(t.gig.start).format('YYYY-MM-DD');
+					});
+					// console.log("Formated", formated)
+					var unique = formated.filter(function (e, i, a) {
+						return a.indexOf(e) === i;
+					});
+					// console.log("Unique", unique)
+					var dates = unique.map(function (s) {
+						return (0, _moment2.default)(s, 'YYYY-MM-DD');
+					});
+					// a little hacky format -> parse but
+					// works better than 0-ing time
+					// console.log("Dates", dates)
+					_this.setState({ tickets: result.data, dates: dates });
+				}
+			}).catch(function (err) {
+				return console.error;
+			});
+		}, _this.select = function (t) {
+			_reactRouter.browserHistory.push('/gyps/gig/' + t.gig_id);
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(Tasks, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			_main2.default.authenticate().then(this.fetchData);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var _state = this.state,
+			    dates = _state.dates,
+			    tickets = _state.tickets;
+
+			console.log("LINEUP", this.state);
+			console.log(dates);
+			return _react2.default.createElement(
+				'div',
+				null,
+				tickets.length == 0 ? _react2.default.createElement(
+					_Subheader2.default,
+					null,
+					'You haven\'t joined any events. ',
+					_react2.default.createElement(
+						_reactRouter.Link,
+						{ to: '/gyps/events' },
+						'Choose some'
+					)
+				) : '',
+				dates.map(function (d) {
+					return _react2.default.createElement(
+						_List.List,
+						{ key: d },
+						_react2.default.createElement(
+							_Subheader2.default,
+							{ style: styles.date },
+							d.format('MMM D, dddd')
+						),
+						_react2.default.createElement(_Divider2.default, null),
+						tickets.filter(function (t) {
+							return (0, _moment2.default)(t.gig.start).isSame(d, 'day');
+						}).map(function (ticket) {
+							return _react2.default.createElement(_List.ListItem, {
+								key: ticket._id,
+								primaryText: ticket.gig.name,
+								secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: ticket.gig, hideDates: true }),
+								onTouchTap: _this2.select.bind(_this2, ticket)
+							});
+						})
+					);
+				})
+			);
+		}
+	}]);
+
+	return Tasks;
+}(_react2.default.Component);
+
+exports.default = Tasks;
 
 /***/ })
 /******/ ]);

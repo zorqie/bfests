@@ -12,6 +12,7 @@ import ActsList from '../acts-list.jsx'
 import GigTimespan from '../gig-timespan.jsx'
 import ShiftDialog from './shift-dialog.jsx'
 import { Kspan } from '../hacks.jsx'
+import { gigJoin, gigLeave } from '../utils.jsx'
 
 const styles = {
 	gigType: {
@@ -119,8 +120,7 @@ export default class VolunteerCard extends React.Component {
 		return <div>
 			<span style={styles.gigType}>Volunteer opportunity</span> 
 			<h2>{gig.name}</h2>
-			<h3>{gig.description}</h3>
-			<ul>
+			<p>{gig.description}</p>
 				{shifts.map(shift => 
 					<ListItem 
 						key={shift._id} 
@@ -128,15 +128,12 @@ export default class VolunteerCard extends React.Component {
 						onTouchTap={this.viewShift.bind(this, shift)}
 						rightIconButton={
 							<Kspan>
-								<FlatButton label="Edit" onTouchTap={this.editShift.bind(this, shift)} />
-								<FlatButton label="Delete" onTouchTap={this.deleteShift.bind(this, shift)} />
+								<FlatButton label="Join" />
 							</Kspan>
 						}
 
 					/>
 				)}
-			</ul>
-			<FloatingActionButton onTouchTap={this.editShift.bind(this, null)}>{addIcon}</FloatingActionButton>
 			<ShiftDialog {...dialog} onCancel={this.dialogCancel} onSubmit={this.dialogSubmit} />
 		</div>
 	}

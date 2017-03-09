@@ -10,9 +10,12 @@ import SignupForm from './mui/signup-form.jsx'
 import ActDetailsPage from './mui/act-details-page.jsx'
 import EventsList from './mui/events-list.jsx'
 import EventPage from './mui/event-page.jsx'
+import EventTrainPage from './mui/event-volunteer-page.jsx'
+import EventVolunteerPage from './mui/event-volunteer-page.jsx'
 import EventInfo from './mui/event-info.jsx'
 import GigDetailsPage from './mui/gig-details-page.jsx'
 import Lineup from './mui/lineup.jsx'
+import Tasks from './mui/tasks.jsx'
 
 // touchy-screen stuff 
 import injectTapEventPlugin from 'react-tap-event-plugin'
@@ -59,6 +62,54 @@ const handleRouteEnter = (nextState, replace, callback) => {
 	callback();
 }
 
+const onEventEnter = (nextState, replace, callback) => {
+	console.log("Entering", nextState)
+	if(nextState.location.action!=='REPLACE') {
+		// not already replaced
+
+		const {eventId} = nextState.params
+		app.service('tickets').find({query: { gig_id: eventId }})
+		.then(result => {
+			console.log("Pass it", result)
+			if(result.total == 0) {
+				console.log("we don't even know you")
+				replace({pathname: 'events'})
+			} else {
+				const pass = result.data[0].status
+				const level = access.indexOf(pass)
+				console.log("Passed", pass)
+				switch(pass) {
+					case 'Registered':
+						replace({pathname: '/gyps/volunteer/' + eventId})
+						console.log("Replaced, now what")
+						callback()
+						break;
+				}
+
+			}
+		})
+		.catch(err => console.error("No pasaran", err))
+	} else {
+		callback()
+	}
+}
+
+// TODO move this
+export const access = [
+	'Registered',
+	'Volnteered',
+	'Trained',
+	'Paid',
+	'Attending',
+]
+
+const paths = {
+	'Registered': 'volunteer',
+	'Volnteered': 'train',
+	'Trained'	: 'payment',
+	'Paid'		: 'attend',
+	'Attending' : 'events',	
+}
 const routes = <Router history={browserHistory}>
 					<Route path='/' component={Layout}>
 						<Route path='login' component={LoginForm} />
@@ -71,10 +122,13 @@ const routes = <Router history={browserHistory}>
 						<Route path='acts/:actId' component={ActDetailsPage} />
 						
 						<Route path='events' component={EventsList} />
-						<Route path='events/:eventId' component={EventPage} />
+						<Route path='events/:eventId' component={EventPage} onEnter={onEventEnter} />
+						<Route path='volunteer/:eventId' component={EventVolunteerPage} onEnter={onEventEnter} />
+						<Route path='train/:eventId' component={EventTrainPage} onEnter={onEventEnter} />
 						<Route path='eventinfo/:eventId' component={EventInfo} />
 
 						<Route path='lineup' component={Lineup} />
+						<Route path='tasks' component={Tasks} />
 
 						<Route path='gig/:gigId' component={GigDetailsPage} />
 						{/*<Route path='venues' component={VenueForm} />
