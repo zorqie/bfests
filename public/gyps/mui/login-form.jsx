@@ -41,7 +41,7 @@ class LoginForm extends React.Component {
 			app.service('users').patch(user._id, {online: true})
 			.then(u => {
 				app.emit('authenticated', user);
-				browserHistory.push('home');
+				browserHistory.push('/gyps/events');
 				// console.log("Login complete");
 			})
 		})

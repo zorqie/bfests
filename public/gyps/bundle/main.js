@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "fd9414d50508e9bd25e1"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "6c6cc36a9edee38d4518"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -58519,7 +58519,7 @@ var LoginForm = function (_React$Component) {
 				console.log("Authenticated.then", user);
 				_main2.default.service('users').patch(user._id, { online: true }).then(function (u) {
 					_main2.default.emit('authenticated', user);
-					_reactRouter.browserHistory.push('home');
+					_reactRouter.browserHistory.push('/gyps/events');
 					// console.log("Login complete");
 				});
 			}).catch(function (error) {
