@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e38c9c1a165f1c8a745a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "129e989832513deff936"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -115098,21 +115098,20 @@ var GigDetailsPage = function (_React$Component) {
 			venue: {},
 			ticket: {}
 		}, _this.ticketListener = function (t) {
-			console.log("HEARD a ticket", t);
-			console.log("Our tic", _this.state.ticket);
+			// console.log("HEARD a ticket", t)
+			// console.log("Our tic", this.state.ticket)
 			// our ticket may be null
 			// no need to check owner_id, it's hooked on service
 			t.gig_id === _this.state.gig._id && _this.fetchData();
 		}, _this.fetchData = function () {
 			var gigId = _this.props.params && _this.props.params.gigId || _this.state.gig._id;
-			console.log("Fetching ", gigId);
+			// console.log("Fetching ", gigId)
 			_main2.default.service('gigs').get(gigId).then(function (gig) {
 				if (_this.props.params) {
 					// if not inside another page
 					document.title = gig.name;
 				}
 				_main2.default.service('tickets').find({ query: { gig_id: gig._id, status: 'Attending' } }).then(function (result) {
-					console.log("GOT TACKETS", result);
 					_this.setState({ venue: gig.venue, gig: gig, ticket: result.data[0] });
 				});
 			});
@@ -115166,8 +115165,6 @@ var GigDetailsPage = function (_React$Component) {
 
 			var attending = (status || ticket && ticket.status) === 'Attending';
 
-			console.log("GIIG", this.state);
-			console.log("GAAG", this.props);
 			var card = gig.type === 'Workshop' ? _react2.default.createElement(_workshopCard2.default, {
 				gig: gig,
 				fans: fans,

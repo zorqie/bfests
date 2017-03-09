@@ -56,8 +56,8 @@ export default class GigDetailsPage extends React.Component {
 	}
 
 	ticketListener = t => {
-		console.log("HEARD a ticket", t)
-		console.log("Our tic", this.state.ticket)
+		// console.log("HEARD a ticket", t)
+		// console.log("Our tic", this.state.ticket)
 		// our ticket may be null
 		// no need to check owner_id, it's hooked on service
 		t.gig_id===this.state.gig._id && this.fetchData()
@@ -65,7 +65,7 @@ export default class GigDetailsPage extends React.Component {
 
 	fetchData = () => {
 		const gigId = (this.props.params && this.props.params.gigId) || this.state.gig._id
-		console.log("Fetching ", gigId)
+		// console.log("Fetching ", gigId)
 		app.service('gigs').get(gigId)
 		.then(gig => {	
 			if(this.props.params) {
@@ -74,10 +74,8 @@ export default class GigDetailsPage extends React.Component {
 			}
 			app.service('tickets').find({query: {gig_id: gig._id, status:'Attending'}})
 			.then(result => {
-				console.log("GOT TACKETS", result)
 				this.setState({venue: gig.venue, gig, ticket:result.data[0]})
-			}
-			)
+			})
 		})
 		// not authorized
 		// .then(() => app.service('fans')
@@ -95,8 +93,6 @@ export default class GigDetailsPage extends React.Component {
 		
 		const attending = (status || (ticket && ticket.status)) === 'Attending'
 
-		console.log("GIIG", this.state)
-		console.log("GAAG", this.props)
 		const card = 
 			gig.type==='Workshop' ? 
 				<WorkshopCard 
