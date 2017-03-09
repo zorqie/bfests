@@ -10,8 +10,8 @@ const Schema = mongoose.Schema;
 
 const TicketSchema = new Schema({
 	owner_id: 	{ type: Schema.Types.ObjectId, ref: 'User' },
-	gig_id: 	{ type: Schema.Types.ObjectId, ref: 'Gig' },
-	status:		String,
+	gig_id: 	{ type: Schema.Types.ObjectId, ref: 'Gig', required: true },
+	status:		{ type: String, required: true},
 	comment:	String,
 
 	createdAt: { type: Date, 'default': Date.now },

@@ -6,6 +6,7 @@ import { browserHistory } from 'react-router';
 import Avatar from 'material-ui/Avatar'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
 import {List, ListItem} from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
 import Divider from 'material-ui/Divider'
@@ -14,16 +15,23 @@ import Dialog from 'material-ui/Dialog'
 import ActsList from './acts-list.jsx'
 import GigTimespan from './gig-timespan.jsx'
 import app from '../main.jsx'
+import { gigJoin, gigLeave } from './utils.jsx'
 
 import PerformanceCard from './cards/performance-card.jsx'
 import WorkshopCard from './cards/workshop-card.jsx'
 import VolunteerCard from './cards/volunteer-card.jsx'
 
+const styles = {
+	leave: {
+		margin: '1em',
+		border: '2px solid grey'
+	}
+}
 
 export default class GigDetailsPage extends React.Component {
 	state = {
 		fans: [],  
-		gig: {},
+		gig: this.props.gig || {},
 		venue: {},
 		ticket: {},
 	}
@@ -35,23 +43,40 @@ export default class GigDetailsPage extends React.Component {
 
 	componentDidMount() {
 		// attach listeners
+		app.service('tickets').on('created', this.ticketListener)
+		app.service('tickets').on('removed', this.ticketListener)
 		app.service('gigs').on('patched', this.fetchData)
 	}
 
 	componentWillUnmount() {
 		// remove listners
 		app.service('gigs').removeListener('patched', this.fetchData)
+		app.service('tickets').removeListener('created', this.ticketListener)
+		app.service('tickets').removeListener('removed', this.ticketListener)
+	}
+
+	ticketListener = t => {
+		console.log("HEARD a ticket", t)
+		console.log("Our tic", this.state.ticket)
+		// our ticket may be null
+		// no need to check owner_id, it's hooked on service
+		t.gig_id===this.state.gig._id && this.fetchData()
 	}
 
 	fetchData = () => {
-		const { gigId } = this.props.params
-		
+		const gigId = (this.props.params && this.props.params.gigId) || this.state.gig._id
+		console.log("Fetching ", gigId)
 		app.service('gigs').get(gigId)
 		.then(gig => {	
-			document.title=gig.name	
-			app.service('tickets').find({query: {gig_id: gig._id}})
-			.then(result =>
-				this.setState({venue: gig.venue, gig, ticket:(result.total && result.data[0])})
+			if(this.props.params) {
+				// if not inside another page
+				document.title=gig.name	
+			}
+			app.service('tickets').find({query: {gig_id: gig._id, status:'Attending'}})
+			.then(result => {
+				console.log("GOT TACKETS", result)
+				this.setState({venue: gig.venue, gig, ticket:result.data[0]})
+			}
 			)
 		})
 		// not authorized
@@ -60,17 +85,23 @@ export default class GigDetailsPage extends React.Component {
 		// 	.then(result => this.setState({fans: result.data})))
 	} 
 
-	viewActDetails = act => browserHistory.push('/acts/'+act._id)
+	viewActDetails = act => browserHistory.push('/gyps/acts/'+act._id)
 
 	render() {
 		const { gig, venue, fans, ticket } =  this.state
+		const { onJoin, onLeave, status } = this.props
+		const handleJoin = onJoin || gigJoin
+		const handleLeave = onLeave || gigLeave
+		
+		const attending = (status || (ticket && ticket.status)) === 'Attending'
+
 		console.log("GIIG", this.state)
+		console.log("GAAG", this.props)
 		const card = 
 			gig.type==='Workshop' ? 
 				<WorkshopCard 
 					gig={gig} 
 					fans={fans}
-					ticket={ticket}
 					onMasterSelect={this.viewActDetails}
 				/> : 
 				gig.type==='Volunteer' ?
@@ -83,7 +114,7 @@ export default class GigDetailsPage extends React.Component {
 		const gigTitle = <span>
 					<span className='acts'>{gig.acts && gig.acts.map(a => a.name).join(', ')}</span>
 					{venue && <span> at the {venue.name}</span>}</span>
-		return <Card>
+		return <div>
 			<CardHeader 
 				title={gigTitle} 
 				subtitle={<GigTimespan gig={gig} showDuration={true} />}
@@ -92,8 +123,19 @@ export default class GigDetailsPage extends React.Component {
 			<CardText>
 				{card}
 			</CardText>
-			<CardActions>
-			</CardActions>
-		</Card>
+			
+				<CardActions>
+					{attending &&
+						<span>
+							You are attending 
+							<FlatButton style={styles.leave} label='Leave' onTouchTap={handleLeave.bind(this, gig)}/>
+						</span>
+					}
+					{!attending && 
+						<RaisedButton primary={true} label='Join' onTouchTap={handleJoin.bind(this, gig)}/>
+					}
+				</CardActions>
+			
+		</div>
 	}
 }

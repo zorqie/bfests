@@ -10,9 +10,11 @@ import {List, ListItem} from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
 import {Tabs, Tab} from 'material-ui/Tabs'
 
+import GigDetailsPage from './gig-details-page.jsx'
 import GigTimespan from './gig-timespan.jsx'
-import app from '../main.jsx';
-import { plusOutline, minusBox } from './icons.jsx';
+import app from '../main.jsx'
+import { gigJoin, gigLeave } from './utils.jsx'
+import { plusOutline, minusBox } from './icons.jsx'
 
 //hack because Material-UI forces a onKeyboardFocus onto the span and React complains
 const Kspan = ({onKeyboardFocus, ...others}) => <span {...others}/>; 
@@ -24,9 +26,10 @@ export default class EventPage extends React.Component {
 		gig: {},
 		venue: {},
 		sites: [],
-		dialogOpen: false,
-		dialogGig: {},
-		errors: {},
+		dialog: {
+			open: false,
+			gig: {},
+		}
 	}
 	
 	componentWillMount() {
@@ -36,6 +39,7 @@ export default class EventPage extends React.Component {
 		app.service('gigs').on('patched', this.gigPatched);
 		app.service('tickets').on('patched', this.ticketPatched);
 		app.service('tickets').on('created', this.ticketCreated);
+		app.service('tickets').on('removed', this.ticketRemoved);
 	}
 	componentDidMount() {
 		app.service('tickets').find()
@@ -50,6 +54,7 @@ export default class EventPage extends React.Component {
 			app.service('gigs').removeListener('removed', this.gigRemoved);
 			app.service('gigs').removeListener('created', this.gigCreated);
 			app.service('gigs').removeListener('patched', this.gigPatched);
+			app.service('tickets').removeListener('removed', this.ticketRemoved);
 			app.service('tickets').removeListener('patched', this.ticketPatched);
 			app.service('tickets').removeListener('created', this.ticketCreated);
 		}
@@ -86,7 +91,7 @@ export default class EventPage extends React.Component {
 	}
 
 	ticketPatched = t => {
-		console.log("Patched", t)
+		console.log("Ticket", t)
 		// if(this.isAttending(t.gig_id) && t.status !== "Attending") {
 			const {tickets} = this.state
 			Object.assign(tickets, {[t.gig_id]: t.status})
@@ -94,29 +99,19 @@ export default class EventPage extends React.Component {
 		// }
 	}
 	ticketCreated = t => {
-		console.log("created", t)
+		console.log("Ticket created", t)
 		const {tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: t.status})
 		this.setState({...this.state, tickets})
-		
+	}
+	ticketRemoved = t => {
+		console.log("Ticket removed", t)
+		const {tickets} = this.state
+		Object.assign(tickets, {[t.gig_id]: null})
+		this.setState({...this.state, ticket: tickets.filter})
 	}
 
-	handleJoin = gig => {
-		console.log("Joining gig", gig)
-		if(this.isAttending(gig)) {
-			// patch
-		} else {
-			app.service('tickets').create({gig_id: gig._id, status: "Attending"})
-		}
-	}
 
-	handleLeave = gig => {
-		console.log("Leaving gig", gig)
-		if(this.isAttending(gig)) {
-			app.service('tickets').patch(null, {status: null}, {query:{gig_id: gig._id}})
-		}
-	}
-	
 	gigRemoved = gig => {
 		// console.log("Removed: ", gig);
 		this.setState({
@@ -137,10 +132,19 @@ export default class EventPage extends React.Component {
 		this.fetchData()
 	}
 
-	viewGigDetails = gig => browserHistory.push('/gyps/gig/'+gig._id)
+	dialogClose = () => {
+		this.setState({...this.state, dialog:{open:false, gig:{}}})
+	}
+
+	viewGigDetails = gig => {
+		// browserHistory.push('/gyps/gig/'+gig._id)
+		const { dialog } = this.state
+		Object.assign(dialog, {open: true, gig})
+		this.setState({...this.state, dialog})
+	}
 
 	render() {
-		const {gig, venue} = this.state;
+		const {gig, venue, dialog} = this.state;
 		// console.log("GIGGGINGING: ", this.state);
 		const title = <b>{gig.name}</b>;
 
@@ -169,18 +173,27 @@ export default class EventPage extends React.Component {
 										<FlatButton 
 											icon={minusBox}
 											title="Leave" 
-											onTouchTap={this.handleLeave.bind(this, gig)}
+											onTouchTap={gigLeave.bind(this, gig)}
 										/>
 										:
 										<FlatButton 
 											icon={plusOutline}
 											title="Join" 
-											onTouchTap={this.handleJoin.bind(this, gig)}
+											onTouchTap={gigJoin.bind(this, gig)}
 										/>
 									}
 					/>)}
 				</CardText>
-				
+
+				<Dialog title={dialog.title} open={dialog.open} onRequestClose={this.dialogClose} >
+					<GigDetailsPage 
+						gig={dialog.gig} 
+						onJoin={gigJoin} 
+						onLeave={gigLeave}
+						status={this.state.tickets[dialog.gig._id]}
+					/>
+				</Dialog>
+
 				<CardActions>
 					<FlatButton label="Volunteer" secondary={true}/>
 				</CardActions>

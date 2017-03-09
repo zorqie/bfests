@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "977a4240f48d78e47af1"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e38c9c1a165f1c8a745a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -14112,6 +14112,10 @@ var _signupForm = __webpack_require__(439);
 
 var _signupForm2 = _interopRequireDefault(_signupForm);
 
+var _actDetailsPage = __webpack_require__(865);
+
+var _actDetailsPage2 = _interopRequireDefault(_actDetailsPage);
+
 var _eventsList = __webpack_require__(434);
 
 var _eventsList2 = _interopRequireDefault(_eventsList);
@@ -14207,6 +14211,7 @@ var routes = _react2.default.createElement(
 		_reactRouter.Route,
 		{ path: '/gyps/', component: _layout2.default },
 		_react2.default.createElement(_reactRouter.IndexRoute, { component: Home }),
+		_react2.default.createElement(_reactRouter.Route, { path: 'acts/:actId', component: _actDetailsPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'events', component: _eventsList2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'events/:eventId', component: _eventPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'eventinfo/:eventId', component: _eventInfo2.default }),
@@ -26283,6 +26288,7 @@ var GigTimespan = function GigTimespan(_ref) {
 			(0, _moment2.default)(gig.end).format('h:mm a')
 		),
 		relative,
+		' ',
 		duration
 	);
 };
@@ -57557,6 +57563,10 @@ var _Subheader2 = _interopRequireDefault(_Subheader);
 
 var _Tabs = __webpack_require__(655);
 
+var _gigDetailsPage = __webpack_require__(859);
+
+var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
+
 var _gigTimespan = __webpack_require__(131);
 
 var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
@@ -57564,6 +57574,8 @@ var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
 var _main = __webpack_require__(40);
 
 var _main2 = _interopRequireDefault(_main);
+
+var _utils = __webpack_require__(866);
 
 var _icons = __webpack_require__(853);
 
@@ -57607,9 +57619,10 @@ var EventPage = function (_React$Component) {
 			gig: {},
 			venue: {},
 			sites: [],
-			dialogOpen: false,
-			dialogGig: {},
-			errors: {}
+			dialog: {
+				open: false,
+				gig: {}
+			}
 		}, _this.fetchData = function () {
 			var eventId = _this.props.params.eventId;
 
@@ -57634,7 +57647,7 @@ var EventPage = function (_React$Component) {
 		}, _this.isAttending = function (gig) {
 			return _this.state.tickets[gig._id] === "Attending";
 		}, _this.ticketPatched = function (t) {
-			console.log("Patched", t);
+			console.log("Ticket", t);
 			// if(this.isAttending(t.gig_id) && t.status !== "Attending") {
 			var tickets = _this.state.tickets;
 
@@ -57642,23 +57655,17 @@ var EventPage = function (_React$Component) {
 			_this.setState(_extends({}, _this.state, { tickets: tickets }));
 			// }
 		}, _this.ticketCreated = function (t) {
-			console.log("created", t);
+			console.log("Ticket created", t);
 			var tickets = _this.state.tickets;
 
 			Object.assign(tickets, _defineProperty({}, t.gig_id, t.status));
 			_this.setState(_extends({}, _this.state, { tickets: tickets }));
-		}, _this.handleJoin = function (gig) {
-			console.log("Joining gig", gig);
-			if (_this.isAttending(gig)) {
-				// patch
-			} else {
-				_main2.default.service('tickets').create({ gig_id: gig._id, status: "Attending" });
-			}
-		}, _this.handleLeave = function (gig) {
-			console.log("Leaving gig", gig);
-			if (_this.isAttending(gig)) {
-				_main2.default.service('tickets').patch(null, { status: null }, { query: { gig_id: gig._id } });
-			}
+		}, _this.ticketRemoved = function (t) {
+			console.log("Ticket removed", t);
+			var tickets = _this.state.tickets;
+
+			Object.assign(tickets, _defineProperty({}, t.gig_id, null));
+			_this.setState(_extends({}, _this.state, { ticket: tickets.filter }));
 		}, _this.gigRemoved = function (gig) {
 			// console.log("Removed: ", gig);
 			_this.setState(_extends({}, _this.state, {
@@ -57675,8 +57682,14 @@ var EventPage = function (_React$Component) {
 			// console.log("Updated: ", gig);
 			// do something to reflect update
 			_this.fetchData();
+		}, _this.dialogClose = function () {
+			_this.setState(_extends({}, _this.state, { dialog: { open: false, gig: {} } }));
 		}, _this.viewGigDetails = function (gig) {
-			return _reactRouter.browserHistory.push('/gyps/gig/' + gig._id);
+			// browserHistory.push('/gyps/gig/'+gig._id)
+			var dialog = _this.state.dialog;
+
+			Object.assign(dialog, { open: true, gig: gig });
+			_this.setState(_extends({}, _this.state, { dialog: dialog }));
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -57689,6 +57702,7 @@ var EventPage = function (_React$Component) {
 			_main2.default.service('gigs').on('patched', this.gigPatched);
 			_main2.default.service('tickets').on('patched', this.ticketPatched);
 			_main2.default.service('tickets').on('created', this.ticketCreated);
+			_main2.default.service('tickets').on('removed', this.ticketRemoved);
 		}
 	}, {
 		key: 'componentDidMount',
@@ -57710,6 +57724,7 @@ var EventPage = function (_React$Component) {
 				_main2.default.service('gigs').removeListener('removed', this.gigRemoved);
 				_main2.default.service('gigs').removeListener('created', this.gigCreated);
 				_main2.default.service('gigs').removeListener('patched', this.gigPatched);
+				_main2.default.service('tickets').removeListener('removed', this.ticketRemoved);
 				_main2.default.service('tickets').removeListener('patched', this.ticketPatched);
 				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
 			}
@@ -57721,7 +57736,8 @@ var EventPage = function (_React$Component) {
 
 			var _state = this.state,
 			    gig = _state.gig,
-			    venue = _state.venue;
+			    venue = _state.venue,
+			    dialog = _state.dialog;
 			// console.log("GIGGGINGING: ", this.state);
 
 			var title = _react2.default.createElement(
@@ -57753,13 +57769,23 @@ var EventPage = function (_React$Component) {
 							rightIconButton: _this3.isAttending(gig) ? _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.minusBox,
 								title: 'Leave',
-								onTouchTap: _this3.handleLeave.bind(_this3, gig)
+								onTouchTap: _utils.gigLeave.bind(_this3, gig)
 							}) : _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.plusOutline,
 								title: 'Join',
-								onTouchTap: _this3.handleJoin.bind(_this3, gig)
+								onTouchTap: _utils.gigJoin.bind(_this3, gig)
 							})
 						});
+					})
+				),
+				_react2.default.createElement(
+					_Dialog2.default,
+					{ title: dialog.title, open: dialog.open, onRequestClose: this.dialogClose },
+					_react2.default.createElement(_gigDetailsPage2.default, {
+						gig: dialog.gig,
+						onJoin: _utils.gigJoin,
+						onLeave: _utils.gigLeave,
+						status: this.state.tickets[dialog.gig._id]
 					})
 				),
 				_react2.default.createElement(
@@ -58258,6 +58284,31 @@ var Lineup = function (_React$Component) {
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Lineup.__proto__ || Object.getPrototypeOf(Lineup)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			tickets: [],
 			dates: []
+		}, _this.fetchData = function () {
+			_main2.default.service('tickets').find({ query: { status: 'Attending' } }).then(function (result) {
+
+				if (result.total) {
+					console.log("Teekets:", result);
+					var formated = result.data.map(function (t) {
+						console.log("t=", t);
+						return (0, _moment2.default)(t.gig.start).format('YYYY-MM-DD');
+					});
+					console.log("Formated", formated);
+					var unique = formated.filter(function (e, i, a) {
+						return a.indexOf(e) === i;
+					});
+					console.log("Unique", unique);
+					var dates = unique.map(function (s) {
+						return (0, _moment2.default)(s, 'YYYY-MM-DD');
+					});
+					// a little hacky format -> parse but
+					// works better than 0-ing time
+					console.log("Dates", dates);
+					_this.setState({ tickets: result.data, dates: dates });
+				}
+			}).catch(function (err) {
+				return console.error;
+			});
 		}, _this.select = function (t) {
 			_reactRouter.browserHistory.push('/gyps/gig/' + t.gig_id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
@@ -58266,35 +58317,19 @@ var Lineup = function (_React$Component) {
 	_createClass(Lineup, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var _this2 = this;
-
-			_main2.default.service('tickets').find().then(function (result) {
-				if (result.total) {
-					var dates = result.data.map(function (t) {
-						return (0, _moment2.default)(t.gig.start).format('YYYY-MM-DD');
-					}).filter(function (e, i, a) {
-						return a.indexOf(e) === i;
-					}).map(function (s) {
-						return (0, _moment2.default)(s, 'YYYY-MM-DD');
-					});
-					// a little hacky format -> parse but
-					// works better than 0-ing time
-					// console.log("Dates", dates)
-					_this2.setState({ tickets: result.data, dates: dates });
-				}
-			}).catch(function (err) {
-				return console.error;
-			});
+			_main2.default.authenticate().then(this.fetchData);
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this3 = this;
+			var _this2 = this;
 
 			var _state = this.state,
 			    dates = _state.dates,
 			    tickets = _state.tickets;
 
+			console.log("LINEUP", this.state);
+			console.log(dates);
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -58320,12 +58355,12 @@ var Lineup = function (_React$Component) {
 						_react2.default.createElement(_Divider2.default, null),
 						tickets.filter(function (t) {
 							return (0, _moment2.default)(t.gig.start).isSame(d, 'day');
-						}).map(function (t) {
+						}).map(function (ticket) {
 							return _react2.default.createElement(_List.ListItem, {
-								key: t._id,
-								primaryText: t.gig.name,
-								secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: t.gig, hideDates: true }),
-								onTouchTap: _this3.select.bind(_this3, t)
+								key: ticket._id,
+								primaryText: ticket.gig.name,
+								secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: ticket.gig, hideDates: true }),
+								onTouchTap: _this2.select.bind(_this2, ticket)
 							});
 						})
 					);
@@ -91015,7 +91050,42 @@ exports.default = {
 };
 
 /***/ }),
-/* 673 */,
+/* 673 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _pure = __webpack_require__(59);
+
+var _pure2 = _interopRequireDefault(_pure);
+
+var _SvgIcon = __webpack_require__(45);
+
+var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
+
+var ContentAdd = function ContentAdd(props) {
+  return _react2.default.createElement(_SvgIcon2.default, props, _react2.default.createElement('path', { d: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z' }));
+};
+ContentAdd = (0, _pure2.default)(ContentAdd);
+ContentAdd.displayName = 'ContentAdd';
+ContentAdd.muiName = 'SvgIcon';
+
+exports.default = ContentAdd;
+
+/***/ }),
 /* 674 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -114949,6 +115019,10 @@ var _FlatButton = __webpack_require__(87);
 
 var _FlatButton2 = _interopRequireDefault(_FlatButton);
 
+var _RaisedButton = __webpack_require__(249);
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
 var _List = __webpack_require__(115);
 
 var _Subheader = __webpack_require__(116);
@@ -114975,6 +115049,8 @@ var _main = __webpack_require__(40);
 
 var _main2 = _interopRequireDefault(_main);
 
+var _utils = __webpack_require__(866);
+
 var _performanceCard = __webpack_require__(860);
 
 var _performanceCard2 = _interopRequireDefault(_performanceCard);
@@ -114995,6 +115071,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var styles = {
+	leave: {
+		margin: '1em',
+		border: '2px solid grey'
+	}
+};
+
 var GigDetailsPage = function (_React$Component) {
 	_inherits(GigDetailsPage, _React$Component);
 
@@ -115011,17 +115094,26 @@ var GigDetailsPage = function (_React$Component) {
 
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GigDetailsPage.__proto__ || Object.getPrototypeOf(GigDetailsPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			fans: [],
-			gig: {},
+			gig: _this.props.gig || {},
 			venue: {},
 			ticket: {}
+		}, _this.ticketListener = function (t) {
+			console.log("HEARD a ticket", t);
+			console.log("Our tic", _this.state.ticket);
+			// our ticket may be null
+			// no need to check owner_id, it's hooked on service
+			t.gig_id === _this.state.gig._id && _this.fetchData();
 		}, _this.fetchData = function () {
-			var gigId = _this.props.params.gigId;
-
-
+			var gigId = _this.props.params && _this.props.params.gigId || _this.state.gig._id;
+			console.log("Fetching ", gigId);
 			_main2.default.service('gigs').get(gigId).then(function (gig) {
-				document.title = gig.name;
-				_main2.default.service('tickets').find({ query: { gig_id: gig._id } }).then(function (result) {
-					return _this.setState({ venue: gig.venue, gig: gig, ticket: result.total && result.data[0] });
+				if (_this.props.params) {
+					// if not inside another page
+					document.title = gig.name;
+				}
+				_main2.default.service('tickets').find({ query: { gig_id: gig._id, status: 'Attending' } }).then(function (result) {
+					console.log("GOT TACKETS", result);
+					_this.setState({ venue: gig.venue, gig: gig, ticket: result.data[0] });
 				});
 			});
 			// not authorized
@@ -115029,7 +115121,7 @@ var GigDetailsPage = function (_React$Component) {
 			// 	.find({query:{gig_id:gigId, status: 'Attending'}})
 			// 	.then(result => this.setState({fans: result.data})))
 		}, _this.viewActDetails = function (act) {
-			return _reactRouter.browserHistory.push('/acts/' + act._id);
+			return _reactRouter.browserHistory.push('/gyps/acts/' + act._id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -115044,6 +115136,8 @@ var GigDetailsPage = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			// attach listeners
+			_main2.default.service('tickets').on('created', this.ticketListener);
+			_main2.default.service('tickets').on('removed', this.ticketListener);
 			_main2.default.service('gigs').on('patched', this.fetchData);
 		}
 	}, {
@@ -115051,6 +115145,8 @@ var GigDetailsPage = function (_React$Component) {
 		value: function componentWillUnmount() {
 			// remove listners
 			_main2.default.service('gigs').removeListener('patched', this.fetchData);
+			_main2.default.service('tickets').removeListener('created', this.ticketListener);
+			_main2.default.service('tickets').removeListener('removed', this.ticketListener);
 		}
 	}, {
 		key: 'render',
@@ -115060,12 +115156,21 @@ var GigDetailsPage = function (_React$Component) {
 			    venue = _state.venue,
 			    fans = _state.fans,
 			    ticket = _state.ticket;
+			var _props = this.props,
+			    onJoin = _props.onJoin,
+			    onLeave = _props.onLeave,
+			    status = _props.status;
+
+			var handleJoin = onJoin || _utils.gigJoin;
+			var handleLeave = onLeave || _utils.gigLeave;
+
+			var attending = (status || ticket && ticket.status) === 'Attending';
 
 			console.log("GIIG", this.state);
+			console.log("GAAG", this.props);
 			var card = gig.type === 'Workshop' ? _react2.default.createElement(_workshopCard2.default, {
 				gig: gig,
 				fans: fans,
-				ticket: ticket,
 				onMasterSelect: this.viewActDetails
 			}) : gig.type === 'Volunteer' ? _react2.default.createElement(_volunteerCard2.default, { gig: gig }) : _react2.default.createElement(_performanceCard2.default, {
 				gig: gig,
@@ -115090,7 +115195,7 @@ var GigDetailsPage = function (_React$Component) {
 				)
 			);
 			return _react2.default.createElement(
-				_Card.Card,
+				'div',
 				null,
 				_react2.default.createElement(_Card.CardHeader, {
 					title: gigTitle,
@@ -115105,7 +115210,17 @@ var GigDetailsPage = function (_React$Component) {
 					null,
 					card
 				),
-				_react2.default.createElement(_Card.CardActions, null)
+				_react2.default.createElement(
+					_Card.CardActions,
+					null,
+					attending && _react2.default.createElement(
+						'span',
+						null,
+						'You are attending',
+						_react2.default.createElement(_FlatButton2.default, { style: styles.leave, label: 'Leave', onTouchTap: handleLeave.bind(this, gig) })
+					),
+					!attending && _react2.default.createElement(_RaisedButton2.default, { primary: true, label: 'Join', onTouchTap: handleJoin.bind(this, gig) })
+				)
 			);
 		}
 	}]);
@@ -115654,14 +115769,6 @@ var _Divider = __webpack_require__(628);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
-var _FlatButton = __webpack_require__(87);
-
-var _FlatButton2 = _interopRequireDefault(_FlatButton);
-
-var _RaisedButton = __webpack_require__(249);
-
-var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
-
 var _actsList = __webpack_require__(858);
 
 var _actsList2 = _interopRequireDefault(_actsList);
@@ -115713,23 +115820,7 @@ var WorkshopCard = function WorkshopCard(_ref) {
 		gig.acts && gig.acts.length ? _react2.default.createElement(_actsList2.default, {
 			acts: gig.acts,
 			onSelect: onMasterSelect
-		}) : ' Unknown master',
-		_react2.default.createElement(_Divider2.default, { style: { marginTop: '1em' } }),
-		_react2.default.createElement(
-			'div',
-			null,
-			ticket && ticket.status && ticket.status === 'Attending' ? _react2.default.createElement(
-				'span',
-				null,
-				'You are attending ',
-				_react2.default.createElement('br', null),
-				_react2.default.createElement(_FlatButton2.default, { style: styles.leave, label: 'Leave' })
-			) : _react2.default.createElement(
-				'span',
-				null,
-				_react2.default.createElement(_RaisedButton2.default, { primary: true, label: 'Join' })
-			)
-		)
+		}) : ' Unknown master'
 	);
 };
 
@@ -115766,6 +115857,229 @@ exports.Kspan = Kspan;
 var hacks = exports.hacks = { Kspan: Kspan };
 
 exports.default = hacks;
+
+/***/ }),
+/* 865 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _mongoose = __webpack_require__(365);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _reactRouter = __webpack_require__(39);
+
+var _add = __webpack_require__(673);
+
+var _add2 = _interopRequireDefault(_add);
+
+var _FloatingActionButton = __webpack_require__(634);
+
+var _FloatingActionButton2 = _interopRequireDefault(_FloatingActionButton);
+
+var _IconButton = __webpack_require__(163);
+
+var _IconButton2 = _interopRequireDefault(_IconButton);
+
+var _FontIcon = __webpack_require__(162);
+
+var _FontIcon2 = _interopRequireDefault(_FontIcon);
+
+var _FlatButton = __webpack_require__(87);
+
+var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _List = __webpack_require__(115);
+
+var _Subheader = __webpack_require__(116);
+
+var _Subheader2 = _interopRequireDefault(_Subheader);
+
+var _Tabs = __webpack_require__(655);
+
+var _Card = __webpack_require__(114);
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+var _gigTimespan = __webpack_require__(131);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ActDetailsPage = function (_React$Component) {
+	_inherits(ActDetailsPage, _React$Component);
+
+	function ActDetailsPage() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, ActDetailsPage);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ActDetailsPage.__proto__ || Object.getPrototypeOf(ActDetailsPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			act: {},
+			gigs: []
+		}, _this.createdListener = function (gig) {
+			console.log("Added: ", gig);
+			// if(this.state.types.indexOf(gig.type) < 0) {
+			// 	this.fetchData()
+			// } else {
+			_this.setState({ gigs: _this.state.gigs.concat(gig) });
+			// }
+		}, _this.patchedListener = function (gig) {
+			// if(this.state.types.indexOf(gig.type) < 0) {
+			//possibly changed type, easier to 
+			_this.fetchData();
+			// } else {
+			// 	// update the one item. but later FIXME
+			// 	this.fetchData()
+			// }
+		}, _this.removedListener = function (gig) {
+			console.log("Removed: ", gig);
+			_this.setState({ gigs: _this.state.gigs.filter(function (v) {
+					return v._id !== gig._id;
+				}) });
+		}, _this.fetchData = function () {
+			var actId = _this.props.params.actId;
+			// console.log("Looking for parent: " + parentId);
+
+			_main2.default.service('acts').get(actId).then(function (act) {
+				document.title = act.name;
+				_main2.default.service('gigs').find({ query: { act_id: act._id, $sort: { start: 1 } } }).then(function (result) {
+					_this.setState(_extends({}, _this.state, { act: act, gigs: result.data }));
+				});
+			}).catch(function (err) {
+				return console.error("ERAR: ", err);
+			});
+		}, _this.selectGig = function (gig) {
+			return _reactRouter.browserHistory.push('/gigs/' + gig._id);
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(ActDetailsPage, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			_main2.default.authenticate().then(this.fetchData);
+
+			_main2.default.service('gigs').on('created', this.createdListener);
+			_main2.default.service('gigs').on('patched', this.patchedListener);
+			_main2.default.service('gigs').on('removed', this.removedListener);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			if (_main2.default) {
+				_main2.default.service('gigs').removeListener('created', this.createdListener);
+				_main2.default.service('gigs').removeListener('patched', this.patchedListener);
+				_main2.default.service('gigs').removeListener('removed', this.removedListener);
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			// console.log("VenuePage props: ", this.props);
+			var _state = this.state,
+			    act = _state.act,
+			    gigs = _state.gigs;
+
+
+			var title = _react2.default.createElement(_Card.CardTitle, {
+				title: act.name,
+				subtitle: act.description,
+				actAsExpander: true,
+				showExpandableButton: true
+			});
+			return _react2.default.createElement(
+				_Card.Card,
+				null,
+				title,
+				_react2.default.createElement(
+					_Card.CardMedia,
+					{ overlay: title, expandable: true },
+					_react2.default.createElement('img', { src: '/img/acts/' + act._id + '.jpg' })
+				),
+				_react2.default.createElement(
+					_Card.CardText,
+					null,
+					gigs.map(function (gig) {
+						return _react2.default.createElement(_List.ListItem, {
+							key: gig._id,
+							primaryText: gig.name,
+							secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig, showRelative: true }),
+							onTouchTap: _this2.selectGig.bind(_this2, gig)
+						});
+					})
+				)
+			);
+		}
+	}]);
+
+	return ActDetailsPage;
+}(_react2.default.Component);
+
+exports.default = ActDetailsPage;
+
+/***/ }),
+/* 866 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.gigLeave = exports.gigJoin = undefined;
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var gigJoin = exports.gigJoin = function gigJoin(gig) {
+	console.log("Joining gig", gig);
+	_main2.default.service('tickets').create({ gig_id: gig._id, status: "Attending" });
+};
+
+var gigLeave = exports.gigLeave = function gigLeave(gig) {
+	console.log("Leaving gig", gig);
+	_main2.default.service('tickets').remove(null, {
+		query: {
+			gig_id: gig._id,
+			status: "Attending"
+		}
+	});
+};
 
 /***/ })
 /******/ ]);

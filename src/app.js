@@ -19,7 +19,7 @@ const mongoose = require('mongoose');
 const gypsing = function (request, response, next){
   // console.log("Routing ", request.originalUrl);
   // console.log("Nexting ", next);
-  if(request.originalUrl.indexOf('/bundle/') < 0) {
+  if(request.originalUrl.indexOf('.') < 0) {
     response.sendFile(path.resolve(__dirname, app.get('public') + '/gyps/', 'index.html'))
   } else {
     next();

@@ -7,6 +7,7 @@ import Layout from './mui/layout.jsx'
 import LoginForm from './mui/login-form.jsx'
 import SignupForm from './mui/signup-form.jsx'
 
+import ActDetailsPage from './mui/act-details-page.jsx'
 import EventsList from './mui/events-list.jsx'
 import EventPage from './mui/event-page.jsx'
 import EventInfo from './mui/event-info.jsx'
@@ -67,6 +68,7 @@ const routes = <Router history={browserHistory}>
 						<IndexRoute component={Home} />
 
 						
+						<Route path='acts/:actId' component={ActDetailsPage} />
 						
 						<Route path='events' component={EventsList} />
 						<Route path='events/:eventId' component={EventPage} />

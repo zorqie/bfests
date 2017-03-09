@@ -1,8 +1,6 @@
 import React from 'react'
 
 import Divider from 'material-ui/Divider'
-import FlatButton from 'material-ui/FlatButton'
-import RaisedButton from 'material-ui/RaisedButton'
 
 import ActsList from '../acts-list.jsx'
 
@@ -35,13 +33,6 @@ const WorkshopCard = ({gig, acts, fans, ticket, onMasterSelect}) => <div>
 		/>
 		: ' Unknown master'
 	}
-	<Divider style={{marginTop:'1em'}} />
-	<div>
-		{(ticket && ticket.status && ticket.status==='Attending') ?
-			<span>You are attending <br/><FlatButton style={styles.leave} label='Leave' /></span> :
-			<span><RaisedButton primary={true} label='Join' /></span> 
-		}
-	</div>
 </div>
 
 export default WorkshopCard

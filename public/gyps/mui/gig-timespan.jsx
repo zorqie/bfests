@@ -17,6 +17,7 @@ const GigTimespan = ({gig, showRelative, showDuration, hideDates, ...others}) =>
 			{!hideDates && <span>{startDate} at</span>} {mStart.format('h:mm a')} 
 			{endDate && (<span> {'\u2013'} {endDate===startDate ? '' : endDate + ' at '}{moment(gig.end).format('h:mm a')}</span>)}
 			{relative}
+			{' '}
 			{duration}
 		</span>;
 }
