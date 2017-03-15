@@ -178,13 +178,13 @@ export default class EventPage extends React.Component {
 										<FlatButton 
 											icon={minusBox}
 											title="Leave" 
-											onTouchTap={gigLeave.bind(this, gig)}
+											onTouchTap={gigLeave.bind(null, gig, 'Attending')}
 										/>
 										:
 										<FlatButton 
 											icon={plusOutline}
 											title="Join" 
-											onTouchTap={gigJoin.bind(this, gig)}
+											onTouchTap={gigJoin.bind(null, gig, 'Attending')}
 										/>
 									}
 					/>)}
@@ -195,7 +195,8 @@ export default class EventPage extends React.Component {
 						gig={dialog.gig} 
 						onJoin={gigJoin} 
 						onLeave={gigLeave}
-						status={this.state.tickets[dialog.gig._id]}
+						tickets={this.state.tickets}
+						status="Attending"
 					/>
 				</Dialog>
 

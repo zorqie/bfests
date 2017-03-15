@@ -64,7 +64,8 @@ const handleRouteEnter = (nextState, replace, callback) => {
 
 const onEventEnter = (nextState, replace, callback) => {
 	console.log("Entering", nextState)
-	if(nextState.location.action!=='REPLACE') {
+	callback()
+	/*if(nextState.location.action!=='REPLACE') {
 		// not already replaced
 
 		const {eventId} = nextState.params
@@ -73,7 +74,8 @@ const onEventEnter = (nextState, replace, callback) => {
 			console.log("Pass it", result)
 			if(result.total == 0) {
 				console.log("we don't even know you")
-				replace({pathname: 'events'})
+				replace({pathname: '/gyps/events'})
+				callback()
 			} else {
 				const pass = result.data[0].status
 				const level = access.indexOf(pass)
@@ -91,7 +93,7 @@ const onEventEnter = (nextState, replace, callback) => {
 		.catch(err => console.error("No pasaran", err))
 	} else {
 		callback()
-	}
+	}*/
 }
 
 // TODO move this

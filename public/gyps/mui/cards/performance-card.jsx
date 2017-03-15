@@ -7,7 +7,7 @@ import ActsList from '../acts-list.jsx'
 const PerformanceCard = ({gig, onPerformerEdit, onPerformerDelete, onPerformerSelect}) => 
 	<div>
 		<h2>{gig.name}</h2>
-		<h3>{gig.description}</h3>
+		<p style={{paddingTop:'0.75em'}}>{gig.description}</p>
 		<Divider style={{marginTop: '1em'}}/>
 		{gig.acts && gig.acts.length ?
 			<div>

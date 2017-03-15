@@ -15,10 +15,7 @@ import GigTimespan from './gig-timespan.jsx'
 import app from '../main.jsx'
 import { gigJoin, gigLeave } from './utils.jsx'
 import { plusOutline, minusBox } from './icons.jsx'
-
-
-//hack because Material-UI forces a onKeyboardFocus onto the span and React complains
-const Kspan = ({onKeyboardFocus, ...others}) => <span {...others}/>; 
+import { Kspan } from './hacks.jsx'
 
 export default class EventPage extends React.Component {
 	state = {
@@ -26,7 +23,7 @@ export default class EventPage extends React.Component {
 		pass: {},
 		gigs: [], 
 		tickets: {},
-		tasks: [], 
+		ticketsRaw: [],
 		dialog: {
 			open: false,
 			gig: {},
@@ -42,11 +39,11 @@ export default class EventPage extends React.Component {
 		app.service('tickets').on('removed', this.ticketRemoved);
 	}
 	componentDidMount() {
-		app.service('tickets').find()
+		app.service('tickets').find({query:{status:"Volunteering"}})
 		.then(result => {
 			// console.log("Got tickets", result)
 			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-			this.setState({...this.state, tickets})
+			this.setState({...this.state, ticketsRaw: result.data, tickets})
 		})
 	}
 	componentWillUnmount() {
@@ -107,11 +104,14 @@ export default class EventPage extends React.Component {
 			}
 		})
 	}
-
-	handleGigLeave = gig => {
-		gigLeave(gig)
-	}
 	
+	shiftJoin = gig => {
+		gigJoin(gig, 'Volunteering')
+	}
+	shiftLeave = gig => {
+		gigLeave(gig, 'Volunteering')
+	}
+
 	viewGigDetails = gig => {
 		// browserHistory.push('/gyps/gig/'+gig._id)
 		const { dialog } = this.state
@@ -123,13 +123,13 @@ export default class EventPage extends React.Component {
 		console.log("Ticket created", t)
 		const {tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: t.status})
-		this.setState({...this.state, tickets})
+		this.setState({...this.state, tickets, ticketsRaw: this.state.ticketsRaw.concat(t)})
 	}
 	ticketRemoved = t => {
 		console.log("Ticket removed", t)
 		const {tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: null})
-		this.setState({...this.state, ticket: tickets})
+		this.setState({...this.state, tickets, ticketsRaw: this.state.ticketsRaw.filter(r=> r._id!==t._id)})
 	}
 
 
@@ -159,7 +159,7 @@ export default class EventPage extends React.Component {
 
 
 	render() {
-		const {gig, dialog} = this.state;
+		const {gig, dialog, event, tickets, ticketsRaw} = this.state;
 		// console.log("GIGGGINGING: ", this.state);
 		const title = <b>{event.name}</b>;
 
@@ -169,14 +169,14 @@ export default class EventPage extends React.Component {
 			<Card initiallyExpanded={true}>
 			    {/*<CardHeader title={v.name} subtitle="gig" />*/}
 			    <CardTitle 
-			    	title={title} 
-			    	subtitle={subtitle} 
-			    	actAsExpander={true} 
-			    	showExpandableButton={true}
+					title={title} 
+					subtitle={subtitle} 
 			    />
-				<CardText expandable={true}>
-					
-
+				<CardText>
+					{ticketsRaw.length ? 
+						<p>You have volunteered for {ticketsRaw.length} opportunities. Feel free to select some more</p> :
+						<p>Който не работи, не яде. За да не изхвърляме храна, запишете се да работите.</p>
+					}
 					{this.state.gigs.map(
 						gig => <ListItem 
 									key={gig._id} 
@@ -188,7 +188,7 @@ export default class EventPage extends React.Component {
 										<FlatButton 
 											icon={minusBox}
 											title="Leave" 
-											onTouchTap={this.handleGigLeave.bind(this, gig)}
+											onTouchTap={gigLeave.bind(this, gig, 'Volunteering')}
 										/>
 										:
 										<FlatButton 
@@ -203,9 +203,10 @@ export default class EventPage extends React.Component {
 				<Dialog title={dialog.title} open={dialog.open} onRequestClose={this.dialogClose} >
 					<GigDetailsPage 
 						gig={dialog.gig} 
-						onJoin={gigJoin} 
-						onLeave={gigLeave}
-						status={this.state.tickets[dialog.gig._id]}
+						onJoin={this.shiftJoin} 
+						onLeave={this.shiftLeave}
+						tickets={tickets}
+						status={tickets[dialog.gig._id]}
 					/>
 				</Dialog>
 				<CardActions>					

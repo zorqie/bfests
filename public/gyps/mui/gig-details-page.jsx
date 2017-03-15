@@ -32,7 +32,6 @@ export default class GigDetailsPage extends React.Component {
 	state = {
 		fans: [],  
 		gig: this.props.gig || {},
-		venue: {},
 		ticket: {},
 	}
 
@@ -60,62 +59,54 @@ export default class GigDetailsPage extends React.Component {
 		// console.log("Our tic", this.state.ticket)
 		// our ticket may be null
 		// no need to check owner_id, it's hooked on service
-		t.gig_id===this.state.gig._id && this.fetchData()
+		t.gig_id===this.state.gig._id && this.fetchData(true)
 	}
 
-	fetchData = () => {
-		if(this.props.params) {
-			// if not inside another page
-			const {gigId} = this.props.params
-			// console.log("Fetching ", gigId)
-			app.service('gigs').get(gigId)
-			.then(gig => {
-					this.fetchTickets(gig)
+	fetchData = (force) => {
+		// console.log("FORCED", force)
+		const gigId = this.props.params ? this.props.params.gigId : this.props.gig._id
+		// console.log("Fetching ", gigId)
+		app.service('gigs').get(gigId)
+		.then(gig => {
+				if(force || this.props.params) {
+					app.service('tickets').find({query: {gig_id: gigId}})
+					.then(result => this.setState({...this.state, gig, ticket: result.total ? result.data[0] : null}) )
+				} else {
+					this.setState({gig})
 				}
-			)
-		} else {
-			// already have our gig in props
-			this.fetchTickets(this.props.gig)
-		}
+			}
+		)
+		
 		// not authorized
 		// .then(() => app.service('fans')
 		// 	.find({query:{gig_id:gigId, status: 'Attending'}})
 		// 	.then(result => this.setState({fans: result.data})))
 	} 
-	fetchTickets = gig => {
-		app.service('tickets').find({query: {gig_id: gig._id, status:'Attending'}})
-		.then(result => {
-			this.setState({venue: gig.venue, gig, ticket:result.data[0]})
-		})
-	}
 
 	viewActDetails = act => browserHistory.push('/gyps/acts/'+act._id)
 
 	render() {
-		const { gig, venue, fans, ticket } =  this.state
-		const { onJoin, onLeave, status } = this.props
+		const { gig, fans, ticket } =  this.state
+		const { onJoin, onLeave, status, tickets } = this.props
 		const handleJoin = onJoin || gigJoin
 		const handleLeave = onLeave || gigLeave
 		
-		const attending = (status || (ticket && ticket.status)) === 'Attending'
-		const volunteering = (status || (ticket && ticket.status)) === 'Volunteering'
-
+		const attending = status ? tickets && tickets[gig._id] === status : (ticket && ticket.status === 'Attending')
+		// console.log("GIIG: ", gig)
+		// console.log("Attending? ", attending)
 		const card = 
 			gig.type==='Workshop' ? 
-				<WorkshopCard 
-					gig={gig} 
-					onMasterSelect={this.viewActDetails}
-				/> : 
+				<WorkshopCard gig={gig} tickets={tickets} onMasterSelect={this.viewActDetails} /> : 
 				gig.type==='Volunteer' ?
-					<VolunteerCard gig={gig} /> : 
+					<VolunteerCard gig={gig} tickets={tickets} onJoin={handleJoin} onLeave={handleLeave} /> : 
 					<PerformanceCard 
 						gig={gig} 
-						ticket={ticket}
+						tickets={tickets}
 						onPerformerSelect={this.viewActDetails}
 					/>
 		const gigTitle = <span>
 					<span className='acts'>{gig.acts && gig.acts.map(a => a.name).join(', ')}</span>
-					{venue && <span> at the {venue.name}</span>}</span>
+					{gig.venue && <span> at the {gig.venue.name}</span>}</span>
 		return <div>
 			<CardHeader 
 				title={gigTitle} 
@@ -125,19 +116,21 @@ export default class GigDetailsPage extends React.Component {
 			<CardText>
 				{card}
 			</CardText>
-			{ gig.type && gig.type !== 'Volunteer' && 
-				<CardActions>
+			<CardActions>
+			{gig.type && gig.type !== 'Volunteer' && 
+				<span>
 					{attending &&
 						<span>
 							You are attending 
-							<FlatButton style={styles.leave} label='Leave' onTouchTap={handleLeave.bind(this, gig)}/>
+							<FlatButton style={styles.leave} label='Leave' onTouchTap={handleLeave.bind(this, gig, 'Attending')}/>
 						</span>
 					}
 					{!attending && 
-						<RaisedButton primary={true} label='Join' onTouchTap={handleJoin.bind(this, gig)}/>
+						<RaisedButton primary={true} label='Join' onTouchTap={handleJoin.bind(this, gig, 'Attending')}/>
 					}
-				</CardActions>
+				</span>
 			}
+			</CardActions>
 		</div>
 	}
 }

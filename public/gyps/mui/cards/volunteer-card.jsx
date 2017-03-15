@@ -3,12 +3,11 @@ import { browserHistory } from 'react-router'
 
 import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
-import FloatingActionButton from 'material-ui/FloatingActionButton'
+import RaisedButton from 'material-ui/RaisedButton'
 import {ListItem} from 'material-ui/List'
 
 import app from '../../main.jsx'
 import { addIcon } from '../icons.jsx'
-import ActsList from '../acts-list.jsx'
 import GigTimespan from '../gig-timespan.jsx'
 import ShiftDialog from './shift-dialog.jsx'
 import { Kspan } from '../hacks.jsx'
@@ -28,7 +27,6 @@ export default class VolunteerCard extends React.Component {
 		dialog: {
 			open: false, 
 			shift: {}, 
-			errors: {},
 		},
 	}
 	componentWillMount() {
@@ -50,13 +48,15 @@ export default class VolunteerCard extends React.Component {
 		}
 	}
 	fetchData = () => {
-		app.service('gigs').find({
-			query: { 
-				parent: this.props.gig._id, 
-				$sort: {start: 1}
-			}
-		})
-		.then(result => this.setState({shifts: result.data}))
+		if(this.props.tickets) {
+			app.service('gigs').find({
+				query: { 
+					parent: this.props.gig._id, 
+					$sort: {start: 1}
+				}
+			})
+			.then(result => this.setState({shifts: result.data}))
+		}
 	}
 
 // Listeners
@@ -78,45 +78,30 @@ export default class VolunteerCard extends React.Component {
 		}
 	}
 
-	viewShift = shift => browserHistory.push('/shifts/'+shift._id)
+	// viewShift = shift => browserHistory.push('/shifts/'+shift._id)
 
-	editShift = shift => {
+	viewShift = shift => {
 		console.log("Editshifting", shift)
 		const { dialog } = this.state
-		const { gig } = this.props
-		const dialogShift = shift || Object.assign({}, gig, {parent: gig._id})
-		if(!shift) {
-			// only if clone of gig, delete its id
-			delete dialogShift._id
-		}
-		Object.assign(dialog, {open: true, errors: {}, shift: dialogShift})
+		Object.assign(dialog, {open: true, shift})
 		this.setState({...this.state, dialog})
 	} 
 
-	deleteShift = shift => {
-		app.service('gigs').remove(shift._id)
-	}
 
 	dialogCancel = () => {
-		this.setState({...this.state, dialog: {open: false, shift:{}, errors:{}}})
+		this.setState({...this.state, dialog: {open: false, shift:{}}})
 	}
-	dialogSubmit = e => {
-		const { dialog } = this.state
-		const { shift } = dialog
-		Object.assign(dialog, {open: false, errors: {}})
-		this.setState({...this.state, dialog})
-		if(shift._id) {
-			//patch
-			app.service('gigs').patch(shift._id, shift)
-			// .then(shift =>)
-		} else {
-			//create
-			app.service('gigs').create(shift)
-		}
-	}
+
+
 	render() {
-		const { gig } = this.props 
+		const { gig, tickets, onJoin, onLeave } = this.props 
 		const { shifts, dialog } = this.state
+		console.log("TIckets?", this.state)
+		const isAttending = gig => tickets && tickets[gig._id] === "Volunteering"
+		const actionButton = what => tickets ? 
+			(isAttending(what) ? 
+					<FlatButton label="Leave" onTouchTap={onLeave.bind(null, what, 'Volunteering')} /> :
+					<RaisedButton label="Join" primary={true} onTouchTap={onJoin.bind(null, what, 'Volunteering')}/> ) : ''
 		return <div>
 			<span style={styles.gigType}>Volunteer opportunity</span> 
 			<h2>{gig.name}</h2>
@@ -126,15 +111,12 @@ export default class VolunteerCard extends React.Component {
 						key={shift._id} 
 						primaryText={<GigTimespan gig={shift} />}
 						onTouchTap={this.viewShift.bind(this, shift)}
-						rightIconButton={
-							<Kspan>
-								<FlatButton label="Join" />
-							</Kspan>
-						}
+						rightIconButton={ actionButton(shift) }
 
 					/>
 				)}
-			<ShiftDialog {...dialog} onCancel={this.dialogCancel} onSubmit={this.dialogSubmit} />
+				{tickets && !shifts.length && actionButton(gig)}
+			<ShiftDialog {...dialog} onCancel={this.dialogCancel} />
 		</div>
 	}
 }

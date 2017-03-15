@@ -32,13 +32,14 @@ export default class Lineup extends React.Component {
 			if(result.total) {
 				// console.log("Teekets:", result)
 				const formated = result.data.map(t => {
-					console.log("t=", t)
+					// console.log("t=", t)
 					return moment(t.gig.start).format('YYYY-MM-DD')
 				})
 				// console.log("Formated", formated)
 				const unique = formated.filter((e, i, a) => a.indexOf(e)===i)
 				// console.log("Unique", unique)
-				const dates = unique.map(s => moment(s, 'YYYY-MM-DD'))
+				const sorted = unique.sort()
+				const dates = sorted.map(s => moment(s, 'YYYY-MM-DD'))
 								// a little hacky format -> parse but
 								// works better than 0-ing time
 				console.log("Dates", dates)

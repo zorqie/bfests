@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "6c6cc36a9edee38d4518"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "8b5d6a2d90b17de6dda7"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -14209,34 +14209,36 @@ var handleRouteEnter = function handleRouteEnter(nextState, replace, callback) {
 
 var onEventEnter = function onEventEnter(nextState, replace, callback) {
 	console.log("Entering", nextState);
-	if (nextState.location.action !== 'REPLACE') {
-		// not already replaced
-
-		var eventId = nextState.params.eventId;
-
-		app.service('tickets').find({ query: { gig_id: eventId } }).then(function (result) {
-			console.log("Pass it", result);
-			if (result.total == 0) {
-				console.log("we don't even know you");
-				replace({ pathname: 'events' });
-			} else {
-				var pass = result.data[0].status;
-				var level = access.indexOf(pass);
-				console.log("Passed", pass);
-				switch (pass) {
-					case 'Registered':
-						replace({ pathname: '/gyps/volunteer/' + eventId });
-						console.log("Replaced, now what");
-						callback();
-						break;
-				}
-			}
-		}).catch(function (err) {
-			return console.error("No pasaran", err);
-		});
-	} else {
-		callback();
-	}
+	callback();
+	/*if(nextState.location.action!=='REPLACE') {
+ 	// not already replaced
+ 
+ 	const {eventId} = nextState.params
+ 	app.service('tickets').find({query: { gig_id: eventId }})
+ 	.then(result => {
+ 		console.log("Pass it", result)
+ 		if(result.total == 0) {
+ 			console.log("we don't even know you")
+ 			replace({pathname: '/gyps/events'})
+ 			callback()
+ 		} else {
+ 			const pass = result.data[0].status
+ 			const level = access.indexOf(pass)
+ 			console.log("Passed", pass)
+ 			switch(pass) {
+ 				case 'Registered':
+ 					replace({pathname: '/gyps/volunteer/' + eventId})
+ 					console.log("Replaced, now what")
+ 					callback()
+ 					break;
+ 			}
+ 
+ 		}
+ 	})
+ 	.catch(err => console.error("No pasaran", err))
+ } else {
+ 	callback()
+ }*/
 };
 
 // TODO move this
@@ -57821,11 +57823,11 @@ var EventPage = function (_React$Component) {
 							rightIconButton: _this3.isAttending(gig) ? _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.minusBox,
 								title: 'Leave',
-								onTouchTap: _utils.gigLeave.bind(_this3, gig)
+								onTouchTap: _utils.gigLeave.bind(null, gig, 'Attending')
 							}) : _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.plusOutline,
 								title: 'Join',
-								onTouchTap: _utils.gigJoin.bind(_this3, gig)
+								onTouchTap: _utils.gigJoin.bind(null, gig, 'Attending')
 							})
 						});
 					})
@@ -57837,7 +57839,8 @@ var EventPage = function (_React$Component) {
 						gig: dialog.gig,
 						onJoin: _utils.gigJoin,
 						onLeave: _utils.gigLeave,
-						status: this.state.tickets[dialog.gig._id]
+						tickets: this.state.tickets,
+						status: 'Attending'
 					})
 				),
 				_react2.default.createElement(
@@ -57865,6 +57868,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -57878,6 +57883,10 @@ var _Card = __webpack_require__(114);
 var _FlatButton = __webpack_require__(87);
 
 var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+var _RaisedButton = __webpack_require__(249);
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 
 var _List = __webpack_require__(115);
 
@@ -57927,46 +57936,127 @@ var EventsList = function (_React$Component) {
 		}
 
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = EventsList.__proto__ || Object.getPrototypeOf(EventsList)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-			events: []
+			events: [],
+			tickets: []
 		}, _this.select = function (e) {
 			if (_main2.default.get('user')) {
 				_reactRouter.browserHistory.push('/gyps/events/' + e._id);
 			} else {
 				_reactRouter.browserHistory.push('/gyps/eventinfo/' + e._id);
 			}
+		}, _this.updatePass = function (event, passId, status) {
+			_main2.default.authenticate().then(function () {
+				if (passId) {
+					// update
+				} else {
+					(0, _utils.gigJoin)(event, 'Volunteering');
+				}
+			}).catch(function (err) {
+				return _reactRouter.browserHistory.push('/gyps/eventinfo/' + event._id);
+			});
+		}, _this.actions = function (event) {
+			var tickets = _this.state.tickets;
+
+			var result = [];
+			if (event.tickets && event.tickets.length) {
+				//at least one ticket
+				event.tickets.forEach(function (pass) {
+					var rules = event.ticket_rules.filter(function (r) {
+						return r.status === pass.status;
+					});
+					rules.forEach(function (_ref2) {
+						var requires = _ref2.requires,
+						    actions = _ref2.actions;
+
+						if (Array.isArray(requires)) {
+							// 
+							console.log("HURRAY, ARRAY", requires);
+						} else if ((typeof requires === 'undefined' ? 'undefined' : _typeof(requires)) === 'object') {
+							//object
+							var status = requires.status,
+							    minCount = requires.minCount,
+							    maxCount = requires.maxCount;
+
+							var matched = tickets.filter(function (t) {
+								return t.status === status;
+							});
+							console.log("Matched", matched);
+							if (matched.length >= minCount) {
+								result = result.concat(actions);
+							}
+							console.log("Objectified", requires);
+						} else {
+							// something weird
+							console.log("Unrequired", requires);
+						}
+					});
+					console.log("RULEZ!", rules);
+				});
+			} else {
+				var only = event.ticket_rules.find(function (r) {
+					return r.status === null;
+				});
+				result = result.concat(only.actions);
+				console.log("only", only);
+			}
+			// console.log("Resulting in ", result)
+			return result;
+		}, _this.buttons = function (actions) {
+			console.log("Buttoning", actions);
+			return actions && actions.map(function (_ref3) {
+				var name = _ref3.name,
+				    path = _ref3.path,
+				    newStatus = _ref3.newStatus;
+
+				return name && _react2.default.createElement(_RaisedButton2.default, { key: name, label: name });
+			});
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
 	_createClass(EventsList, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
+		key: 'componentWillMount',
+		value: function componentWillMount() {
 			var _this2 = this;
 
-			_main2.default.service('gigs').find({ query: { public: true } }).then(function (result) {
-				return _this2.setState({ events: result.data });
+			_main2.default.service('gigs').find({ query: { public: true } }).then(function (gigs) {
+				return _this2.setState({ events: gigs.data });
 			}).catch(function (err) {
 				return console.error;
 			});
 		}
 	}, {
-		key: 'render',
-
-		/*	render() {
-  		return <div>
-  			{this.state.events.map(
-  				e => <ListItem
-  						key={e._id}
-  						primaryText={e.name}
-  						secondaryText={<GigTimespan gig={e} showRelative={true} />}
-  						onTouchTap={this.select.bind(this, e)}
-  						rightIconButton={<FlatButton label='Get tickets' />}
-  					/>
-  			)}
-  		</div>
-  	}*/
-		value: function render() {
+		key: 'componentDidMount',
+		value: function componentDidMount() {
 			var _this3 = this;
 
+			var ids = this.state.events.map(function (e) {
+				return e._id;
+			});
+			_main2.default.service('tickets').find() // {query: {gig_id: {$in: ids}}}
+			.then(function (tickets) {
+				// TODO consider moving this to server side
+				if (tickets.total) {
+					var events = _this3.state.events.map(function (e) {
+						return Object.assign(e, { tickets: tickets.data.filter(function (t) {
+								return e._id === t.gig_id;
+							}) });
+					});
+					_this3.setState({ events: events, tickets: tickets.data });
+				}
+			}).catch(function (err) {
+				return console.error;
+			});
+		}
+
+		// TODO  consider moving this to server side
+
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this4 = this;
+
+			console.log("E-vents", this.state.events);
+			console.log("teekettes", this.state.tickets);
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -57983,7 +58073,7 @@ var EventsList = function (_React$Component) {
 									null,
 									event.name
 								),
-								_react2.default.createElement(_FlatButton2.default, { style: styles.titleRight, label: 'View details', onTouchTap: _this3.select.bind(_this3, event) })
+								_react2.default.createElement(_FlatButton2.default, { style: styles.titleRight, label: 'View details', onTouchTap: _this4.select.bind(_this4, event) })
 							),
 							subtitle: _react2.default.createElement(_gigTimespan2.default, { gig: event, showRelative: true }),
 							actAsExpander: true
@@ -57991,7 +58081,6 @@ var EventsList = function (_React$Component) {
 						_react2.default.createElement(
 							_Card.CardMedia,
 							{
-
 								expandable: true
 							},
 							_react2.default.createElement('img', { src: '/img/' + event._id + '_poster.jpg' })
@@ -58008,10 +58097,11 @@ var EventsList = function (_React$Component) {
 						_react2.default.createElement(
 							_Card.CardActions,
 							null,
+							_this4.buttons(_this4.actions(event)),
 							_react2.default.createElement(_FlatButton2.default, {
 								label: 'Get tickets',
 								secondary: true,
-								onTouchTap: _utils.gigJoin.bind(_this3, event, 'Registered')
+								onTouchTap: _this4.updatePass.bind(_this4, event, null, 'Volunteering')
 							})
 						)
 					);
@@ -58348,7 +58438,7 @@ var Lineup = function (_React$Component) {
 				if (result.total) {
 					// console.log("Teekets:", result)
 					var formated = result.data.map(function (t) {
-						console.log("t=", t);
+						// console.log("t=", t)
 						return (0, _moment2.default)(t.gig.start).format('YYYY-MM-DD');
 					});
 					// console.log("Formated", formated)
@@ -58356,7 +58446,8 @@ var Lineup = function (_React$Component) {
 						return a.indexOf(e) === i;
 					});
 					// console.log("Unique", unique)
-					var dates = unique.map(function (s) {
+					var sorted = unique.sort();
+					var dates = sorted.map(function (s) {
 						return (0, _moment2.default)(s, 'YYYY-MM-DD');
 					});
 					// a little hacky format -> parse but
@@ -115051,6 +115142,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -115153,35 +115246,31 @@ var GigDetailsPage = function (_React$Component) {
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GigDetailsPage.__proto__ || Object.getPrototypeOf(GigDetailsPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			fans: [],
 			gig: _this.props.gig || {},
-			venue: {},
 			ticket: {}
 		}, _this.ticketListener = function (t) {
 			// console.log("HEARD a ticket", t)
 			// console.log("Our tic", this.state.ticket)
 			// our ticket may be null
 			// no need to check owner_id, it's hooked on service
-			t.gig_id === _this.state.gig._id && _this.fetchData();
-		}, _this.fetchData = function () {
-			if (_this.props.params) {
-				// if not inside another page
-				var gigId = _this.props.params.gigId;
-				// console.log("Fetching ", gigId)
+			t.gig_id === _this.state.gig._id && _this.fetchData(true);
+		}, _this.fetchData = function (force) {
+			// console.log("FORCED", force)
+			var gigId = _this.props.params ? _this.props.params.gigId : _this.props.gig._id;
+			// console.log("Fetching ", gigId)
+			_main2.default.service('gigs').get(gigId).then(function (gig) {
+				if (force || _this.props.params) {
+					_main2.default.service('tickets').find({ query: { gig_id: gigId } }).then(function (result) {
+						return _this.setState(_extends({}, _this.state, { gig: gig, ticket: result.total ? result.data[0] : null }));
+					});
+				} else {
+					_this.setState({ gig: gig });
+				}
+			});
 
-				_main2.default.service('gigs').get(gigId).then(function (gig) {
-					_this.fetchTickets(gig);
-				});
-			} else {
-				// already have our gig in props
-				_this.fetchTickets(_this.props.gig);
-			}
 			// not authorized
 			// .then(() => app.service('fans')
 			// 	.find({query:{gig_id:gigId, status: 'Attending'}})
 			// 	.then(result => this.setState({fans: result.data})))
-		}, _this.fetchTickets = function (gig) {
-			_main2.default.service('tickets').find({ query: { gig_id: gig._id, status: 'Attending' } }).then(function (result) {
-				_this.setState({ venue: gig.venue, gig: gig, ticket: result.data[0] });
-			});
 		}, _this.viewActDetails = function (act) {
 			return _reactRouter.browserHistory.push('/gyps/acts/' + act._id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
@@ -115215,26 +115304,23 @@ var GigDetailsPage = function (_React$Component) {
 		value: function render() {
 			var _state = this.state,
 			    gig = _state.gig,
-			    venue = _state.venue,
 			    fans = _state.fans,
 			    ticket = _state.ticket;
 			var _props = this.props,
 			    onJoin = _props.onJoin,
 			    onLeave = _props.onLeave,
-			    status = _props.status;
+			    status = _props.status,
+			    tickets = _props.tickets;
 
 			var handleJoin = onJoin || _utils.gigJoin;
 			var handleLeave = onLeave || _utils.gigLeave;
 
-			var attending = (status || ticket && ticket.status) === 'Attending';
-			var volunteering = (status || ticket && ticket.status) === 'Volunteering';
-
-			var card = gig.type === 'Workshop' ? _react2.default.createElement(_workshopCard2.default, {
+			var attending = status ? tickets && tickets[gig._id] === status : ticket && ticket.status === 'Attending';
+			// console.log("GIIG: ", gig)
+			// console.log("Attending? ", attending)
+			var card = gig.type === 'Workshop' ? _react2.default.createElement(_workshopCard2.default, { gig: gig, tickets: tickets, onMasterSelect: this.viewActDetails }) : gig.type === 'Volunteer' ? _react2.default.createElement(_volunteerCard2.default, { gig: gig, tickets: tickets, onJoin: handleJoin, onLeave: handleLeave }) : _react2.default.createElement(_performanceCard2.default, {
 				gig: gig,
-				onMasterSelect: this.viewActDetails
-			}) : gig.type === 'Volunteer' ? _react2.default.createElement(_volunteerCard2.default, { gig: gig }) : _react2.default.createElement(_performanceCard2.default, {
-				gig: gig,
-				ticket: ticket,
+				tickets: tickets,
 				onPerformerSelect: this.viewActDetails
 			});
 			var gigTitle = _react2.default.createElement(
@@ -115247,11 +115333,11 @@ var GigDetailsPage = function (_React$Component) {
 						return a.name;
 					}).join(', ')
 				),
-				venue && _react2.default.createElement(
+				gig.venue && _react2.default.createElement(
 					'span',
 					null,
 					' at the ',
-					venue.name
+					gig.venue.name
 				)
 			);
 			return _react2.default.createElement(
@@ -115270,16 +115356,20 @@ var GigDetailsPage = function (_React$Component) {
 					null,
 					card
 				),
-				gig.type && gig.type !== 'Volunteer' && _react2.default.createElement(
+				_react2.default.createElement(
 					_Card.CardActions,
 					null,
-					attending && _react2.default.createElement(
+					gig.type && gig.type !== 'Volunteer' && _react2.default.createElement(
 						'span',
 						null,
-						'You are attending',
-						_react2.default.createElement(_FlatButton2.default, { style: styles.leave, label: 'Leave', onTouchTap: handleLeave.bind(this, gig) })
-					),
-					!attending && _react2.default.createElement(_RaisedButton2.default, { primary: true, label: 'Join', onTouchTap: handleJoin.bind(this, gig) })
+						attending && _react2.default.createElement(
+							'span',
+							null,
+							'You are attending',
+							_react2.default.createElement(_FlatButton2.default, { style: styles.leave, label: 'Leave', onTouchTap: handleLeave.bind(this, gig, 'Attending') })
+						),
+						!attending && _react2.default.createElement(_RaisedButton2.default, { primary: true, label: 'Join', onTouchTap: handleJoin.bind(this, gig, 'Attending') })
+					)
 				)
 			);
 		}
@@ -115329,8 +115419,8 @@ var PerformanceCard = function PerformanceCard(_ref) {
 			gig.name
 		),
 		_react2.default.createElement(
-			'h3',
-			null,
+			'p',
+			{ style: { paddingTop: '0.75em' } },
 			gig.description
 		),
 		_react2.default.createElement(_Divider2.default, { style: { marginTop: '1em' } }),
@@ -115361,10 +115451,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -115389,186 +115475,97 @@ var _moment = __webpack_require__(0);
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _main = __webpack_require__(40);
-
-var _main2 = _interopRequireDefault(_main);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var ShiftDialog = function ShiftDialog(_ref) {
+	var shift = _ref.shift,
+	    open = _ref.open,
+	    onCancel = _ref.onCancel,
+	    onSubmit = _ref.onSubmit;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var blankGig = function blankGig() {
-	return {
-		name: '',
-		description: '',
-		venue: '',
-		act: '',
-		type: '',
-		start: new Date(),
-		end: new Date()
-	};
-};
-
-var focus = function focus(input) {
-	return input && input.focus();
-};
-
-var ShiftDialog = function (_React$Component) {
-	_inherits(ShiftDialog, _React$Component);
-
-	function ShiftDialog() {
-		var _ref;
-
-		var _temp, _this, _ret;
-
-		_classCallCheck(this, ShiftDialog);
-
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ShiftDialog.__proto__ || Object.getPrototypeOf(ShiftDialog)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-			gig: _this.props.shift || blankGig()
-		}, _this.handleChange = function (e) {
-			// TODO: ensure end is after start
-			// TODO: keep the time if the date changes
-
-			var _e$target = e.target,
-			    name = _e$target.name,
-			    value = _e$target.value;
-			var gig = _this.state.gig;
-			// console.log("Changed: " + name + " -> " + JSON.stringify(value));
-
-			if (name.indexOf("Time") > -1) {
-				//handle time changes
-				var dateName = name.substr(0, name.indexOf("Time"));
-				var date = _this.state.gig[dateName];
-				var hours = (0, _moment2.default)(value, 'HH:mm');
-				var newDate = (0, _moment2.default)(date).hours(hours.hours()).minutes(hours.minutes()).toDate();
-				// console.log("Changing: " + dateName + " = " + (date) + "\n--> " + newDate);
-				Object.assign(gig, _defineProperty({}, dateName, newDate));
-			} else {
-				Object.assign(gig, _defineProperty({}, name, value));
-			}
-			// this.validate(gig);
-			_this.setState(_extends({}, _this.state, { gig: gig }));
-			// console.log("State: " + JSON.stringify(this.state));
-		}, _this.dialogActions = [_react2.default.createElement(_FlatButton2.default, {
-			label: 'Cancel',
-			primary: true,
-			onTouchTap: _this.props.onCancel
-		}), _react2.default.createElement(_RaisedButton2.default, {
+	var actions = [_react2.default.createElement(_FlatButton2.default, {
+		label: onSubmit ? "Cancel" : "Ok",
+		primary: true,
+		onTouchTap: onCancel
+	})];
+	if (onSubmit) {
+		actions.push(_react2.default.createElement(_RaisedButton2.default, {
 			label: 'Save',
 			primary: true,
-			onTouchTap: _this.props.onSubmit
-		})], _temp), _possibleConstructorReturn(_this, _ret);
+			onTouchTap: onSubmit
+		}));
 	}
-
-	_createClass(ShiftDialog, [{
-		key: 'componentWillReceiveProps',
-		value: function componentWillReceiveProps(nextProps) {
-			this.setState({ gig: nextProps.shift });
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			// console.log("Props", this.props)
-			var gig = this.state.gig;
-			var _props = this.props,
-			    errors = _props.errors,
-			    open = _props.open;
-
-			return _react2.default.createElement(
-				_Dialog2.default,
-				{
-					title: (gig._id ? '' : 'Add ') + gig.type + ' shift',
-					open: open,
-					actions: this.dialogActions,
-					onRequestClose: this.props.onCancel
-				},
-				_react2.default.createElement(
-					'form',
-					null,
-					_react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(_TextField2.default, {
-							name: 'name',
-							floatingLabelText: 'Name',
-							value: gig.name || '',
-							maxLength: 30
-						}),
-						_react2.default.createElement(_TextField2.default, {
-							name: 'venue',
-							floatingLabelText: 'Location',
-							value: gig.venue && gig.venue.name || ''
-						})
-					),
-					_react2.default.createElement(_TextField2.default, {
-						name: 'description',
-						floatingLabelText: 'Short description',
-						value: gig.description || '',
-						fullWidth: true,
-						maxLength: 60,
-						onChange: this.handleChange
-					}),
-					_react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(_TextField2.default, {
-							type: 'date',
-							name: 'start',
-							floatingLabelFixed: true,
-							floatingLabelText: 'Start date',
-							value: gig.start && (0, _moment2.default)(gig.start).format('YYYY-MM-DD') || '',
-							errorText: errors.start && errors.start.message || '',
-							onChange: this.handleChange,
-							ref: focus
-						}),
-						_react2.default.createElement(_TextField2.default, {
-							type: 'time',
-							name: 'startTime',
-							floatingLabelFixed: true,
-							floatingLabelText: 'Start time',
-							value: gig.start && (0, _moment2.default)(gig.start).format('HH:mm') || '',
-							onChange: this.handleChange
-						})
-					),
-					_react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(_TextField2.default, {
-							type: 'date',
-							name: 'end',
-							floatingLabelFixed: true,
-							floatingLabelText: 'End date',
-							value: gig.end && (0, _moment2.default)(gig.end).format('YYYY-MM-DD') || '',
-							errorText: errors.end && errors.end.message || '',
-							onChange: this.handleChange
-						}),
-						_react2.default.createElement(_TextField2.default, {
-							type: 'time',
-							name: 'endTime',
-							floatingLabelFixed: true,
-							floatingLabelText: 'End time',
-							value: gig.end && (0, _moment2.default)(gig.end).format('HH:mm') || '',
-							onChange: this.handleChange
-						})
-					)
-				)
-			);
-		}
-	}]);
-
-	return ShiftDialog;
-}(_react2.default.Component);
-
+	return _react2.default.createElement(
+		_Dialog2.default,
+		{
+			open: open,
+			actions: actions,
+			onRequestClose: onCancel
+		},
+		_react2.default.createElement(
+			'form',
+			null,
+			_react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(_TextField2.default, {
+					name: 'name',
+					floatingLabelText: 'Name',
+					value: shift.name || '',
+					maxLength: 30
+				}),
+				_react2.default.createElement(_TextField2.default, {
+					name: 'venue',
+					floatingLabelText: 'Location',
+					value: shift.venue && shift.venue.name || ''
+				})
+			),
+			_react2.default.createElement(_TextField2.default, {
+				name: 'description',
+				floatingLabelText: 'Short description',
+				value: shift.description || '',
+				fullWidth: true,
+				maxLength: 60
+			}),
+			_react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(_TextField2.default, {
+					type: 'date',
+					name: 'start',
+					floatingLabelFixed: true,
+					floatingLabelText: 'Start date',
+					value: shift.start && (0, _moment2.default)(shift.start).format('YYYY-MM-DD') || ''
+				}),
+				_react2.default.createElement(_TextField2.default, {
+					type: 'time',
+					name: 'startTime',
+					floatingLabelFixed: true,
+					floatingLabelText: 'Start time',
+					value: shift.start && (0, _moment2.default)(shift.start).format('HH:mm') || ''
+				})
+			),
+			_react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(_TextField2.default, {
+					type: 'date',
+					name: 'end',
+					floatingLabelFixed: true,
+					floatingLabelText: 'End date',
+					value: shift.end && (0, _moment2.default)(shift.end).format('YYYY-MM-DD') || ''
+				}),
+				_react2.default.createElement(_TextField2.default, {
+					type: 'time',
+					name: 'endTime',
+					floatingLabelFixed: true,
+					floatingLabelText: 'End time',
+					value: shift.end && (0, _moment2.default)(shift.end).format('HH:mm') || ''
+				})
+			)
+		)
+	);
+};
 exports.default = ShiftDialog;
 
 /***/ }),
@@ -115600,9 +115597,9 @@ var _FlatButton = __webpack_require__(87);
 
 var _FlatButton2 = _interopRequireDefault(_FlatButton);
 
-var _FloatingActionButton = __webpack_require__(634);
+var _RaisedButton = __webpack_require__(249);
 
-var _FloatingActionButton2 = _interopRequireDefault(_FloatingActionButton);
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 
 var _List = __webpack_require__(115);
 
@@ -115611,10 +115608,6 @@ var _main = __webpack_require__(40);
 var _main2 = _interopRequireDefault(_main);
 
 var _icons = __webpack_require__(853);
-
-var _actsList = __webpack_require__(858);
-
-var _actsList2 = _interopRequireDefault(_actsList);
 
 var _gigTimespan = __webpack_require__(131);
 
@@ -115662,18 +115655,19 @@ var VolunteerCard = function (_React$Component) {
 			shifts: [],
 			dialog: {
 				open: false,
-				shift: {},
-				errors: {}
+				shift: {}
 			}
 		}, _this.fetchData = function () {
-			_main2.default.service('gigs').find({
-				query: {
-					parent: _this.props.gig._id,
-					$sort: { start: 1 }
-				}
-			}).then(function (result) {
-				return _this.setState({ shifts: result.data });
-			});
+			if (_this.props.tickets) {
+				_main2.default.service('gigs').find({
+					query: {
+						parent: _this.props.gig._id,
+						$sort: { start: 1 }
+					}
+				}).then(function (result) {
+					return _this.setState({ shifts: result.data });
+				});
+			}
 		}, _this.createdListener = function (shift) {
 			console.log("Created", shift);
 			console.log("THIS IS", _this.props.gig);
@@ -115691,37 +115685,13 @@ var VolunteerCard = function (_React$Component) {
 				_this.fetchData();
 			}
 		}, _this.viewShift = function (shift) {
-			return _reactRouter.browserHistory.push('/shifts/' + shift._id);
-		}, _this.editShift = function (shift) {
 			console.log("Editshifting", shift);
 			var dialog = _this.state.dialog;
-			var gig = _this.props.gig;
 
-			var dialogShift = shift || Object.assign({}, gig, { parent: gig._id });
-			if (!shift) {
-				// only if clone of gig, delete its id
-				delete dialogShift._id;
-			}
-			Object.assign(dialog, { open: true, errors: {}, shift: dialogShift });
+			Object.assign(dialog, { open: true, shift: shift });
 			_this.setState(_extends({}, _this.state, { dialog: dialog }));
-		}, _this.deleteShift = function (shift) {
-			_main2.default.service('gigs').remove(shift._id);
 		}, _this.dialogCancel = function () {
-			_this.setState(_extends({}, _this.state, { dialog: { open: false, shift: {}, errors: {} } }));
-		}, _this.dialogSubmit = function (e) {
-			var dialog = _this.state.dialog;
-			var shift = dialog.shift;
-
-			Object.assign(dialog, { open: false, errors: {} });
-			_this.setState(_extends({}, _this.state, { dialog: dialog }));
-			if (shift._id) {
-				//patch
-				_main2.default.service('gigs').patch(shift._id, shift);
-				// .then(shift =>)
-			} else {
-				//create
-				_main2.default.service('gigs').create(shift);
-			}
+			_this.setState(_extends({}, _this.state, { dialog: { open: false, shift: {} } }));
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -115751,16 +115721,30 @@ var VolunteerCard = function (_React$Component) {
 
 		// Listeners
 
+
+		// viewShift = shift => browserHistory.push('/shifts/'+shift._id)
+
 	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
-			var gig = this.props.gig;
+			var _props = this.props,
+			    gig = _props.gig,
+			    tickets = _props.tickets,
+			    onJoin = _props.onJoin,
+			    onLeave = _props.onLeave;
 			var _state = this.state,
 			    shifts = _state.shifts,
 			    dialog = _state.dialog;
 
+			console.log("TIckets?", this.state);
+			var isAttending = function isAttending(gig) {
+				return tickets && tickets[gig._id] === "Volunteering";
+			};
+			var actionButton = function actionButton(what) {
+				return tickets ? isAttending(what) ? _react2.default.createElement(_FlatButton2.default, { label: 'Leave', onTouchTap: onLeave.bind(null, what, 'Volunteering') }) : _react2.default.createElement(_RaisedButton2.default, { label: 'Join', primary: true, onTouchTap: onJoin.bind(null, what, 'Volunteering') }) : '';
+			};
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -115784,15 +115768,12 @@ var VolunteerCard = function (_React$Component) {
 						key: shift._id,
 						primaryText: _react2.default.createElement(_gigTimespan2.default, { gig: shift }),
 						onTouchTap: _this2.viewShift.bind(_this2, shift),
-						rightIconButton: _react2.default.createElement(
-							_hacks.Kspan,
-							null,
-							_react2.default.createElement(_FlatButton2.default, { label: 'Join' })
-						)
+						rightIconButton: actionButton(shift)
 
 					});
 				}),
-				_react2.default.createElement(_shiftDialog2.default, _extends({}, dialog, { onCancel: this.dialogCancel, onSubmit: this.dialogSubmit }))
+				tickets && !shifts.length && actionButton(gig),
+				_react2.default.createElement(_shiftDialog2.default, _extends({}, dialog, { onCancel: this.dialogCancel }))
 			);
 		}
 	}]);
@@ -116121,16 +116102,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var gigJoin = exports.gigJoin = function gigJoin(gig) {
 	var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Attending';
 
-	console.log("Joining gig", gig);
-	_main2.default.service('tickets').create({ gig_id: gig._id, status: status });
+	var ticket = { gig_id: gig._id, status: status };
+	_main2.default.service('tickets').create(ticket).catch(function (err) {
+		console.error("What could be wrong", err);
+		console.error("This", JSON.stringify(err));
+	});
 };
 
 var gigLeave = exports.gigLeave = function gigLeave(gig) {
-	console.log("Leaving gig", gig);
+	var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Attending';
+
+	// console.log("Util: Leaving gig", gig)
+	// TODO ensure status is string
 	_main2.default.service('tickets').remove(null, {
 		query: {
 			gig_id: gig._id,
-			status: "Attending"
+			status: status
 		}
 	});
 };
@@ -116198,6 +116185,8 @@ var _utils = __webpack_require__(866);
 
 var _icons = __webpack_require__(853);
 
+var _hacks = __webpack_require__(864);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -116208,21 +116197,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-//hack because Material-UI forces a onKeyboardFocus onto the span and React complains
-var Kspan = function Kspan(_ref) {
-	var onKeyboardFocus = _ref.onKeyboardFocus,
-	    others = _objectWithoutProperties(_ref, ['onKeyboardFocus']);
-
-	return _react2.default.createElement('span', others);
-};
-
 var EventPage = function (_React$Component) {
 	_inherits(EventPage, _React$Component);
 
 	function EventPage() {
-		var _ref2;
+		var _ref;
 
 		var _temp, _this, _ret;
 
@@ -116232,12 +116211,12 @@ var EventPage = function (_React$Component) {
 			args[_key] = arguments[_key];
 		}
 
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			event: {},
 			pass: {},
 			gigs: [],
 			tickets: {},
-			tasks: [],
+			ticketsRaw: [],
 			dialog: {
 				open: false,
 				gig: {}
@@ -116281,8 +116260,10 @@ var EventPage = function (_React$Component) {
 					(0, _utils.gigJoin)(gig, 'Volunteering');
 				}
 			});
-		}, _this.handleGigLeave = function (gig) {
-			(0, _utils.gigLeave)(gig);
+		}, _this.shiftJoin = function (gig) {
+			(0, _utils.gigJoin)(gig, 'Volunteering');
+		}, _this.shiftLeave = function (gig) {
+			(0, _utils.gigLeave)(gig, 'Volunteering');
 		}, _this.viewGigDetails = function (gig) {
 			// browserHistory.push('/gyps/gig/'+gig._id)
 			var dialog = _this.state.dialog;
@@ -116294,13 +116275,15 @@ var EventPage = function (_React$Component) {
 			var tickets = _this.state.tickets;
 
 			Object.assign(tickets, _defineProperty({}, t.gig_id, t.status));
-			_this.setState(_extends({}, _this.state, { tickets: tickets }));
+			_this.setState(_extends({}, _this.state, { tickets: tickets, ticketsRaw: _this.state.ticketsRaw.concat(t) }));
 		}, _this.ticketRemoved = function (t) {
 			console.log("Ticket removed", t);
 			var tickets = _this.state.tickets;
 
 			Object.assign(tickets, _defineProperty({}, t.gig_id, null));
-			_this.setState(_extends({}, _this.state, { ticket: tickets }));
+			_this.setState(_extends({}, _this.state, { tickets: tickets, ticketsRaw: _this.state.ticketsRaw.filter(function (r) {
+					return r._id !== t._id;
+				}) }));
 		}, _this.gigRemoved = function (gig) {
 			// console.log("Removed: ", gig);
 			_this.setState(_extends({}, _this.state, {
@@ -116337,12 +116320,12 @@ var EventPage = function (_React$Component) {
 		value: function componentDidMount() {
 			var _this2 = this;
 
-			_main2.default.service('tickets').find().then(function (result) {
+			_main2.default.service('tickets').find({ query: { status: "Volunteering" } }).then(function (result) {
 				// console.log("Got tickets", result)
 				var tickets = result.data.reduce(function (o, t) {
 					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
 				}, {});
-				_this2.setState(_extends({}, _this2.state, { tickets: tickets }));
+				_this2.setState(_extends({}, _this2.state, { ticketsRaw: result.data, tickets: tickets }));
 			});
 		}
 	}, {
@@ -116363,7 +116346,10 @@ var EventPage = function (_React$Component) {
 
 			var _state = this.state,
 			    gig = _state.gig,
-			    dialog = _state.dialog;
+			    dialog = _state.dialog,
+			    event = _state.event,
+			    tickets = _state.tickets,
+			    ticketsRaw = _state.ticketsRaw;
 			// console.log("GIGGGINGING: ", this.state);
 
 			var title = _react2.default.createElement(
@@ -116379,13 +116365,22 @@ var EventPage = function (_React$Component) {
 				{ initiallyExpanded: true },
 				_react2.default.createElement(_Card.CardTitle, {
 					title: title,
-					subtitle: subtitle,
-					actAsExpander: true,
-					showExpandableButton: true
+					subtitle: subtitle
 				}),
 				_react2.default.createElement(
 					_Card.CardText,
-					{ expandable: true },
+					null,
+					ticketsRaw.length ? _react2.default.createElement(
+						'p',
+						null,
+						'You have volunteered for ',
+						ticketsRaw.length,
+						' opportunities. Feel free to select some more'
+					) : _react2.default.createElement(
+						'p',
+						null,
+						'\u041A\u043E\u0439\u0442\u043E \u043D\u0435 \u0440\u0430\u0431\u043E\u0442\u0438, \u043D\u0435 \u044F\u0434\u0435. \u0417\u0430 \u0434\u0430 \u043D\u0435 \u0438\u0437\u0445\u0432\u044A\u0440\u043B\u044F\u043C\u0435 \u0445\u0440\u0430\u043D\u0430, \u0437\u0430\u043F\u0438\u0448\u0435\u0442\u0435 \u0441\u0435 \u0434\u0430 \u0440\u0430\u0431\u043E\u0442\u0438\u0442\u0435.'
+					),
 					this.state.gigs.map(function (gig) {
 						return _react2.default.createElement(_List.ListItem, {
 							key: gig._id,
@@ -116395,7 +116390,7 @@ var EventPage = function (_React$Component) {
 							rightIconButton: _this3.isVolunteering(gig) ? _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.minusBox,
 								title: 'Leave',
-								onTouchTap: _this3.handleGigLeave.bind(_this3, gig)
+								onTouchTap: _utils.gigLeave.bind(_this3, gig, 'Volunteering')
 							}) : _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.plusOutline,
 								title: 'Join',
@@ -116409,9 +116404,10 @@ var EventPage = function (_React$Component) {
 					{ title: dialog.title, open: dialog.open, onRequestClose: this.dialogClose },
 					_react2.default.createElement(_gigDetailsPage2.default, {
 						gig: dialog.gig,
-						onJoin: _utils.gigJoin,
-						onLeave: _utils.gigLeave,
-						status: this.state.tickets[dialog.gig._id]
+						onJoin: this.shiftJoin,
+						onLeave: this.shiftLeave,
+						tickets: tickets,
+						status: tickets[dialog.gig._id]
 					})
 				),
 				_react2.default.createElement(_Card.CardActions, null)
@@ -116512,8 +116508,9 @@ var Tasks = function (_React$Component) {
 					var unique = formated.filter(function (e, i, a) {
 						return a.indexOf(e) === i;
 					});
+					var sorted = unique.sort();
 					// console.log("Unique", unique)
-					var dates = unique.map(function (s) {
+					var dates = sorted.map(function (s) {
 						return (0, _moment2.default)(s, 'YYYY-MM-DD');
 					});
 					// a little hacky format -> parse but
@@ -116543,7 +116540,7 @@ var Tasks = function (_React$Component) {
 			    dates = _state.dates,
 			    tickets = _state.tickets;
 
-			console.log("LINEUP", this.state);
+			console.log("TASKS", this.state);
 			console.log(dates);
 			return _react2.default.createElement(
 				'div',
@@ -116551,10 +116548,10 @@ var Tasks = function (_React$Component) {
 				tickets.length == 0 ? _react2.default.createElement(
 					_Subheader2.default,
 					null,
-					'You haven\'t joined any events. ',
+					'You haven\'t volunteered for any work. ',
 					_react2.default.createElement(
 						_reactRouter.Link,
-						{ to: '/gyps/events' },
+						{ to: '/gyps/volunteer' },
 						'Choose some'
 					)
 				) : '',

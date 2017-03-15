@@ -1,17 +1,22 @@
 import app from '../main.jsx'
 
 export const gigJoin = (gig, status='Attending') => {
-		console.log("Joining gig", gig)
-		app.service('tickets').create({gig_id: gig._id, status})
+		const ticket = {gig_id: gig._id, status}
+		app.service('tickets').create(ticket)
+		.catch(err=>{
+			console.error("What could be wrong", err)
+			console.error("This", JSON.stringify(err))
+		})
 	}
 
-export const gigLeave = gig => {
-		console.log("Leaving gig", gig)
+export const gigLeave = (gig, status='Attending') => {
+		// console.log("Util: Leaving gig", gig)
+		// TODO ensure status is string
 		app.service('tickets')
 		.remove(null, {
 			query: {
 				gig_id: gig._id, 
-				status: "Attending"
+				status
 			}
 		})
 	}

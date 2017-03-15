@@ -26,7 +26,7 @@ export default class Tasks extends React.Component {
 		app.authenticate().then(this.fetchData)
 	}
 	fetchData = () => {
-		app.service('tickets').find({query: {status:'Volunteering'}})
+		app.service('tickets').find({query: {status: 'Volunteering'}})
 		.then(result => {
 			
 			if(result.total) {
@@ -37,8 +37,9 @@ export default class Tasks extends React.Component {
 				})
 				// console.log("Formated", formated)
 				const unique = formated.filter((e, i, a) => a.indexOf(e)===i)
+				const sorted = unique.sort()
 				// console.log("Unique", unique)
-				const dates = unique.map(s => moment(s, 'YYYY-MM-DD'))
+				const dates = sorted.map(s => moment(s, 'YYYY-MM-DD'))
 								// a little hacky format -> parse but
 								// works better than 0-ing time
 				// console.log("Dates", dates)
@@ -54,27 +55,27 @@ export default class Tasks extends React.Component {
 
 	render() {
 		const { dates, tickets } = this.state
-		console.log("LINEUP", this.state) 
+		console.log("TASKS", this.state) 
 		console.log(dates)
 		return <div>
 			{ tickets.length==0 ?
-				<Subheader>You haven't joined any events. <Link to='/gyps/events'>Choose some</Link></Subheader> 
+				<Subheader>You haven't volunteered for any work. <Link to='/gyps/volunteer'>Choose some</Link></Subheader> 
 				: ''
 			}
 			{dates.map(d =>
-			<List key={d}>
-				<Subheader style={styles.date}>{d.format('MMM D, dddd')}</Subheader>
-				<Divider/>
-				{tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
-					.map(
-					ticket => <ListItem
-							key={ticket._id}
-							primaryText={ticket.gig.name}
-							secondaryText={<GigTimespan gig={ticket.gig} hideDates={true} />}
-							onTouchTap={this.select.bind(this, ticket)}
-						/>
-				)}
-			</List>
+				<List key={d}>
+					<Subheader style={styles.date}>{d.format('MMM D, dddd')}</Subheader>
+					<Divider/>
+					{tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
+						.map(
+						ticket => <ListItem
+								key={ticket._id}
+								primaryText={ticket.gig.name}
+								secondaryText={<GigTimespan gig={ticket.gig} hideDates={true} />}
+								onTouchTap={this.select.bind(this, ticket)}
+							/>
+					)}
+				</List>
 			)}
 		</div>
 	}
