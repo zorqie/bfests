@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b619b54af9c31183e313"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a38f9b7af1e86542a33d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -35284,7 +35284,7 @@ var EventActions = exports.EventActions = function EventActions(_ref) {
 			});
 			// console.log("RULEZ!", rules)
 		});
-	} else if (event.tickets) {
+	} else if (event.tickets && event.ticket_rules) {
 		var rule = event.ticket_rules.find(function (r) {
 			return r.status === null;
 		});

@@ -46,7 +46,7 @@ export const EventActions = ({event, tickets, route}) => {
 			})
 			// console.log("RULEZ!", rules)
 		})
-	} else if(event.tickets) {
+	} else if(event.tickets && event.ticket_rules) {
 		const rule = event.ticket_rules.find(r => r.status===null)
 		result = result.concat(rule.actions)
 		// console.log("rule", rule)
