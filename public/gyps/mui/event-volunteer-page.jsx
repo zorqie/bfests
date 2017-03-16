@@ -12,6 +12,7 @@ import {Tabs, Tab} from 'material-ui/Tabs'
 
 import GigDetailsPage from './gig-details-page.jsx'
 import GigTimespan from './gig-timespan.jsx'
+import EventActions from './event-actions.jsx'
 import app from '../main.jsx'
 import { gigJoin, gigLeave } from './utils.jsx'
 import { plusOutline, minusBox } from './icons.jsx'
@@ -39,12 +40,7 @@ export default class EventPage extends React.Component {
 		app.service('tickets').on('removed', this.ticketRemoved);
 	}
 	componentDidMount() {
-		app.service('tickets').find({query:{status:"Volunteering"}})
-		.then(result => {
-			// console.log("Got tickets", result)
-			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-			this.setState({...this.state, ticketsRaw: result.data, tickets})
-		})
+		// this.fetchTickets()
 	}
 	componentWillUnmount() {
 		if(app) {
@@ -79,8 +75,25 @@ export default class EventPage extends React.Component {
 			.then(page => {
 				// console.log("Got result: ", page);			
 				this.setState({...this.state, gigs: page.data, event})
-			})})
+			})
+		})
+		.then(this.fetchTickets)
 		.catch(err => console.error("ERAR: ", err))
+	}
+	fetchTickets = () => {
+		app.service('tickets').find(/*{query:{status:"Volunteering"}}*/)
+		.then(result => {
+			// console.log("Got tickets", result)
+			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
+			const {event} = this.state
+			console.log("Event", event)
+			const passes = result.data.filter(t => t.gig_id===event._id)
+			console.log("PASSED", passes)
+			if(event && passes.length) {
+				Object.assign(event, {tickets: passes})
+			}
+			this.setState({...this.state, ticketsRaw: result.data.filter(t => t.status==='Volunteering'), event, tickets})
+		})
 	}
 
 	handleDialogCancel = e => {
@@ -159,11 +172,11 @@ export default class EventPage extends React.Component {
 
 
 	render() {
-		const {gig, dialog, event, tickets, ticketsRaw} = this.state;
-		// console.log("GIGGGINGING: ", this.state);
-		const title = <b>{event.name}</b>;
+		const {gig, dialog, event, tickets, ticketsRaw} = this.state
+		// console.log("Volunteerizing: ", this.props)
+		const title = <b>{event.name}</b>
 
-		const subtitle = <GigTimespan gig={event} showRelative={true}/>;
+		const subtitle = <GigTimespan gig={event} showRelative={true} />
 
 		return (
 			<Card initiallyExpanded={true}>
@@ -172,6 +185,7 @@ export default class EventPage extends React.Component {
 					title={title} 
 					subtitle={subtitle} 
 			    />
+			    <EventActions event={event} tickets={ticketsRaw} route={this.props.route.path}/>
 				<CardText>
 					{ticketsRaw.length ? 
 						<p>You have volunteered for {ticketsRaw.length} opportunities. Feel free to select some more</p> :

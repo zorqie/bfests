@@ -1,5 +1,5 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
+import { Link, browserHistory } from 'react-router'
 
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
@@ -7,6 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import { List, ListItem } from 'material-ui/List'
 
 import GigTimespan from './gig-timespan.jsx'
+import EventActions from './event-actions.jsx'
 import app from '../main.jsx'
 import { gigJoin } from './utils.jsx'
 
@@ -34,8 +35,19 @@ export default class EventsList extends React.Component {
 		.catch(err => console.error)
 	}
 	componentDidMount() {
-		const ids = this.state.events.map(e => e._id)
-		app.service('tickets').find() // {query: {gig_id: {$in: ids}}}
+		this.fetchTickets()
+		app.service('tickets').on('created', this.ticketListener)
+		app.service('tickets').on('patched', this.ticketListener)
+		app.service('tickets').on('removed', this.ticketListener)
+	} 
+	componentWillUnmount() {
+		app.service('tickets').removeListener('created', this.ticketListener)
+		app.service('tickets').removeListener('patched', this.ticketListener)
+		app.service('tickets').removeListener('removed', this.ticketListener)
+	}
+
+	fetchTickets() {
+		app.service('tickets').find() 
 		.then(tickets => {
 			// TODO consider moving this to server side
 			if(tickets.total) {
@@ -44,7 +56,11 @@ export default class EventsList extends React.Component {
 			}
 		})
 		.catch(err => console.error)
-	} 
+	}
+
+	ticketListener = ticket => {
+		this.fetchTickets()
+	}
 
 	select = e => {
 		if(app.get('user')) {
@@ -54,13 +70,14 @@ export default class EventsList extends React.Component {
 		}
 	}
 
-	updatePass = (event, passId, status) => {
+	updatePass = (event, status, update) => {
 		app.authenticate()
 		.then(() => {
-			if(passId) {
-				// update
+			if(update) {
+				
 			} else {
-				gigJoin(event, 'Volunteering')
+				// insert
+				gigJoin(event, status)
 			}
 		})
 		.catch(err => browserHistory.push('/gyps/eventinfo/'+event._id))
@@ -82,15 +99,12 @@ export default class EventsList extends React.Component {
 						//object
 						const {status, minCount, maxCount} = requires
 						const matched = tickets.filter(t => t.status===status)
-						console.log("Matched", matched)
 						if(matched.length >= minCount) {
 							result = result.concat(actions)
 						}
-						console.log("Objectified", requires)
 					} else {
-						// something weird
-						console.log("Unrequired", requires)
-
+						// no requires or something weird
+						result = result.concat(actions)
 					}
 				})
 				console.log("RULEZ!", rules)
@@ -104,18 +118,21 @@ export default class EventsList extends React.Component {
 		return result
 	}
 
-	buttons = actions => {
-		console.log("Buttoning", actions)
+	buttons = (event, actions) => {
 		return actions && actions.map(({name, path, newStatus}) => {
-			return name && <RaisedButton key={name} label={name} />
+			return name && (path ? 
+				<Link key={event._id + name} to={'/gyps'+path.replace(':eventId', event._id)}><RaisedButton  label={name} /></Link> : 
+				<RaisedButton key={event._id + name} primary={true} label={name} onTouchTap={this.updatePass.bind(this, event, newStatus)} />
+			)
 		})
 	}
 
 	render() {
-		console.log("E-vents", this.state.events)
-		console.log("teekettes", this.state.tickets)
+		const {events, tickets} = this.state
+		console.log("E-vents", events)
+		console.log("teekettes", tickets)
 		return <div>
-			{this.state.events.map(event => 
+			{events.map(event => 
 				<Card key={event._id} style={styles.card} initiallyExpanded={true} >
 				    <CardTitle 
 				    	title={<span><b>{event.name}</b><FlatButton style={styles.titleRight} label='View details' onTouchTap={this.select.bind(this, event)} /></span>} 
@@ -134,12 +151,14 @@ export default class EventsList extends React.Component {
 					</CardText>
 					
 					<CardActions>
-						{this.buttons(this.actions(event))}
-						<FlatButton 
-							label="Get tickets" 
-							secondary={true}
-							onTouchTap={this.updatePass.bind(this, event, null, 'Volunteering')}
-						/>
+						<EventActions event={event} tickets={tickets} />
+						{/*this.buttons(event, this.actions(event))*/}
+						
+						{/*<FlatButton 
+													label="Get tickets" 
+													secondary={true}
+													onTouchTap={this.updatePass.bind(this, event, null, status)}
+												/>*/}
 					</CardActions>
 				</Card>
 			)}

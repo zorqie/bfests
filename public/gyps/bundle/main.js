@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "8b5d6a2d90b17de6dda7"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "1a95c8b8bf8d2802c953"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -57894,6 +57894,10 @@ var _gigTimespan = __webpack_require__(131);
 
 var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
 
+var _eventActions = __webpack_require__(870);
+
+var _eventActions2 = _interopRequireDefault(_eventActions);
+
 var _main = __webpack_require__(40);
 
 var _main2 = _interopRequireDefault(_main);
@@ -57938,18 +57942,19 @@ var EventsList = function (_React$Component) {
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = EventsList.__proto__ || Object.getPrototypeOf(EventsList)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			events: [],
 			tickets: []
+		}, _this.ticketListener = function (ticket) {
+			_this.fetchTickets();
 		}, _this.select = function (e) {
 			if (_main2.default.get('user')) {
 				_reactRouter.browserHistory.push('/gyps/events/' + e._id);
 			} else {
 				_reactRouter.browserHistory.push('/gyps/eventinfo/' + e._id);
 			}
-		}, _this.updatePass = function (event, passId, status) {
+		}, _this.updatePass = function (event, status, update) {
 			_main2.default.authenticate().then(function () {
-				if (passId) {
-					// update
-				} else {
-					(0, _utils.gigJoin)(event, 'Volunteering');
+				if (update) {} else {
+					// insert
+					(0, _utils.gigJoin)(event, status);
 				}
 			}).catch(function (err) {
 				return _reactRouter.browserHistory.push('/gyps/eventinfo/' + event._id);
@@ -57980,14 +57985,12 @@ var EventsList = function (_React$Component) {
 							var matched = tickets.filter(function (t) {
 								return t.status === status;
 							});
-							console.log("Matched", matched);
 							if (matched.length >= minCount) {
 								result = result.concat(actions);
 							}
-							console.log("Objectified", requires);
 						} else {
-							// something weird
-							console.log("Unrequired", requires);
+							// no requires or something weird
+							result = result.concat(actions);
 						}
 					});
 					console.log("RULEZ!", rules);
@@ -58001,14 +58004,17 @@ var EventsList = function (_React$Component) {
 			}
 			// console.log("Resulting in ", result)
 			return result;
-		}, _this.buttons = function (actions) {
-			console.log("Buttoning", actions);
+		}, _this.buttons = function (event, actions) {
 			return actions && actions.map(function (_ref3) {
 				var name = _ref3.name,
 				    path = _ref3.path,
 				    newStatus = _ref3.newStatus;
 
-				return name && _react2.default.createElement(_RaisedButton2.default, { key: name, label: name });
+				return name && (path ? _react2.default.createElement(
+					_reactRouter.Link,
+					{ key: event._id + name, to: '/gyps' + path.replace(':eventId', event._id) },
+					_react2.default.createElement(_RaisedButton2.default, { label: name })
+				) : _react2.default.createElement(_RaisedButton2.default, { key: event._id + name, primary: true, label: name, onTouchTap: _this.updatePass.bind(_this, event, newStatus) }));
 			});
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
@@ -58027,13 +58033,24 @@ var EventsList = function (_React$Component) {
 	}, {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+			this.fetchTickets();
+			_main2.default.service('tickets').on('created', this.ticketListener);
+			_main2.default.service('tickets').on('patched', this.ticketListener);
+			_main2.default.service('tickets').on('removed', this.ticketListener);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			_main2.default.service('tickets').removeListener('created', this.ticketListener);
+			_main2.default.service('tickets').removeListener('patched', this.ticketListener);
+			_main2.default.service('tickets').removeListener('removed', this.ticketListener);
+		}
+	}, {
+		key: 'fetchTickets',
+		value: function fetchTickets() {
 			var _this3 = this;
 
-			var ids = this.state.events.map(function (e) {
-				return e._id;
-			});
-			_main2.default.service('tickets').find() // {query: {gig_id: {$in: ids}}}
-			.then(function (tickets) {
+			_main2.default.service('tickets').find().then(function (tickets) {
 				// TODO consider moving this to server side
 				if (tickets.total) {
 					var events = _this3.state.events.map(function (e) {
@@ -58055,12 +58072,16 @@ var EventsList = function (_React$Component) {
 		value: function render() {
 			var _this4 = this;
 
-			console.log("E-vents", this.state.events);
-			console.log("teekettes", this.state.tickets);
+			var _state = this.state,
+			    events = _state.events,
+			    tickets = _state.tickets;
+
+			console.log("E-vents", events);
+			console.log("teekettes", tickets);
 			return _react2.default.createElement(
 				'div',
 				null,
-				this.state.events.map(function (event) {
+				events.map(function (event) {
 					return _react2.default.createElement(
 						_Card.Card,
 						{ key: event._id, style: styles.card, initiallyExpanded: true },
@@ -58097,12 +58118,7 @@ var EventsList = function (_React$Component) {
 						_react2.default.createElement(
 							_Card.CardActions,
 							null,
-							_this4.buttons(_this4.actions(event)),
-							_react2.default.createElement(_FlatButton2.default, {
-								label: 'Get tickets',
-								secondary: true,
-								onTouchTap: _this4.updatePass.bind(_this4, event, null, 'Volunteering')
-							})
+							_react2.default.createElement(_eventActions2.default, { event: event, tickets: tickets })
 						)
 					);
 				})
@@ -116177,6 +116193,10 @@ var _gigTimespan = __webpack_require__(131);
 
 var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
 
+var _eventActions = __webpack_require__(870);
+
+var _eventActions2 = _interopRequireDefault(_eventActions);
+
 var _main = __webpack_require__(40);
 
 var _main2 = _interopRequireDefault(_main);
@@ -116242,8 +116262,28 @@ var EventPage = function (_React$Component) {
 					// console.log("Got result: ", page);			
 					_this.setState(_extends({}, _this.state, { gigs: page.data, event: event }));
 				});
-			}).catch(function (err) {
+			}).then(_this.fetchTickets).catch(function (err) {
 				return console.error("ERAR: ", err);
+			});
+		}, _this.fetchTickets = function () {
+			_main2.default.service('tickets').find().then(function (result) {
+				// console.log("Got tickets", result)
+				var tickets = result.data.reduce(function (o, t) {
+					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
+				}, {});
+				var event = _this.state.event;
+
+				console.log("Event", event);
+				var passes = result.data.filter(function (t) {
+					return t.gig_id === event._id;
+				});
+				console.log("PASSED", passes);
+				if (event && passes.length) {
+					Object.assign(event, { tickets: passes });
+				}
+				_this.setState(_extends({}, _this.state, { ticketsRaw: result.data.filter(function (t) {
+						return t.status === 'Volunteering';
+					}), event: event, tickets: tickets }));
 			});
 		}, _this.handleDialogCancel = function (e) {
 			// console.log("Canceling...");
@@ -116318,15 +116358,7 @@ var EventPage = function (_React$Component) {
 	}, {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var _this2 = this;
-
-			_main2.default.service('tickets').find({ query: { status: "Volunteering" } }).then(function (result) {
-				// console.log("Got tickets", result)
-				var tickets = result.data.reduce(function (o, t) {
-					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
-				}, {});
-				_this2.setState(_extends({}, _this2.state, { ticketsRaw: result.data, tickets: tickets }));
-			});
+			// this.fetchTickets()
 		}
 	}, {
 		key: 'componentWillUnmount',
@@ -116342,7 +116374,7 @@ var EventPage = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this3 = this;
+			var _this2 = this;
 
 			var _state = this.state,
 			    gig = _state.gig,
@@ -116350,7 +116382,7 @@ var EventPage = function (_React$Component) {
 			    event = _state.event,
 			    tickets = _state.tickets,
 			    ticketsRaw = _state.ticketsRaw;
-			// console.log("GIGGGINGING: ", this.state);
+			// console.log("Volunteerizing: ", this.props)
 
 			var title = _react2.default.createElement(
 				'b',
@@ -116367,6 +116399,7 @@ var EventPage = function (_React$Component) {
 					title: title,
 					subtitle: subtitle
 				}),
+				_react2.default.createElement(_eventActions2.default, { event: event, tickets: ticketsRaw, route: this.props.route.path }),
 				_react2.default.createElement(
 					_Card.CardText,
 					null,
@@ -116385,16 +116418,16 @@ var EventPage = function (_React$Component) {
 						return _react2.default.createElement(_List.ListItem, {
 							key: gig._id,
 							primaryText: gig.name,
-							onTouchTap: _this3.viewGigDetails.bind(_this3, gig),
+							onTouchTap: _this2.viewGigDetails.bind(_this2, gig),
 							secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig }),
-							rightIconButton: _this3.isVolunteering(gig) ? _react2.default.createElement(_FlatButton2.default, {
+							rightIconButton: _this2.isVolunteering(gig) ? _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.minusBox,
 								title: 'Leave',
-								onTouchTap: _utils.gigLeave.bind(_this3, gig, 'Volunteering')
+								onTouchTap: _utils.gigLeave.bind(_this2, gig, 'Volunteering')
 							}) : _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.plusOutline,
 								title: 'Join',
-								onTouchTap: _this3.handleGigJoin.bind(_this3, gig)
+								onTouchTap: _this2.handleGigJoin.bind(_this2, gig)
 							})
 						});
 					})
@@ -116585,6 +116618,125 @@ var Tasks = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Tasks;
+
+/***/ }),
+/* 870 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.EventActions = undefined;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = __webpack_require__(39);
+
+var _RaisedButton = __webpack_require__(249);
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+var _Card = __webpack_require__(114);
+
+var _main = __webpack_require__(40);
+
+var _main2 = _interopRequireDefault(_main);
+
+var _utils = __webpack_require__(866);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var updatePass = function updatePass(event, status, update) {
+	_main2.default.authenticate().then(function () {
+		if (update) {} else {
+			// insert
+			(0, _utils.gigJoin)(event, status);
+		}
+	}).catch(function (err) {
+		return _reactRouter.browserHistory.push('/gyps/eventinfo/' + event._id);
+	});
+};
+
+var EventActions = exports.EventActions = function EventActions(_ref) {
+	var event = _ref.event,
+	    tickets = _ref.tickets,
+	    route = _ref.route;
+
+	var result = [];
+	if (event.tickets && event.tickets.length) {
+		//at least one ticket
+		event.tickets.forEach(function (pass) {
+			var rules = event.ticket_rules.filter(function (r) {
+				return r.status === pass.status;
+			});
+			rules.forEach(function (_ref2) {
+				var requires = _ref2.requires,
+				    actions = _ref2.actions;
+
+				if (Array.isArray(requires)) {
+					// 
+					console.log("HURRAY, ARRAY", requires);
+				} else if ((typeof requires === 'undefined' ? 'undefined' : _typeof(requires)) === 'object') {
+					//object
+					var status = requires.status,
+					    minCount = requires.minCount,
+					    maxCount = requires.maxCount;
+
+					var matched = tickets.filter(function (t) {
+						return t.status === status;
+					});
+					if (matched.length >= minCount) {
+						result = result.concat(actions);
+					}
+				} else {
+					// no requires or something weird
+					result = result.concat(actions);
+				}
+			});
+			console.log("RULEZ!", rules);
+		});
+	} else if (event.tickets) {
+		var only = event.ticket_rules.find(function (r) {
+			return r.status === null;
+		});
+		result = result.concat(only.actions);
+		console.log("only", only);
+	}
+
+	var actions = result.filter(function (a) {
+		return a.name && route !== a.path;
+	});
+	console.log("ACTING", actions);
+
+	return _react2.default.createElement(
+		_Card.CardActions,
+		null,
+		actions.map(function (_ref3) {
+			var name = _ref3.name,
+			    path = _ref3.path,
+			    newStatus = _ref3.newStatus;
+			return path ? _react2.default.createElement(
+				_reactRouter.Link,
+				{ key: event._id + name, to: '/gyps/' + path.replace(':eventId', event._id) },
+				_react2.default.createElement(_RaisedButton2.default, { label: name })
+			) : _react2.default.createElement(_RaisedButton2.default, {
+				key: event._id + name,
+				primary: true,
+				label: name,
+				onTouchTap: updatePass.bind(null, event, newStatus)
+			});
+		})
+	);
+};
+
+exports.default = EventActions;
 
 /***/ })
 /******/ ]);
