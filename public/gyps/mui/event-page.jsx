@@ -12,6 +12,7 @@ import {Tabs, Tab} from 'material-ui/Tabs'
 
 import GigDetailsPage from './gig-details-page.jsx'
 import GigTimespan from './gig-timespan.jsx'
+import EventActions from './event-actions.jsx'
 import app from '../main.jsx'
 import { gigJoin, gigLeave } from './utils.jsx'
 import { plusOutline, minusBox } from './icons.jsx'
@@ -34,7 +35,7 @@ export default class EventPage extends React.Component {
 		pass: {},
 		gigs: [], 
 		tickets: {},
-		tasks: [], 
+		allTickets: [],
 		dialog: {
 			open: false,
 			gig: {},
@@ -43,36 +44,28 @@ export default class EventPage extends React.Component {
 	
 	componentWillMount() {
 		app.authenticate().then(this.fetchData)
-		app.service('gigs').on('removed', this.gigRemoved);
-		app.service('gigs').on('created', this.gigCreated);
-		app.service('gigs').on('patched', this.gigPatched);
-		app.service('tickets').on('created', this.ticketCreated);
-		app.service('tickets').on('removed', this.ticketRemoved);
-	}
-	componentDidMount() {
-		app.service('tickets').find()
-		.then(result => {
-			console.log("Got tickets", result)
-			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-			this.setState({...this.state, tickets})
-		})
+		app.service('gigs').on('removed', this.gigRemoved)
+		app.service('gigs').on('created', this.gigCreated)
+		app.service('gigs').on('patched', this.gigPatched)
+		app.service('tickets').on('created', this.ticketCreated)
+		app.service('tickets').on('removed', this.ticketRemoved)
 	}
 	componentWillUnmount() {
 		if(app) {
-			app.service('gigs').removeListener('removed', this.gigRemoved);
-			app.service('gigs').removeListener('created', this.gigCreated);
-			app.service('gigs').removeListener('patched', this.gigPatched);
-			app.service('tickets').removeListener('removed', this.ticketRemoved);
-			app.service('tickets').removeListener('created', this.ticketCreated);
+			app.service('gigs').removeListener('removed', this.gigRemoved)
+			app.service('gigs').removeListener('created', this.gigCreated)
+			app.service('gigs').removeListener('patched', this.gigPatched)
+			app.service('tickets').removeListener('removed', this.ticketRemoved)
+			app.service('tickets').removeListener('created', this.ticketCreated)
 		}
 	}
 
 	fetchData = () => {
-		const eventId = this.props.params.eventId;
+		const eventId = this.props.params.eventId
 
 		app.service('gigs').get(eventId)
 		.then(event => {
-			document.title = event.name;
+			document.title = event.name
 			// app.service('tickets').find({query:{gig_id: event._id}})
 			// .then(pass => {
 			// 	if(access.indexOf(pass.status) <access.length-1) {
@@ -90,8 +83,23 @@ export default class EventPage extends React.Component {
 			.then(page => {
 				// console.log("Got result: ", page);			
 				this.setState({...this.state, gigs: page.data, event})
-			})})
+			})
+		})
+		.then(this.fetchTickets)
 		.catch(err => console.error("ERAR: ", err))
+	}
+
+	fetchTickets = () => {
+		app.service('tickets').find()
+		.then(result => {
+			console.log("Got tickets", result)
+			if(result.total) {
+				const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
+				const {event} = this.state
+				Object.assign(event, {tickets: result.data.filter(t=>t.gig_id===event._id)})
+				this.setState({...this.state, event, tickets, allTickets: result.data})
+			}
+		})
 	}
 
 	handleDialogCancel = e => {
@@ -149,24 +157,19 @@ export default class EventPage extends React.Component {
 	}
 
 	render() {
-		const {gig, dialog} = this.state;
+		const {event, dialog, tickets, allTickets} = this.state;
 		// console.log("GIGGGINGING: ", this.state);
 		const title = <b>{event.name}</b>;
 
 		const subtitle = <GigTimespan gig={event} showRelative={true}/>;
 
-		return (
-			<Card initiallyExpanded={true}>
-			    {/*<CardHeader title={v.name} subtitle="gig" />*/}
+		return <Card>
 			    <CardTitle 
 			    	title={title} 
 			    	subtitle={subtitle} 
-			    	actAsExpander={true} 
-			    	showExpandableButton={true}
 			    />
-				<CardText expandable={true}>
-					
-
+			    <EventActions event={event} tickets={allTickets} route={this.props.route.path} />
+				<CardText>
 					{this.state.gigs.map(
 						gig => <ListItem 
 									key={gig._id} 
@@ -195,15 +198,11 @@ export default class EventPage extends React.Component {
 						gig={dialog.gig} 
 						onJoin={gigJoin} 
 						onLeave={gigLeave}
-						tickets={this.state.tickets}
+						tickets={tickets}
 						status="Attending"
 					/>
 				</Dialog>
-
-				<CardActions>
-					<FlatButton label="Volunteer" secondary={true}/>
-				</CardActions>
 			</Card>
-		)
+		
 	}
 }

@@ -11,7 +11,7 @@ const updatePass = (event, status, update) => {
 	app.authenticate()
 	.then(() => {
 		if(update) {
-			
+			app.service('tickets').patch(null, {status}, {query: {gig_id: event._id}})			//we never use this...
 		} else {
 			// insert
 			gigJoin(event, status)
@@ -33,6 +33,7 @@ export const EventActions = ({event, tickets, route}) => {
 					console.log("HURRAY, ARRAY", requires)
 				} else if( typeof requires === 'object') {
 					//object
+					// console.log("Required", requires)
 					const {status, minCount, maxCount} = requires
 					const matched = tickets.filter(t => t.status===status)
 					if(matched.length >= minCount) {
@@ -43,15 +44,15 @@ export const EventActions = ({event, tickets, route}) => {
 					result = result.concat(actions)
 				}
 			})
-			console.log("RULEZ!", rules)
+			// console.log("RULEZ!", rules)
 		})
 	} else if(event.tickets) {
-		const only = event.ticket_rules.find(r => r.status===null)
-		result = result.concat(only.actions)
-		console.log("only", only)
+		const rule = event.ticket_rules.find(r => r.status===null)
+		result = result.concat(rule.actions)
+		// console.log("rule", rule)
 	}
 
-	const actions = result.filter(a => a.name && (route !== a.path))
+	const actions = result.filter(a => a.name && (a.newStatus || (route !== a.path)))
 	console.log("ACTING", actions)
 
 	return <CardActions>
@@ -63,7 +64,7 @@ export const EventActions = ({event, tickets, route}) => {
 						key={event._id + name} 
 						primary={true} 
 						label={name} 
-						onTouchTap={updatePass.bind(null, event, newStatus)} 
+						onTouchTap={updatePass.bind(null, event, newStatus, false)} 
 					/>
 				
 		)}

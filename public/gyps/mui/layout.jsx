@@ -40,7 +40,7 @@ export default class Layout extends React.Component {
 			user: null, 
 			section: 'BFest',
 			snackbarOpen: false,
-			message: ''
+			message: '' 
 		};
 
 		this.sections = [
@@ -142,7 +142,7 @@ export default class Layout extends React.Component {
 					)}
 				</Drawer>
 				{this.props.children}
-				<footer style={{position:'fixed', bottom: 0, right: 0, fontSize: 'smaller'}}>
+				<footer style={{position:'fixed', bottom: 0, right: 8, fontSize: 'smaller'}}>
 					© 2017 Intergalactic Balkan Festivals Unlimited
 				</footer>
 				<Snackbar
