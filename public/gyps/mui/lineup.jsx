@@ -6,7 +6,7 @@ import { List, ListItem } from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
 import Divider from 'material-ui/Divider'
 
-import GigTimespan from './gig-timespan.jsx'
+import GigListItem from './gig-list-item.jsx'
 import app from '../main.jsx'
 
 const styles = {
@@ -49,33 +49,33 @@ export default class Lineup extends React.Component {
 		.catch(err => console.error)
 	}
 
-	select = t => {
-		browserHistory.push('/gyps/gig/'+t.gig_id)
+	select = gig => {
+		browserHistory.push('/gyps/gig/' + gig._id)
 	}
 
 	render() {
 		const { dates, tickets } = this.state
-		console.log("LINEUP", this.state) 
-		console.log(dates)
+		// console.log("LINEUP", this.state) 
+		// console.log(dates)
 		return <div>
 			{ tickets.length==0 ?
 				<Subheader>You haven't joined any events. <Link to='/gyps/events'>Choose some</Link></Subheader> 
 				: ''
 			}
 			{dates.map(d =>
-			<List key={d}>
-				<Subheader style={styles.date}>{d.format('MMM D, dddd')}</Subheader>
-				<Divider/>
-				{tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
-					.map(
-					ticket => <ListItem
-							key={ticket._id}
-							primaryText={ticket.gig.name}
-							secondaryText={<GigTimespan gig={ticket.gig} hideDates={true} />}
-							onTouchTap={this.select.bind(this, ticket)}
-						/>
-				)}
-			</List>
+				<List key={d}>
+					<Subheader style={styles.date}>{d.format('MMM D, dddd')}</Subheader>
+					<Divider/>
+					{tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
+						.map(({gig}) => 
+							<GigListItem
+								key={gig._id}
+								gig={gig}
+								hideDates={true}
+								onSelect={this.select.bind(this, gig)}
+							/>
+					)}
+				</List>
 			)}
 		</div>
 	}

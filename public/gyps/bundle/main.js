@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "8fe3a62b744e65606639"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "9e025cfa0bb8552352c5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -59599,9 +59599,9 @@ var _Divider = __webpack_require__(75);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
-var _gigTimespan = __webpack_require__(54);
+var _gigListItem = __webpack_require__(879);
 
-var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+var _gigListItem2 = _interopRequireDefault(_gigListItem);
 
 var _main = __webpack_require__(26);
 
@@ -59666,8 +59666,8 @@ var Lineup = function (_React$Component) {
 			}).catch(function (err) {
 				return console.error;
 			});
-		}, _this.select = function (t) {
-			_reactRouter.browserHistory.push('/gyps/gig/' + t.gig_id);
+		}, _this.select = function (gig) {
+			_reactRouter.browserHistory.push('/gyps/gig/' + gig._id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -59684,9 +59684,9 @@ var Lineup = function (_React$Component) {
 			var _state = this.state,
 			    dates = _state.dates,
 			    tickets = _state.tickets;
+			// console.log("LINEUP", this.state) 
+			// console.log(dates)
 
-			console.log("LINEUP", this.state);
-			console.log(dates);
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -59712,12 +59712,13 @@ var Lineup = function (_React$Component) {
 						_react2.default.createElement(_Divider2.default, null),
 						tickets.filter(function (t) {
 							return (0, _moment2.default)(t.gig.start).isSame(d, 'day');
-						}).map(function (ticket) {
-							return _react2.default.createElement(_List.ListItem, {
-								key: ticket._id,
-								primaryText: ticket.gig.name,
-								secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: ticket.gig, hideDates: true }),
-								onTouchTap: _this2.select.bind(_this2, ticket)
+						}).map(function (_ref2) {
+							var gig = _ref2.gig;
+							return _react2.default.createElement(_gigListItem2.default, {
+								key: gig._id,
+								gig: gig,
+								hideDates: true,
+								onSelect: _this2.select.bind(_this2, gig)
 							});
 						})
 					);
@@ -117086,6 +117087,48 @@ module.exports = {
 
 
 module.exports = 0;
+
+/***/ }),
+/* 879 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+			value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.default = GigListItem;
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _List = __webpack_require__(41);
+
+var _gigTimespan = __webpack_require__(54);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function GigListItem(_ref) {
+			var gig = _ref.gig,
+			    onSelect = _ref.onSelect,
+			    hideDates = _ref.hideDates,
+			    others = _objectWithoutProperties(_ref, ['gig', 'onSelect', 'hideDates']);
+
+			return _react2.default.createElement(_List.ListItem, _extends({
+						primaryText: gig.name,
+						secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig, hideDates: hideDates }),
+						onTouchTap: onSelect.bind(null, gig)
+			}, others));
+}
 
 /***/ })
 /******/ ]);
