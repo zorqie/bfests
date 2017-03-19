@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a38f9b7af1e86542a33d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "4eb58dac87c33287b573"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -9085,6 +9085,10 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouter = __webpack_require__(22);
 
+var _shortid = __webpack_require__(871);
+
+var _shortid2 = _interopRequireDefault(_shortid);
+
 var _layout = __webpack_require__(449);
 
 var _layout2 = _interopRequireDefault(_layout);
@@ -9148,8 +9152,8 @@ var io = __webpack_require__(443);
 
 // FIXME this should be in configuration somewhere.
 // Establish a Socket.io connection
-// const socket = io('http://localhost:2017');
-var socket = io('https://fathomless-gorge-78924.herokuapp.com/');
+var socket = io('http://localhost:2017');
+// const socket = io('https://fathomless-gorge-78924.herokuapp.com/'); 
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 var app = feathers().configure(socketio(socket)).configure(hooks())
@@ -9276,6 +9280,7 @@ app.authenticate().then(function () {
 
 // FIXME remove this!!!
 window.gyps = app;
+window.ShortId = _shortid2.default;
 
 exports.default = app;
 
@@ -58707,7 +58712,7 @@ var EventPage = function (_React$Component) {
 				// })
 				_main2.default.service('gigs').find({
 					query: {
-						parent: new _mongoose2.default.Types.ObjectId(eventId),
+						parent: eventId,
 						type: { $ne: 'Volunteer' },
 						$sort: { start: 1 }
 					}
@@ -58983,7 +58988,7 @@ var EventPage = function (_React$Component) {
 				// })
 				_main2.default.service('gigs').find({
 					query: {
-						parent: new _mongoose2.default.Types.ObjectId(eventId),
+						parent: eventId,
 						type: 'Volunteer',
 						$sort: { start: 1 }
 					}
@@ -59193,8 +59198,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -59284,63 +59287,6 @@ var EventsList = function (_React$Component) {
 			}).catch(function (err) {
 				return _reactRouter.browserHistory.push('/gyps/eventinfo/' + event._id);
 			});
-		}, _this.actions = function (event) {
-			var tickets = _this.state.tickets;
-
-			var result = [];
-			if (event.tickets && event.tickets.length) {
-				//at least one ticket
-				event.tickets.forEach(function (pass) {
-					var rules = event.ticket_rules.filter(function (r) {
-						return r.status === pass.status;
-					});
-					rules.forEach(function (_ref2) {
-						var requires = _ref2.requires,
-						    actions = _ref2.actions;
-
-						if (Array.isArray(requires)) {
-							// 
-							console.log("HURRAY, ARRAY", requires);
-						} else if ((typeof requires === 'undefined' ? 'undefined' : _typeof(requires)) === 'object') {
-							//object
-							var status = requires.status,
-							    minCount = requires.minCount,
-							    maxCount = requires.maxCount;
-
-							var matched = tickets.filter(function (t) {
-								return t.status === status;
-							});
-							if (matched.length >= minCount) {
-								result = result.concat(actions);
-							}
-						} else {
-							// no requires or something weird
-							result = result.concat(actions);
-						}
-					});
-					console.log("RULEZ!", rules);
-				});
-			} else {
-				var only = event.ticket_rules.find(function (r) {
-					return r.status === null;
-				});
-				result = result.concat(only.actions);
-				console.log("only", only);
-			}
-			// console.log("Resulting in ", result)
-			return result;
-		}, _this.buttons = function (event, actions) {
-			return actions && actions.map(function (_ref3) {
-				var name = _ref3.name,
-				    path = _ref3.path,
-				    newStatus = _ref3.newStatus;
-
-				return name && (path ? _react2.default.createElement(
-					_reactRouter.Link,
-					{ key: event._id + name, to: '/gyps' + path.replace(':eventId', event._id) },
-					_react2.default.createElement(_RaisedButton2.default, { label: name })
-				) : _react2.default.createElement(_RaisedButton2.default, { key: event._id + name, primary: true, label: name, onTouchTap: _this.updatePass.bind(_this, event, newStatus) }));
-			});
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -59349,7 +59295,7 @@ var EventsList = function (_React$Component) {
 		value: function componentWillMount() {
 			var _this2 = this;
 
-			_main2.default.service('gigs').find({ query: { public: true } }).then(function (gigs) {
+			_main2.default.service('gigs').find({ query: { public: true, $sort: { start: 1 } } }).then(function (gigs) {
 				return _this2.setState({ events: gigs.data });
 			}).catch(function (err) {
 				return console.error;
@@ -59377,21 +59323,17 @@ var EventsList = function (_React$Component) {
 
 			_main2.default.service('tickets').find().then(function (tickets) {
 				// TODO consider moving this to server side
-				if (tickets.total) {
-					var events = _this3.state.events.map(function (e) {
-						return Object.assign(e, { tickets: tickets.data.filter(function (t) {
-								return e._id === t.gig_id;
-							}) });
-					});
-					_this3.setState({ events: events, tickets: tickets.data });
-				}
+
+				var events = _this3.state.events.map(function (e) {
+					return Object.assign(e, { tickets: tickets.data.filter(function (t) {
+							return e._id === t.gig_id;
+						}) });
+				});
+				_this3.setState({ events: events, tickets: tickets.data });
 			}).catch(function (err) {
 				return console.error;
 			});
 		}
-
-		// TODO  consider moving this to server side
-
 	}, {
 		key: 'render',
 		value: function render() {
@@ -59400,9 +59342,9 @@ var EventsList = function (_React$Component) {
 			var _state = this.state,
 			    events = _state.events,
 			    tickets = _state.tickets;
+			// console.log("E-vents", events)
+			// console.log("teekettes", tickets)
 
-			console.log("E-vents", events);
-			console.log("teekettes", tickets);
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -59440,11 +59382,7 @@ var EventsList = function (_React$Component) {
 								event.description
 							)
 						),
-						_react2.default.createElement(
-							_Card.CardActions,
-							null,
-							_react2.default.createElement(_eventActions2.default, { event: event, tickets: tickets })
-						)
+						_react2.default.createElement(_eventActions2.default, { event: event, tickets: tickets })
 					);
 				})
 			);
@@ -116843,6 +116781,381 @@ module.exports = function() {
 	throw new Error("define cannot be used indirect");
 };
 
+
+/***/ }),
+/* 869 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var randomFromSeed = __webpack_require__(877);
+
+var ORIGINAL = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-';
+var alphabet;
+var previousSeed;
+
+var shuffled;
+
+function reset() {
+    shuffled = false;
+}
+
+function setCharacters(_alphabet_) {
+    if (!_alphabet_) {
+        if (alphabet !== ORIGINAL) {
+            alphabet = ORIGINAL;
+            reset();
+        }
+        return;
+    }
+
+    if (_alphabet_ === alphabet) {
+        return;
+    }
+
+    if (_alphabet_.length !== ORIGINAL.length) {
+        throw new Error('Custom alphabet for shortid must be ' + ORIGINAL.length + ' unique characters. You submitted ' + _alphabet_.length + ' characters: ' + _alphabet_);
+    }
+
+    var unique = _alphabet_.split('').filter(function (item, ind, arr) {
+        return ind !== arr.lastIndexOf(item);
+    });
+
+    if (unique.length) {
+        throw new Error('Custom alphabet for shortid must be ' + ORIGINAL.length + ' unique characters. These characters were not unique: ' + unique.join(', '));
+    }
+
+    alphabet = _alphabet_;
+    reset();
+}
+
+function characters(_alphabet_) {
+    setCharacters(_alphabet_);
+    return alphabet;
+}
+
+function setSeed(seed) {
+    randomFromSeed.seed(seed);
+    if (previousSeed !== seed) {
+        reset();
+        previousSeed = seed;
+    }
+}
+
+function shuffle() {
+    if (!alphabet) {
+        setCharacters(ORIGINAL);
+    }
+
+    var sourceArray = alphabet.split('');
+    var targetArray = [];
+    var r = randomFromSeed.nextValue();
+    var characterIndex;
+
+    while (sourceArray.length > 0) {
+        r = randomFromSeed.nextValue();
+        characterIndex = Math.floor(r * sourceArray.length);
+        targetArray.push(sourceArray.splice(characterIndex, 1)[0]);
+    }
+    return targetArray.join('');
+}
+
+function getShuffled() {
+    if (shuffled) {
+        return shuffled;
+    }
+    shuffled = shuffle();
+    return shuffled;
+}
+
+/**
+ * lookup shuffled letter
+ * @param index
+ * @returns {string}
+ */
+function lookup(index) {
+    var alphabetShuffled = getShuffled();
+    return alphabetShuffled[index];
+}
+
+module.exports = {
+    characters: characters,
+    seed: setSeed,
+    lookup: lookup,
+    shuffled: getShuffled
+};
+
+/***/ }),
+/* 870 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var randomByte = __webpack_require__(876);
+
+function encode(lookup, number) {
+    var loopCounter = 0;
+    var done;
+
+    var str = '';
+
+    while (!done) {
+        str = str + lookup(number >> 4 * loopCounter & 0x0f | randomByte());
+        done = number < Math.pow(16, loopCounter + 1);
+        loopCounter++;
+    }
+    return str;
+}
+
+module.exports = encode;
+
+/***/ }),
+/* 871 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(874);
+
+/***/ }),
+/* 872 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var encode = __webpack_require__(870);
+var alphabet = __webpack_require__(869);
+
+// Ignore all milliseconds before a certain time to reduce the size of the date entropy without sacrificing uniqueness.
+// This number should be updated every year or so to keep the generated id short.
+// To regenerate `new Date() - 0` and bump the version. Always bump the version!
+var REDUCE_TIME = 1459707606518;
+
+// don't change unless we change the algos or REDUCE_TIME
+// must be an integer and less than 16
+var version = 6;
+
+// Counter is used when shortid is called multiple times in one second.
+var counter;
+
+// Remember the last time shortid was called in case counter is needed.
+var previousSeconds;
+
+/**
+ * Generate unique id
+ * Returns string id
+ */
+function build(clusterWorkerId) {
+
+    var str = '';
+
+    var seconds = Math.floor((Date.now() - REDUCE_TIME) * 0.001);
+
+    if (seconds === previousSeconds) {
+        counter++;
+    } else {
+        counter = 0;
+        previousSeconds = seconds;
+    }
+
+    str = str + encode(alphabet.lookup, version);
+    str = str + encode(alphabet.lookup, clusterWorkerId);
+    if (counter > 0) {
+        str = str + encode(alphabet.lookup, counter);
+    }
+    str = str + encode(alphabet.lookup, seconds);
+
+    return str;
+}
+
+module.exports = build;
+
+/***/ }),
+/* 873 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var alphabet = __webpack_require__(869);
+
+/**
+ * Decode the id to get the version and worker
+ * Mainly for debugging and testing.
+ * @param id - the shortid-generated id.
+ */
+function decode(id) {
+    var characters = alphabet.shuffled();
+    return {
+        version: characters.indexOf(id.substr(0, 1)) & 0x0f,
+        worker: characters.indexOf(id.substr(1, 1)) & 0x0f
+    };
+}
+
+module.exports = decode;
+
+/***/ }),
+/* 874 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var alphabet = __webpack_require__(869);
+var encode = __webpack_require__(870);
+var decode = __webpack_require__(873);
+var build = __webpack_require__(872);
+var isValid = __webpack_require__(875);
+
+// if you are using cluster or multiple servers use this to make each instance
+// has a unique value for worker
+// Note: I don't know if this is automatically set when using third
+// party cluster solutions such as pm2.
+var clusterWorkerId = __webpack_require__(878) || 0;
+
+/**
+ * Set the seed.
+ * Highly recommended if you don't want people to try to figure out your id schema.
+ * exposed as shortid.seed(int)
+ * @param seed Integer value to seed the random alphabet.  ALWAYS USE THE SAME SEED or you might get overlaps.
+ */
+function seed(seedValue) {
+  alphabet.seed(seedValue);
+  return module.exports;
+}
+
+/**
+ * Set the cluster worker or machine id
+ * exposed as shortid.worker(int)
+ * @param workerId worker must be positive integer.  Number less than 16 is recommended.
+ * returns shortid module so it can be chained.
+ */
+function worker(workerId) {
+  clusterWorkerId = workerId;
+  return module.exports;
+}
+
+/**
+ *
+ * sets new characters to use in the alphabet
+ * returns the shuffled alphabet
+ */
+function characters(newCharacters) {
+  if (newCharacters !== undefined) {
+    alphabet.characters(newCharacters);
+  }
+
+  return alphabet.shuffled();
+}
+
+/**
+ * Generate unique id
+ * Returns string id
+ */
+function generate() {
+  return build(clusterWorkerId);
+}
+
+// Export all other functions as properties of the generate function
+module.exports = generate;
+module.exports.generate = generate;
+module.exports.seed = seed;
+module.exports.worker = worker;
+module.exports.characters = characters;
+module.exports.decode = decode;
+module.exports.isValid = isValid;
+
+/***/ }),
+/* 875 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var alphabet = __webpack_require__(869);
+
+function isShortId(id) {
+    if (!id || typeof id !== 'string' || id.length < 6) {
+        return false;
+    }
+
+    var characters = alphabet.characters();
+    var len = id.length;
+    for (var i = 0; i < len; i++) {
+        if (characters.indexOf(id[i]) === -1) {
+            return false;
+        }
+    }
+    return true;
+}
+
+module.exports = isShortId;
+
+/***/ }),
+/* 876 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var crypto = ( false ? 'undefined' : _typeof(window)) === 'object' && (window.crypto || window.msCrypto); // IE 11 uses window.msCrypto
+
+function randomByte() {
+    if (!crypto || !crypto.getRandomValues) {
+        return Math.floor(Math.random() * 256) & 0x30;
+    }
+    var dest = new Uint8Array(1);
+    crypto.getRandomValues(dest);
+    return dest[0] & 0x30;
+}
+
+module.exports = randomByte;
+
+/***/ }),
+/* 877 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// Found this seed-based random generator somewhere
+// Based on The Central Randomizer 1.3 (C) 1997 by Paul Houle (houle@msc.cornell.edu)
+
+var seed = 1;
+
+/**
+ * return a random number based on a seed
+ * @param seed
+ * @returns {number}
+ */
+function getNextValue() {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280.0;
+}
+
+function setSeed(_seed_) {
+    seed = _seed_;
+}
+
+module.exports = {
+    nextValue: getNextValue,
+    seed: setSeed
+};
+
+/***/ }),
+/* 878 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = 0;
 
 /***/ })
 /******/ ]);

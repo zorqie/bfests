@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
+import ShortId from 'shortid'
+
 import Layout from './mui/layout.jsx'
 
 import LoginForm from './mui/login-form.jsx'
@@ -29,8 +31,8 @@ const io = require('socket.io-client');
 
 // FIXME this should be in configuration somewhere.
 // Establish a Socket.io connection
-// const socket = io('http://localhost:2017');
-const socket = io('https://fathomless-gorge-78924.herokuapp.com/'); 
+const socket = io('http://localhost:2017');
+// const socket = io('https://fathomless-gorge-78924.herokuapp.com/'); 
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 const app = feathers()
@@ -161,6 +163,7 @@ app.authenticate()
 
 // FIXME remove this!!!
 window.gyps = app;
+window.ShortId = ShortId
 
 export default app;
 

@@ -6,13 +6,14 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
 const ActSchema = new Schema({
-  name: { type: String, required: true },
-  description: String,
-  type: String,
-  user_id: { type: Schema.Types.ObjectId, ref: 'User' }
+	_id: 		{ type: String, 'default': shortid.generate},
+	name:		{ type: String, required: true },
+	description: String,
+	user_id:	{ type: String, ref: 'User' }
   // ,
   // createdAt: { type: Date, 'default': Date.now },
   // updatedAt: { type: Date, 'default': Date.now }

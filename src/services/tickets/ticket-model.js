@@ -6,11 +6,13 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
 const TicketSchema = new Schema({
-	owner_id: 	{ type: Schema.Types.ObjectId, ref: 'User' },
-	gig_id: 	{ type: Schema.Types.ObjectId, ref: 'Gig', required: true },
+	_id: 		{ type: String, 'default': shortid.generate},
+	owner_id: 	{ type: String, ref: 'User' },
+	gig_id: 	{ type: String, ref: 'Gig', required: true },
 	status:		{ type: String, required: true},
 	comment:	String,
 

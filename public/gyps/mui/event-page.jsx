@@ -74,7 +74,7 @@ export default class EventPage extends React.Component {
 			// })
 			app.service('gigs').find({
 				query: {
-					parent: new mongoose.Types.ObjectId(eventId),
+					parent: eventId,
 					type: {$ne: 'Volunteer'},
 					$sort: { start: 1 },
 					// $limit: this.props.limit || 7
