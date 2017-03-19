@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "fbb85546c99c2e6daa31"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "8fe3a62b744e65606639"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -35105,16 +35105,11 @@ function error(data) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+exports.default = ActsList;
 
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
-
-var _FloatingActionButton = __webpack_require__(259);
-
-var _FloatingActionButton2 = _interopRequireDefault(_FloatingActionButton);
 
 var _FlatButton = __webpack_require__(30);
 
@@ -35122,86 +35117,36 @@ var _FlatButton2 = _interopRequireDefault(_FlatButton);
 
 var _List = __webpack_require__(41);
 
-var _icons = __webpack_require__(139);
+var _hacks = __webpack_require__(437);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function ActsList(_ref) {
+	var acts = _ref.acts,
+	    compact = _ref.compact,
+	    onSelect = _ref.onSelect,
+	    onEdit = _ref.onEdit,
+	    onDelete = _ref.onDelete;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-//hack because Material-UI forces a onKeyboardFocus onto the span and React complains
-var Kspan = function Kspan(_ref) {
-	var onKeyboardFocus = _ref.onKeyboardFocus,
-	    others = _objectWithoutProperties(_ref, ['onKeyboardFocus']);
-
-	return _react2.default.createElement('span', others);
-};
-
-var ActsList = function (_React$Component) {
-	_inherits(ActsList, _React$Component);
-
-	function ActsList() {
-		var _ref2;
-
-		var _temp, _this, _ret;
-
-		_classCallCheck(this, ActsList);
-
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = ActsList.__proto__ || Object.getPrototypeOf(ActsList)).call.apply(_ref2, [this].concat(args))), _this), _this.edit = function (act) {
-			return _this.props.onEdit(act);
-		}, _this.delete = function (act) {
-			return _this.props.onDelete(act);
-		}, _this.select = function (act) {
-			return _this.props.onSelect && _this.props.onSelect(act);
-		}, _temp), _possibleConstructorReturn(_this, _ret);
-	}
-
-	_createClass(ActsList, [{
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			var _props = this.props,
-			    acts = _props.acts,
-			    allowAdd = _props.allowAdd,
-			    compact = _props.compact,
-			    onEdit = _props.onEdit,
-			    onDelete = _props.onDelete;
-
-			return _react2.default.createElement(
-				_List.List,
-				null,
-				acts.map(function (act) {
-					return _react2.default.createElement(_List.ListItem, {
-						key: act._id,
-						primaryText: act.name,
-						onTouchTap: _this2.select.bind(_this2, act),
-						secondaryText: compact ? '' : act.description || ' ',
-						rightIconButton: _react2.default.createElement(
-							Kspan,
-							null,
-							onEdit && _react2.default.createElement(_FlatButton2.default, { label: 'Edit', onTouchTap: _this2.edit.bind(_this2, act) }),
-							onDelete && _react2.default.createElement(_FlatButton2.default, { label: 'Delete', onTouchTap: _this2.delete.bind(_this2, act) })
-						)
-					});
-				})
-			);
-		}
-	}]);
-
-	return ActsList;
-}(_react2.default.Component);
-
-exports.default = ActsList;
+	return _react2.default.createElement(
+		_List.List,
+		null,
+		acts.map(function (act) {
+			return _react2.default.createElement(_List.ListItem, {
+				key: act._id,
+				primaryText: act.name,
+				onTouchTap: onSelect.bind(null, act),
+				secondaryText: compact ? '' : act.description || ' ',
+				rightIconButton: _react2.default.createElement(
+					Kspan,
+					null,
+					onEdit && _react2.default.createElement(_FlatButton2.default, { label: 'Edit', onTouchTap: onEdit.bind(null, act) }),
+					onDelete && _react2.default.createElement(_FlatButton2.default, { label: 'Delete', onTouchTap: onDelete.bind(null, act) })
+				)
+			});
+		})
+	);
+}
 
 /***/ }),
 /* 212 */
