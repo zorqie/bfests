@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4eb58dac87c33287b573"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "fbb85546c99c2e6daa31"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -59241,10 +59241,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var styles = {
-	overlay: {
-		color: 'white',
-		margin: '1em'
-	},
 	card: {
 		margin: '2em'
 	},
@@ -59278,15 +59274,6 @@ var EventsList = function (_React$Component) {
 			} else {
 				_reactRouter.browserHistory.push('/gyps/eventinfo/' + e._id);
 			}
-		}, _this.updatePass = function (event, status, update) {
-			_main2.default.authenticate().then(function () {
-				if (update) {} else {
-					// insert
-					(0, _utils.gigJoin)(event, status);
-				}
-			}).catch(function (err) {
-				return _reactRouter.browserHistory.push('/gyps/eventinfo/' + event._id);
-			});
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -59368,9 +59355,7 @@ var EventsList = function (_React$Component) {
 						}),
 						_react2.default.createElement(
 							_Card.CardMedia,
-							{
-								expandable: true
-							},
+							{ expandable: true },
 							_react2.default.createElement('img', { src: '/img/' + event._id + '_poster.jpg' })
 						),
 						_react2.default.createElement(

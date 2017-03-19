@@ -12,10 +12,6 @@ import app from '../main.jsx'
 import { gigJoin } from './utils.jsx'
 
 const styles = {
-	overlay: {
-		color:'white',
-		margin: '1em'
-	},
 	card: {
 		margin: '2em'
 	},
@@ -70,19 +66,6 @@ export default class EventsList extends React.Component {
 		}
 	}
 
-	updatePass = (event, status, update) => {
-		app.authenticate()
-		.then(() => {
-			if(update) {
-				
-			} else {
-				// insert
-				gigJoin(event, status)
-			}
-		})
-		.catch(err => browserHistory.push('/gyps/eventinfo/'+event._id))
-	}
-
 	render() {
 		const {events, tickets} = this.state
 		// console.log("E-vents", events)
@@ -97,9 +80,7 @@ export default class EventsList extends React.Component {
 				    >
 				    
 				    </CardTitle>
-				    <CardMedia 
-				    	expandable={true}
-				    >
+				    <CardMedia expandable={true} >
 						<img src={`/img/${event._id}_poster.jpg`} />
 					</CardMedia>
 					<CardText actAsExpander={true}>
