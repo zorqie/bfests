@@ -13,6 +13,8 @@ const ActSchema = new Schema({
 	_id: 		{ type: String, 'default': shortid.generate},
 	name:		{ type: String, required: true },
 	description: String,
+	poster_uri: String,
+	avatar_uri: String, 
 	user_id:	{ type: String, ref: 'User' }
   // ,
   // createdAt: { type: Date, 'default': Date.now },
