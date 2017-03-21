@@ -32,4 +32,4 @@ data/
 
 # Fonts
 public/fonts/
-public/gyps/bundle/*.hot-update.*
+public/bundle/*.hot-update.*
