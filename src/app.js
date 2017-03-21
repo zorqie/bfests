@@ -21,13 +21,14 @@ const mongoose = require('mongoose');
 // const { renderToString } = require('react-dom/server');
 // const { match, RouterContext } = require('react-router');
 
-const gypsing = function (request, response, next){
-  // console.log("Routing ", request.originalUrl);
-  // console.log("Nexting ", next);
-  if(request.originalUrl.indexOf('.') < 0) {
-    response.sendFile(path.resolve(__dirname, app.get('public') , 'index.html'))
+const gypsing = function (request, response, next) {
+  const url = request.originalUrl;
+  if(url.indexOf('/auth') < 0 && url.indexOf('.') < 0) {
+    console.log("Re-Routing ", request.originalUrl);
+    return response.sendFile(path.resolve(__dirname, app.get('public') , 'index.html'))
   } else {
-    next();
+    console.log("Nexting ", url);
+    return next();
   }
 };
 

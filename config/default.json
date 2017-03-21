@@ -5,13 +5,14 @@
   "mongo_local": "mongodb://localhost:27017/test",
   "public": "../public/",
   "auth": {
+    "shouldSetupSuccessRoute": false,
     "token": {
       "secret": "onGq8IJBYp+lhWKbY4xH+9BGrxIuZArEGf9T2Lf0Wy7MhA22DLkXyLppOQ27qUnvgxkTINvoArwih94eauCAZw=="
     },
     "local": {},
     "facebook": {
-      "clientID": "your facebook client id",
-      "clientSecret": "your facebook client secret",
+      "clientID": "FB_CLIENT",
+      "clientSecret": "FB_SECRET",
       "permissions": {
         "scope": ["public_profile","email"]
       }
@@ -29,7 +30,6 @@
       "permissions": {
         "scope": ["https://identity.x.com/xidentity/resources/profile/me"]
       }
-    },
-    "successRedirect": "/nonesuch.html"
+    }
   }
 }

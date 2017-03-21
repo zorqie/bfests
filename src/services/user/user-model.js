@@ -11,9 +11,13 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
 	_id: 		{ type: String, 'default': shortid.generate},
-	email: 		{ type: String, required: true },
+	facebookId: { type: String },
+	facebook:	{ type: Schema.Types.Mixed },
+	instagramId: { type: String },
+	instagram:	{ type: Schema.Types.Mixed },
+	email: 		{ type: String },
 	password: 	{ type: String },
-	name: 		{ type: String, required: true },
+	name: 		{ type: String  },
 	online: 	{ type: Boolean, 'default': false },
 	roles: 		[String]
 	/*
