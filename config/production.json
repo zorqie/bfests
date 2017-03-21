@@ -1,5 +1,5 @@
 {
-  "host": "fathomless-gorge-78924.herokuapp.com",
+  "host": "gyps.herokuapp.com",
   "port": 80,
   "mongoose": "MONGODB_URI",
   "public": "../public/",
