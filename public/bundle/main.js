@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f6c9b14e44a33c8c44ea"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f79f8f73174d56ae611e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -9266,8 +9266,8 @@ var io = __webpack_require__(464);
 
 // FIXME this should be in configuration somewhere.
 // Establish a Socket.io connection
-var socket = io('http://localhost:2017');
-// const socket = io('https://gyps.herokuapp.com/'); 
+// const socket = io('http://localhost:2017');
+var socket = io('https://gyps.herokuapp.com/');
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 var app = feathers().configure(socketio(socket)).configure(hooks())
