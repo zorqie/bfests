@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "5c40760ad826618cb3a4"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "57dd86ab5474dc38ea0a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -36788,7 +36788,8 @@ var Layout = function (_React$Component) {
 
 		_this.patchedListener = function (u) {
 			if (u) {
-				var message = u.name + ' signed ' + (u.online ? 'in' : 'out');
+				var name = u.name || u.facebook && u.facebook.name;
+				var message = name + ' signed ' + (u.online ? 'in' : 'out');
 				_this.setState({ snackbarOpen: true, message: message });
 			}
 		};

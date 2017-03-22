@@ -105,7 +105,8 @@ export default class Layout extends React.Component {
 	}
 	patchedListener = u => {
 		if(u) {
-			const message = u.name + ' signed ' + (u.online ? 'in' : 'out')
+			const name = u.name || (u.facebook && u.facebook.name)
+			const message = name + ' signed ' + (u.online ? 'in' : 'out')
 			this.setState({snackbarOpen: true, message})
 		}
 	}
