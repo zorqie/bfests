@@ -37,7 +37,7 @@ export default class UserCard extends React.Component {
 		const { user } = this.props;
 		return <Card>
 					<CardHeader
-						title={user.name}
+						title={user.name || (user.facebook && user.facebook.name)}
 						subtitle={user.email}
 						avatar=""
 					/>

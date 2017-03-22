@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "bda5bd3aa9a701341f49"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f6c9b14e44a33c8c44ea"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -9266,8 +9266,8 @@ var io = __webpack_require__(464);
 
 // FIXME this should be in configuration somewhere.
 // Establish a Socket.io connection
-// const socket = io('http://localhost:2017');
-var socket = io('https://gyps.herokuapp.com/');
+var socket = io('http://localhost:2017');
+// const socket = io('https://gyps.herokuapp.com/'); 
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 var app = feathers().configure(socketio(socket)).configure(hooks())
@@ -37226,6 +37226,16 @@ var LoginForm = function (_React$Component) {
 						{ style: { marginTop: '1em', textAlign: 'right' } },
 						_react2.default.createElement(_FlatButton2.default, { label: 'Cancel', onTouchTap: _reactRouter.browserHistory.goBack }),
 						_react2.default.createElement(_RaisedButton2.default, { type: 'submit', label: 'Login', primary: true })
+					),
+					_react2.default.createElement(
+						'a',
+						{ href: '/auth/facebook' },
+						'Login with Facebook'
+					),
+					_react2.default.createElement(
+						'p',
+						{ style: { marginTop: '1em', fontSize: 'smaller', color: 'grey' } },
+						'No personal info will be stored except your name as it appears on your profile.'
 					)
 				)
 			);
@@ -61259,6 +61269,7 @@ var routes = exports.routes = _react2.default.createElement(
 		{ path: '/', component: _layout2.default },
 		_react2.default.createElement(_reactRouter.IndexRoute, { component: Home }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'login', component: _loginForm2.default }),
+		_react2.default.createElement(_reactRouter.Redirect, { from: 'auth/success', to: 'events' }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'signup', component: _signupForm2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'acts/:actId', component: _actDetailsPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'events', component: _eventsList2.default }),
@@ -117911,7 +117922,7 @@ var UserCard = function (_React$Component) {
 				_Card.Card,
 				null,
 				_react2.default.createElement(_Card.CardHeader, {
-					title: user.name,
+					title: user.name || user.facebook && user.facebook.name,
 					subtitle: user.email,
 					avatar: ''
 				}),

@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
+import { Router, Route, Redirect, IndexRoute, Link, browserHistory } from 'react-router'
 
 import Layout from './mui/layout.jsx'
 
@@ -33,6 +33,7 @@ export const routes =
 			<IndexRoute component={Home} />
 
 			<Route path='login' component={LoginForm} />
+			<Redirect from='auth/success' to='events' />
 			<Route path='signup' component={SignupForm} />
 			
 			<Route path='acts/:actId' component={ActDetailsPage} />

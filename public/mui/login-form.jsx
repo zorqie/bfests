@@ -85,6 +85,8 @@ class LoginForm extends React.Component {
 						<FlatButton label='Cancel' onTouchTap={browserHistory.goBack} />
 						<RaisedButton type='submit' label='Login' primary/>
 					</div>
+					<a href='/auth/facebook'>Login with Facebook</a>
+					<p style={{marginTop:'1em', fontSize:'smaller', color:'grey'}}>No personal info will be stored except your name as it appears on your profile.</p>
 				</form>
 				
 			</Paper>

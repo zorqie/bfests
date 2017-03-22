@@ -43,6 +43,12 @@ app.use(compress())
   .options('*', cors())
   .use(cors())
   // .use(favicon( path.join(app.get('public'), 'favicon.ico') ))
+.get('/auth/success', (req, res, next) => {
+  console.log("\nZ\nZ\nZ\nZ\nZ\nZ\nZ\n\nNexting", next)
+  next()
+  console.log("\n\n\n\n\n\n\n\n\nNexted", next)
+  res.sendFile(path.resolve(__dirname, app.get('public') , 'index.html'))
+})
   .get('*', gypsing)
   .use('/', serveStatic( app.get('public') ))
   .use(bodyParser.json())
@@ -52,7 +58,6 @@ app.use(compress())
   .configure(socketio())
   .configure(services)
   .configure(middleware);
-
 // app.get('*', (req, res) => {
 //   // match the routes to the url
 //   match({ routes: routes, location: req.url }, (err, redirect, props) => {

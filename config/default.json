@@ -5,7 +5,6 @@
   "mongo_local": "mongodb://localhost:27017/test",
   "public": "../public/",
   "auth": {
-    "shouldSetupSuccessRoute": false,
     "token": {
       "secret": "onGq8IJBYp+lhWKbY4xH+9BGrxIuZArEGf9T2Lf0Wy7MhA22DLkXyLppOQ27qUnvgxkTINvoArwih94eauCAZw=="
     },
