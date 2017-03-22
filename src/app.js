@@ -27,7 +27,7 @@ const gypsing = function (request, response, next) {
     console.log("Re-Routing ", request.originalUrl);
     return response.sendFile(path.resolve(__dirname, app.get('public') , 'index.html'))
   } else {
-    console.log("Nexting ", url);
+    // console.log("Nexting ", url);
     return next();
   }
 };
@@ -47,6 +47,7 @@ app.use(compress())
   // console.log("\nZ\nZ\nZ\nZ\nZ\nZ\nZ\n\nNexting", next)
   next()
   // console.log("\n\n\n\n\n\n\n\n\nNexted", next)
+  console.log("==== Response: ", res)
   res.sendFile(path.resolve(__dirname, app.get('public') , 'index.html'))
 })
   .get('*', gypsing)
