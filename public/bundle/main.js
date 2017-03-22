@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f79f8f73174d56ae611e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "5c40760ad826618cb3a4"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -61269,7 +61269,6 @@ var routes = exports.routes = _react2.default.createElement(
 		{ path: '/', component: _layout2.default },
 		_react2.default.createElement(_reactRouter.IndexRoute, { component: Home }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'login', component: _loginForm2.default }),
-		_react2.default.createElement(_reactRouter.Redirect, { from: 'auth/success', to: 'events' }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'signup', component: _signupForm2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'acts/:actId', component: _actDetailsPage2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: 'events', component: _eventsList2.default }),

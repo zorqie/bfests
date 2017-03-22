@@ -33,7 +33,7 @@ export const routes =
 			<IndexRoute component={Home} />
 
 			<Route path='login' component={LoginForm} />
-			<Redirect from='auth/success' to='events' />
+			{/*<Redirect from='auth/success' to='events' />*/}
 			<Route path='signup' component={SignupForm} />
 			
 			<Route path='acts/:actId' component={ActDetailsPage} />
