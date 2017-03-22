@@ -1,10 +1,9 @@
 {
-  "host": "gyps.herokuapp.com",
+  "host": "https://gyps.herokuapp.com",
   "port": 80,
   "mongoose": "MONGODB_URI",
   "public": "../public/",
   "auth": {
-    "shouldSetupSuccessRoute": false,
     "token": {
       "secret": "FEATHERS_AUTH_SECRET"
     },
