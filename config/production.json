@@ -11,7 +11,7 @@
     "facebook": {
       "clientID": "FB_CLIENT",
       "clientSecret": "FB_SECRET",
-      "callbackURL": "https://gyps.herouapp.com/auth/facebook/callback",
+      "callbackURL": "https://gyps.herokuapp.com/auth/facebook/callback",
       "permissions": {
         "scope": ["public_profile","email"]
       }
