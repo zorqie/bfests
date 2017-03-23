@@ -9,7 +9,6 @@
     },
     "local": {},
     "facebook": {
-      "strategy": "FacebookStrategy",
       "clientID": "FB_CLIENT",
       "clientSecret": "FB_SECRET",
       "permissions": {
