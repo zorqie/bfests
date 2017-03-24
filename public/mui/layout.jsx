@@ -130,6 +130,7 @@ export default class Layout extends React.Component {
 							<Link to='login'><FlatButton label="Login" /></Link>
 					}
 					onLeftIconButtonTouchTap={this.toggleDrawer}
+					className='gyps-bar'
 				/>
 				<Drawer 
 					docked={false}
@@ -137,7 +138,7 @@ export default class Layout extends React.Component {
 					open={this.state.drawerOpen}
 					onRequestChange={this.handleDrawer}
 				>
-					{ user && <UserCard user={user} onNavigate={this.closeDrawer}/> }
+					{ user && <UserCard user={user} onNavigate={this.handleMenu}/> }
 					{this.sections.map( section => 
 						<MenuItem onTouchTap={this.handleMenu.bind(this, section)} primaryText={section.text} key={section.path}/>
 					)}

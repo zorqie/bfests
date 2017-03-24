@@ -46,7 +46,7 @@ app.use(compress())
   .get('/auth/success', (req, res, next) => {
     // console.log("\nZ\nZ\nZ\nZ\nZ\nZ\nZ\n\nNexting", next)
     // console.log("\n\n\n\n\n\n\n\n\nNexted", next)
-    console.log("==== Response: ", res)
+    // console.log("==== Response: ", res)
     next()
     res.sendFile(path.resolve(__dirname, app.get('public') , 'index.html'))
   })

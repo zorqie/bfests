@@ -8,6 +8,7 @@ import Subheader from 'material-ui/Subheader'
 import Divider from 'material-ui/Divider'
 
 import GigListItem from './gig-list-item.jsx'
+import GigTimespan from './gig-timespan.jsx'
 import app from '../main.jsx'
 
 const styles = {
@@ -15,7 +16,52 @@ const styles = {
 		fontFamily: 'Roboto, sans-serif',
 		fontWeight: 300,
 		fontSize: '24px'
+	},
+	item: {
+		verticalAlign: 'top',
+	},
+	time: {
+		verticalAlign: 'top',
+		display: 'inline-block',
+		fontWeight: 300,
+		width: '30%',
+	},
+	gig: {
+		display: 'inline-block',
+		width: '40%',
+	},
+	name: {
+		fontWeight: 500,
+	},
+	venue: {
+		verticalAlign: 'top',
+		display: 'inline-block',
+		fontSize: 'small',
+		fontWeight: 300,
+		letterSpacing: '2px',
+		textTransform: 'uppercase',
+		width: '30%',
+	},
+	acts: {
+		fontSize: 'small',
+		fontWeight: 300,
+		color: 'rgba(0, 0, 0, 0.870588)',
 	}
+}
+
+function LineupItem({gig, onSelect, hideDates, ...others}) {
+	return <ListItem
+				onTouchTap={onSelect.bind(null, gig)}
+				{...others}
+				style={styles.item}
+			>
+			<div style={styles.time}>{<GigTimespan gig={gig} hideDates={hideDates} />}</div>
+			<div style={styles.gig}>
+				<div style={styles.name}>{gig.name}</div>
+				<div style={styles.acts}>{gig.acts && gig.acts.map(a=>a.name).join(', ')}</div>
+			</div>
+			<div style={styles.venue}>{gig.venue && gig.venue.name}</div>
+	</ListItem>
 }
 
 export default class Lineup extends React.Component {
@@ -68,8 +114,9 @@ export default class Lineup extends React.Component {
 					<Subheader style={styles.date}>{d.format('MMM D, dddd')}</Subheader>
 					<Divider/>
 					{tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
+						.sort((a, b) => +(a.gig.start > b.gig.start) || +(a.gig.start === b.gig.start) - 1)
 						.map(({gig}) => 
-							<GigListItem
+							<LineupItem
 								key={gig._id}
 								gig={gig}
 								hideDates={true}

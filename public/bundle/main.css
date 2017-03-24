@@ -2,13 +2,22 @@ html, body, * {
 	margin: 0;
 	font-family: Roboto, sans-serif;
 }
-.gig-timespan {
+.gyps-bar {
+	background-image: url(/img/rk7KCwOol_poster.jpg);
+	background-position: -64px -534px;
+	background-blend-mode: multiply;
+}
+.gig-duration {
+	display: block !important;
+	float: right !important;
+}
+.gig-duration, .gig-relative {
 	margin-left: 1em;
 	font-weight: 300;
 }
-.gig-timespan::before {
-	content: '(';
+.gig-duration::before {
+	content: '(' !important;
 }
-.gig-timespan::after {
-	content: ')';
+.gig-duration::after {
+	content: ')' !important;
 }

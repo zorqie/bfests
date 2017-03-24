@@ -16,6 +16,7 @@ const gigSchema = new Schema({
 	type: 		{ type: String, required: true },
 	capacity: { type: Number},
 	public: 	{ type: Boolean, 'default': false },
+	mandatory: 	{ type: Boolean },
 	start: 		{ type: Date, required: true},
 	end:   		{ type: Date },
 	

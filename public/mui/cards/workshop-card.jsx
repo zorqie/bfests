@@ -14,18 +14,18 @@ const styles = {
 		fontWeight: '300',
 		float: 'right'
 	},
-	leave: {
-		margin: '1em',
-		border: '2px solid grey'
-	}
+	divider: {
+		marginTop:'1em', 
+		marginBottom: '0.5em'
+	},
 }
 
 const WorkshopCard = ({gig, acts, fans, ticket, onMasterSelect}) => <div>
 	<span style={styles.gigType}>{gig.type}</span>
 	<h2>{gig.name}</h2>
 	<p>{gig.description}</p>
-	<Divider style={{marginTop:'1em'}} />
-		Taught by: 
+	<Divider style={styles.divider} />
+		Led by: 
 	{gig.acts && gig.acts.length ?
 		<ActsList 
 			acts={gig.acts} 

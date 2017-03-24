@@ -57,18 +57,15 @@ export const EventActions = ({event, tickets, route}) => {
 
 	return <CardActions>
 		{actions.map( ({name, path, newStatus}) => 
-			path ? 
-				<Link key={event._id + name} to={path.replace(':eventId', event._id)} >
-					<RaisedButton  label={name} /> 
-				</Link>
-				: 
-				<RaisedButton 
-					key={event._id + name} 
-					primary={true} 
-					label={name} 
-					onTouchTap={updatePass.bind(null, event, newStatus, false)} 
-				/>
-				
+			path ? 	<Link key={event._id + name} to={path.replace(':eventId', event._id)} >
+						<RaisedButton  label={name} /> 
+					</Link>
+				:	<RaisedButton 
+						key={event._id + name} 
+						primary={true} 
+						label={name} 
+						onTouchTap={updatePass.bind(null, event, newStatus, false)} 
+					/>
 		)}
 	</CardActions>
 }

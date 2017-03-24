@@ -23,8 +23,8 @@ import VolunteerCard from './cards/volunteer-card.jsx'
 
 const styles = {
 	leave: {
-		margin: '1em',
-		border: '2px solid grey'
+		marginLeft: '1em',
+		border: '1px solid rgba(0, 0, 0, 0.3)'
 	}
 }
 
@@ -107,7 +107,7 @@ export default class GigDetailsPage extends React.Component {
 		const gigTitle = <span>
 					<span className='acts'>{gig.acts && gig.acts.map(a => a.name).join(', ')}</span>
 					{gig.venue && <span> at the {gig.venue.name}</span>}</span>
-		return <div>
+		return <Card style={{margin:'2em'}}>
 			<CardHeader 
 				title={gigTitle} 
 				subtitle={<GigTimespan gig={gig} showDuration={true} />}
@@ -119,18 +119,13 @@ export default class GigDetailsPage extends React.Component {
 			<CardActions>
 			{gig.type && gig.type !== 'Volunteer' && 
 				<span>
-					{attending &&
-						<span>
-							You are attending 
-							<FlatButton style={styles.leave} label='Leave' onTouchTap={handleLeave.bind(this, gig, 'Attending')}/>
-						</span>
-					}
-					{!attending && 
-						<RaisedButton primary={true} label='Join' onTouchTap={handleJoin.bind(this, gig, 'Attending')}/>
+					{attending 
+						? <FlatButton secondary={true} label='Leave' onTouchTap={handleLeave.bind(this, gig, 'Attending')}/>
+						: <RaisedButton primary={true} label='Join' onTouchTap={handleJoin.bind(this, gig, 'Attending')}/>
 					}
 				</span>
 			}
 			</CardActions>
-		</div>
+		</Card>
 	}
 }
