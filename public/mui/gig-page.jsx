@@ -1,6 +1,5 @@
 import React from 'react'
 import moment from 'moment'
-import mongoose from 'mongoose'
 
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'

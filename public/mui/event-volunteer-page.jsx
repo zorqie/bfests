@@ -18,6 +18,7 @@ import { Kspan } from './hacks.jsx'
 
 export default class EventPage extends React.Component {
 	state = {
+		loading: true,
 		event: {},
 		pass: {},
 		gigs: [], 
@@ -51,8 +52,8 @@ export default class EventPage extends React.Component {
 	}
 
 	fetchData = () => {
-		const eventId = this.props.params.eventId;
-
+		const {eventId} = this.props.params;
+		this.setState({loading: true})
 		app.service('gigs').get(eventId)
 		.then(event => {
 			document.title = event.name;
@@ -72,7 +73,7 @@ export default class EventPage extends React.Component {
 			})
 			.then(page => {
 				// console.log("Got result: ", page);			
-				this.setState({...this.state, gigs: page.data, event})
+				this.setState({...this.state, gigs: page.data, event, loading: false})
 			})
 		})
 		.then(this.fetchTickets)
@@ -131,13 +132,13 @@ export default class EventPage extends React.Component {
 	}
 
 	ticketCreated = t => {
-		console.log("Ticket created", t)
+		// console.log("Ticket created", t)
 		const {tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: t.status})
 		this.setState({...this.state, tickets, ticketsRaw: this.state.ticketsRaw.concat(t)})
 	}
 	ticketRemoved = t => {
-		console.log("Ticket removed", t)
+		// console.log("Ticket removed", t)
 		const {tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: null})
 		this.setState({...this.state, tickets, ticketsRaw: this.state.ticketsRaw.filter(r=> r._id!==t._id)})
@@ -170,13 +171,13 @@ export default class EventPage extends React.Component {
 
 
 	render() {
-		const {gig, dialog, event, tickets, ticketsRaw} = this.state
+		const {loading, gig, dialog, event, tickets, ticketsRaw} = this.state
 		// console.log("Volunteerizing: ", this.props)
 		const title = <b>{event.name}</b>
 
 		const subtitle = <GigTimespan gig={event} showRelative={true} />
-
-		return (
+		const n = ticketsRaw.length
+		return (!loading && 
 			<Card initiallyExpanded={true}>
 			    {/*<CardHeader title={v.name} subtitle="gig" />*/}
 			    <CardTitle 
@@ -185,31 +186,34 @@ export default class EventPage extends React.Component {
 			    />
 			    <EventActions event={event} tickets={ticketsRaw} route={this.props.route.path}/>
 				<CardText>
-					{ticketsRaw.length ? 
-						<p>You have volunteered for <Link to='/tasks'>{ticketsRaw.length} opportunities</Link>. Feel free to select some more</p> :
-						<p>Който не работи, не яде. За да не изхвърляме храна, запишете се да работите.</p>
+					{n > 0
+						? <p>You have volunteered for <Link to='/tasks'>{n} opportunities</Link>. 
+							{n<5 ? ' Feel free to select some more' : ' Give others a chance too'}
+						</p>
+						: <p>Whoever doesn't work, doesn't eat. To prevent food waste, please choose some work.</p>
 					}
-					{this.state.gigs.map(
-						gig => <ListItem 
-									key={gig._id} 
-									primaryText={gig.name} 
-									onTouchTap={this.viewGigDetails.bind(this, gig)}
-									secondaryText={<GigTimespan gig={gig} />} 
-									rightIconButton={
-										this.isVolunteering(gig) ?
-										<FlatButton 
-											icon={minusBox}
-											title="Leave" 
-											onTouchTap={gigLeave.bind(this, gig, 'Volunteering')}
-										/>
-										:
-										<FlatButton 
-											icon={plusOutline}
-											title="Join" 
-											onTouchTap={this.handleGigJoin.bind(this, gig)}
-										/>
-									}
-					/>)}
+					{this.state.gigs.map(gig => 
+						<ListItem 
+							key={gig._id} 
+							primaryText={gig.name} 
+							onTouchTap={this.viewGigDetails.bind(this, gig)}
+							secondaryText={<GigTimespan gig={gig} />} 
+							rightIconButton={
+								this.isVolunteering(gig) ?
+								<FlatButton 
+									icon={minusBox}
+									title="Leave" 
+									onTouchTap={gigLeave.bind(this, gig, 'Volunteering')}
+								/>
+								:
+								<FlatButton 
+									icon={plusOutline}
+									title="Join" 
+									onTouchTap={this.handleGigJoin.bind(this, gig)}
+								/>
+							}
+						/>
+					)}
 				</CardText>
 
 				<Dialog title={dialog.title} open={dialog.open} onRequestClose={this.dialogClose} >
@@ -224,6 +228,6 @@ export default class EventPage extends React.Component {
 				<CardActions>					
 				</CardActions>
 			</Card>
-		)
+		|| null)
 	}
 }

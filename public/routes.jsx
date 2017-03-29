@@ -15,6 +15,7 @@ import EventVolunteerPage from './mui/event-volunteer-page.jsx'
 import EventInfo from './mui/event-info.jsx'
 import GigDetailsPage from './mui/gig-details-page.jsx'
 import Lineup from './mui/lineup.jsx'
+import Schedule from './mui/event-schedule.jsx';
 
 const Home = () => <div style={{textAlign:'center', margin:'3em'}}>
 	<h2>Europa Roots - A Bulgarian Spring Project</h2>
@@ -43,6 +44,9 @@ export const routes =
 			<Route path='volunteer/:eventId' component={EventVolunteerPage} />
 			<Route path='train/:eventId' component={EventTrainPage} />
 			<Route path='eventinfo/:eventId' component={EventInfo} />
+
+			
+			<Route path='schedule/:eventId(/:type)' component={Schedule} />
 
 			<Route path='lineup' component={Lineup} />
 			<Route path='tasks' component={Tasks} />

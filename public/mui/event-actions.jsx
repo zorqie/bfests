@@ -57,7 +57,7 @@ export const EventActions = ({event, tickets, route}) => {
 
 	return <CardActions>
 		{actions.map( ({name, path, newStatus}) => 
-			path ? 	<Link key={event._id + name} to={path.replace(':eventId', event._id)} >
+			path ? 	<Link key={event._id + name} to={path.replace(':eventId', event._id)} activeStyle={{display: 'none'}}>
 						<RaisedButton  label={name} /> 
 					</Link>
 				:	<RaisedButton 

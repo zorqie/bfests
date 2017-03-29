@@ -1,6 +1,5 @@
 import React from 'react'
 import moment from 'moment'
-import mongoose from 'mongoose'
 import {browserHistory} from 'react-router'
 
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
@@ -97,6 +96,19 @@ export default class EventPage extends React.Component {
 		this.setState({dialogOpen: false})
 	}
 	
+	handleGigJoin = gig => {
+		app.service('gigs').find({query: {parent: gig._id}})
+		.then(result => {
+			if(result.total) {
+				// has children
+				this.viewGigDetails(gig)
+			} else {
+				console.log("Go join the gig")
+				gigJoin(gig, 'Attending')
+			}
+		})
+	}
+
 	isAttending = gig => {
 		return this.state.tickets[gig._id] === "Attending" 
 	}
@@ -176,7 +188,7 @@ export default class EventPage extends React.Component {
 										<FlatButton 
 											icon={plusOutline}
 											title="Join" 
-											onTouchTap={gigJoin.bind(null, gig, 'Attending')}
+											onTouchTap={this.handleGigJoin.bind(null, gig, 'Attending')}
 										/>
 									}
 					/>)}

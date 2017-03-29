@@ -8,6 +8,7 @@ import { List, ListItem } from 'material-ui/List'
 
 import GigTimespan from './gig-timespan.jsx'
 import EventActions from './event-actions.jsx'
+import EventInfo from './event-info.jsx'
 import app from '../main.jsx'
 import { gigJoin } from './utils.jsx'
 
@@ -85,6 +86,7 @@ export default class EventsList extends React.Component {
 					</CardMedia>
 					<CardText actAsExpander={true}>
 						<p>{event.description}</p>
+						<EventInfo event={event} tickets={tickets} />
 					</CardText>
 										
 					<EventActions event={event} tickets={tickets} />

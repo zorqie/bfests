@@ -10,11 +10,12 @@ const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
 const gigSchema = new Schema({
-	_id:			{ type: String, 'default': shortid.generate},
+	_id:		{ type: String, 'default': shortid.generate},
 	name: 		{ type: String, required: true },
-	description: 	{ type: String },
+	description:{ type: String },
+	info: 		{ type: [Schema.Types.Mixed] },
 	type: 		{ type: String, required: true },
-	capacity: { type: Number},
+	capacity: 	{ type: Number},
 	public: 	{ type: Boolean, 'default': false },
 	mandatory: 	{ type: Boolean },
 	start: 		{ type: Date, required: true},

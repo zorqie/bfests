@@ -1,6 +1,5 @@
 import React from 'react'
 import moment from 'moment'
-import mongoose from 'mongoose'
 import { browserHistory } from 'react-router';
 
 import Avatar from 'material-ui/Avatar'
@@ -14,19 +13,11 @@ import Dialog from 'material-ui/Dialog'
 
 import ActsList from './acts-list.jsx'
 import GigTimespan from './gig-timespan.jsx'
+import GigTitle from './gig-title.jsx'
 import app from '../main.jsx'
 import { gigJoin, gigLeave } from './utils.jsx'
 
-import PerformanceCard from './cards/performance-card.jsx'
-import WorkshopCard from './cards/workshop-card.jsx'
-import VolunteerCard from './cards/volunteer-card.jsx'
-
-const styles = {
-	leave: {
-		marginLeft: '1em',
-		border: '1px solid rgba(0, 0, 0, 0.3)'
-	}
-}
+import ActivityCard from './cards/activity-card.jsx'
 
 export default class GigDetailsPage extends React.Component {
 	state = {
@@ -92,40 +83,24 @@ export default class GigDetailsPage extends React.Component {
 		const handleLeave = onLeave || gigLeave
 		
 		const attending = status ? tickets && tickets[gig._id] === status : (ticket && ticket.status === 'Attending')
-		// console.log("GIIG: ", gig)
-		// console.log("Attending? ", attending)
-		const card = 
-			gig.type==='Workshop' ? 
-				<WorkshopCard gig={gig} tickets={tickets} onMasterSelect={this.viewActDetails} /> : 
-				gig.type==='Volunteer' ?
-					<VolunteerCard gig={gig} tickets={tickets} onJoin={handleJoin} onLeave={handleLeave} /> : 
-					<PerformanceCard 
-						gig={gig} 
-						tickets={tickets}
-						onPerformerSelect={this.viewActDetails}
-					/>
-		const gigTitle = <span>
-					<span className='acts'>{gig.acts && gig.acts.map(a => a.name).join(', ')}</span>
-					{gig.venue && <span> at the {gig.venue.name}</span>}</span>
-		return <Card style={{margin:'2em'}}>
+		
+		return <div>
 			<CardHeader 
-				title={gigTitle} 
+				title={<GigTitle gig={gig} />} 
 				subtitle={<GigTimespan gig={gig} showDuration={true} />}
 				avatar={<Avatar>{(gig.type && gig.type.charAt(0)) || ' '}</Avatar>}>
 			</CardHeader>
 			<CardText>
-				{card}
+				<ActivityCard 
+					gig={gig} 
+					tickets={tickets} 
+					onJoin={handleJoin} 
+					onLeave={handleLeave} 
+					onActSelect={this.viewActDetails} 
+				/>
 			</CardText>
 			<CardActions>
-			{gig.type && gig.type !== 'Volunteer' && 
-				<span>
-					{attending 
-						? <FlatButton secondary={true} label='Leave' onTouchTap={handleLeave.bind(this, gig, 'Attending')}/>
-						: <RaisedButton primary={true} label='Join' onTouchTap={handleJoin.bind(this, gig, 'Attending')}/>
-					}
-				</span>
-			}
 			</CardActions>
-		</Card>
+		</div>
 	}
 }

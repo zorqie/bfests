@@ -132,7 +132,6 @@ app.authenticate()
 
 // FIXME remove this!!!
 window.gyps = app;
-window.ShortId = ShortId
 
 export default app;
 

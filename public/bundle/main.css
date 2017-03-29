@@ -21,3 +21,57 @@ html, body, * {
 .gig-duration::after {
 	content: ')' !important;
 }
+table.gig-schedule {
+	margin-bottom: 2em;
+	padding-right: 2em;
+	border-collapse: separate;
+	border-spacing: 4px 0;
+}
+table.gig-schedule tbody tr td:first-child {
+	border: none;
+	width: 4em;
+	text-align: right;
+	background-color: white;
+	font-size: smaller;
+	font-weight: 300;
+	padding: 0.5em 1em;
+}
+/*table.gig-schedule tbody tr:nth-child(odd) {
+	background-color: rgba(127, 221, 233, 0.14);
+}*/
+table.gig-schedule tbody tr td {
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+	transition: all 0.5s ease;
+}
+table.gig-schedule tbody tr td:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+td.j-start {
+	border-top: 2px solid grey !important;
+}
+td.j-end {
+	border-bottom: 2px solid grey !important;
+}
+td.j-shift {
+	border-right: 2px solid grey !important;
+	border-left: 2px solid grey;
+	width: 12em;
+}
+table.gig-schedule tbody tr td a {
+	font-size: x-small;
+	text-decoration: none;
+	color: rgba(0,0,0,0.7);
+	padding-left: 0.3em;
+}
+
+/*table.gig-schedule thead tr:nth-child(2) th {
+	background-color: rgba(0,0,0,0.5);
+}*/
+table.gig-schedule thead tr th a {
+	font-size: smaller;
+	text-decoration: none;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: rgba(0,0,0,0.5);
+}
