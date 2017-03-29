@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "8a74129c1c7934b287c0"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "b7b16830beca84f41d75"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -83026,6 +83026,10 @@ var _FlatButton = __webpack_require__(30);
 
 var _FlatButton2 = _interopRequireDefault(_FlatButton);
 
+var _RaisedButton = __webpack_require__(58);
+
+var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
 var _MenuItem = __webpack_require__(263);
 
 var _MenuItem2 = _interopRequireDefault(_MenuItem);
@@ -83184,7 +83188,7 @@ var Layout = function (_React$Component) {
 						iconElementRight: user ? _react2.default.createElement(_FlatButton2.default, { onClick: this.handleLogout, label: 'Logout' }) : _react2.default.createElement(
 							_reactRouter.Link,
 							{ to: 'login' },
-							_react2.default.createElement(_FlatButton2.default, { label: 'Login' })
+							_react2.default.createElement(_RaisedButton2.default, { primary: true, label: 'Login' })
 						),
 						onLeftIconButtonTouchTap: this.toggleDrawer,
 						className: 'gyps-bar'

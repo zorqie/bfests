@@ -13,6 +13,7 @@ import AppBar from 'material-ui/AppBar';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Drawer from 'material-ui/Drawer';
 import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
 import MenuItem from 'material-ui/MenuItem';
 import Snackbar from 'material-ui/Snackbar';
 
@@ -127,7 +128,7 @@ export default class Layout extends React.Component {
 						user ? 
 							<FlatButton onClick={this.handleLogout} label="Logout"/>
 							:
-							<Link to='login'><FlatButton label="Login" /></Link>
+							<Link to='login'><RaisedButton primary={true} label="Login" /></Link>
 					}
 					onLeftIconButtonTouchTap={this.toggleDrawer}
 					className='gyps-bar'
