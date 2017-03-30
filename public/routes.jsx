@@ -10,6 +10,8 @@ import SignupForm from './mui/signup-form.jsx'
 import ActDetailsPage from './mui/act-details-page.jsx'
 import EventsList from './mui/events-list.jsx'
 import EventPage from './mui/event-page.jsx'
+import EventPurchasePage from './mui/event-purchase.jsx'
+import EventTrainingPage from './mui/event-training.jsx'
 import EventTrainPage from './mui/event-volunteer-page.jsx'
 import EventVolunteerPage from './mui/event-volunteer-page.jsx'
 import EventInfo from './mui/event-info.jsx'
@@ -44,6 +46,8 @@ export const routes =
 			<Route path='volunteer/:eventId' component={EventVolunteerPage} />
 			<Route path='train/:eventId' component={EventTrainPage} />
 			<Route path='eventinfo/:eventId' component={EventInfo} />
+			<Route path='training/:eventId' component={EventTrainingPage} />
+			<Route path='purchase/:eventId' component={EventPurchasePage} />
 
 			
 			<Route path='schedule/:eventId(/:type)' component={Schedule} />
