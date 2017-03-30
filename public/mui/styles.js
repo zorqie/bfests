@@ -34,6 +34,9 @@ const styles = {
 	},
 	
 	lineup: {
+		container: {
+			margin: '1em'
+		},
 		date: {
 			fontFamily: 'Roboto, sans-serif',
 			fontWeight: 300,

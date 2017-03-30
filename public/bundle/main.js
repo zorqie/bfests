@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "26dd501baf37f613d47f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "dfc7d676c12a937f5926"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -83788,8 +83788,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -83814,6 +83812,10 @@ var _Divider = __webpack_require__(138);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
+var _main = __webpack_require__(19);
+
+var _main2 = _interopRequireDefault(_main);
+
 var _gigListItem = __webpack_require__(172);
 
 var _gigListItem2 = _interopRequireDefault(_gigListItem);
@@ -83822,9 +83824,13 @@ var _gigTimespan = __webpack_require__(56);
 
 var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
 
-var _main = __webpack_require__(19);
+var _lineupItem = __webpack_require__(752);
 
-var _main2 = _interopRequireDefault(_main);
+var _lineupItem2 = _interopRequireDefault(_lineupItem);
+
+var _styles = __webpack_require__(743);
+
+var _styles2 = _interopRequireDefault(_styles);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -83834,93 +83840,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var styles = {
-	date: {
-		fontFamily: 'Roboto, sans-serif',
-		fontWeight: 300,
-		fontSize: '24px'
-	},
-	item: {
-		verticalAlign: 'top'
-	},
-	time: {
-		verticalAlign: 'top',
-		display: 'inline-block',
-		fontWeight: 300,
-		width: '30%'
-	},
-	gig: {
-		display: 'inline-block',
-		width: '40%'
-	},
-	name: {
-		fontWeight: 500
-	},
-	venue: {
-		verticalAlign: 'top',
-		display: 'inline-block',
-		fontSize: 'small',
-		fontWeight: 300,
-		letterSpacing: '2px',
-		textTransform: 'uppercase',
-		width: '30%'
-	},
-	acts: {
-		fontSize: 'small',
-		fontWeight: 300,
-		color: 'rgba(0, 0, 0, 0.870588)'
-	}
-};
-
-function LineupItem(_ref) {
-	var gig = _ref.gig,
-	    onSelect = _ref.onSelect,
-	    hideDates = _ref.hideDates,
-	    others = _objectWithoutProperties(_ref, ['gig', 'onSelect', 'hideDates']);
-
-	return _react2.default.createElement(
-		_List.ListItem,
-		_extends({
-			onTouchTap: onSelect.bind(null, gig)
-		}, others, {
-			style: styles.item
-		}),
-		_react2.default.createElement(
-			'div',
-			{ style: styles.time },
-			_react2.default.createElement(_gigTimespan2.default, { gig: gig, hideDates: hideDates })
-		),
-		_react2.default.createElement(
-			'div',
-			{ style: styles.gig },
-			_react2.default.createElement(
-				'div',
-				{ style: styles.name },
-				gig.name
-			),
-			_react2.default.createElement(
-				'div',
-				{ style: styles.acts },
-				gig.acts && gig.acts.map(function (a) {
-					return a.name;
-				}).join(', ')
-			)
-		),
-		_react2.default.createElement(
-			'div',
-			{ style: styles.venue },
-			gig.venue && gig.venue.name
-		)
-	);
-}
-
 var Lineup = function (_React$Component) {
 	_inherits(Lineup, _React$Component);
 
 	function Lineup() {
-		var _ref2;
+		var _ref;
 
 		var _temp, _this, _ret;
 
@@ -83930,7 +83854,7 @@ var Lineup = function (_React$Component) {
 			args[_key] = arguments[_key];
 		}
 
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = Lineup.__proto__ || Object.getPrototypeOf(Lineup)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Lineup.__proto__ || Object.getPrototypeOf(Lineup)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			tickets: [],
 			dates: [],
 			loading: true
@@ -83984,7 +83908,7 @@ var Lineup = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				null,
+				{ style: _styles2.default.lineup.container },
 				loading && _react2.default.createElement(_CircularProgress2.default, null),
 				!loading && tickets.length == 0 ? _react2.default.createElement(
 					_Subheader2.default,
@@ -84002,7 +83926,7 @@ var Lineup = function (_React$Component) {
 						{ key: d },
 						_react2.default.createElement(
 							_Subheader2.default,
-							{ style: styles.date },
+							{ style: _styles2.default.lineup.date },
 							d.format('MMM D, dddd')
 						),
 						_react2.default.createElement(_Divider2.default, null),
@@ -84010,9 +83934,9 @@ var Lineup = function (_React$Component) {
 							return (0, _moment2.default)(t.gig.start).isSame(d, 'day');
 						}).sort(function (a, b) {
 							return +(a.gig.start > b.gig.start) || +(a.gig.start === b.gig.start) - 1;
-						}).map(function (_ref3) {
-							var gig = _ref3.gig;
-							return _react2.default.createElement(LineupItem, {
+						}).map(function (_ref2) {
+							var gig = _ref2.gig;
+							return _react2.default.createElement(_lineupItem2.default, {
 								key: gig._id,
 								gig: gig,
 								hideDates: true,
@@ -84440,6 +84364,9 @@ var styles = {
 	},
 
 	lineup: {
+		container: {
+			margin: '1em'
+		},
 		date: {
 			fontFamily: 'Roboto, sans-serif',
 			fontWeight: 300,
@@ -85459,8 +85386,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -85481,6 +85406,10 @@ var _Divider = __webpack_require__(138);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
+var _main = __webpack_require__(19);
+
+var _main2 = _interopRequireDefault(_main);
+
 var _gigListItem = __webpack_require__(172);
 
 var _gigListItem2 = _interopRequireDefault(_gigListItem);
@@ -85489,9 +85418,9 @@ var _gigTimespan = __webpack_require__(56);
 
 var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
 
-var _main = __webpack_require__(19);
+var _lineupItem = __webpack_require__(752);
 
-var _main2 = _interopRequireDefault(_main);
+var _lineupItem2 = _interopRequireDefault(_lineupItem);
 
 var _styles = __webpack_require__(743);
 
@@ -85505,11 +85434,154 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 var startTimeSort = function startTimeSort(a, b) {
 	return +(a.start > b.start) || +(a.start === b.start) - 1;
 };
+
+var PerformanceList = function (_React$Component) {
+	_inherits(PerformanceList, _React$Component);
+
+	function PerformanceList() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, PerformanceList);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = PerformanceList.__proto__ || Object.getPrototypeOf(PerformanceList)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			gigs: [],
+			dates: [],
+			loading: true
+		}, _this.fetchData = function () {
+			var my = _main2.default.get('user');
+			_main2.default.service('acts').find({ query: { user_id: my._id } }).then(function (acts) {
+				return _main2.default.service('gigs').find({
+					query: {
+						act_id: { $in: acts.data.map(function (a) {
+								return a._id;
+							}) },
+						$sort: { start: 1 }
+					}
+				}).then(function (result) {
+					// console.log("Teekets:", result)
+					var formated = result.data.map(function (g) {
+						return (0, _moment2.default)(g.start).format('YYYY-MM-DD');
+					});
+					// console.log("Formated", formated)
+					var unique = formated.filter(function (e, i, a) {
+						return a.indexOf(e) === i;
+					});
+					// console.log("Unique", unique)
+					var sorted = unique.sort();
+					var dates = sorted.map(function (s) {
+						return (0, _moment2.default)(s, 'YYYY-MM-DD');
+					});
+					// a little hacky format -> parse but
+					// works better than 0-ing time
+					// console.log("Dates", dates)
+					_this.setState({ gigs: result.data, dates: dates, loading: false });
+				});
+			}).catch(function (err) {
+				return console.error;
+			});
+		}, _this.select = function (gig) {
+			_reactRouter.browserHistory.push('/gigs/' + gig._id);
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(PerformanceList, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			_main2.default.authenticate().then(this.fetchData);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var _state = this.state,
+			    dates = _state.dates,
+			    gigs = _state.gigs,
+			    loading = _state.loading;
+			// console.log("LINEUP", this.state) 
+			// console.log(dates)
+
+			return _react2.default.createElement(
+				'div',
+				{ style: _styles2.default.lineup.container },
+				loading && _react2.default.createElement(_CircularProgress2.default, null),
+				!loading && gigs.length == 0 ? _react2.default.createElement(
+					'div',
+					null,
+					'No events found.'
+				) : '',
+				dates.map(function (d) {
+					return _react2.default.createElement(
+						_List.List,
+						{ key: d },
+						_react2.default.createElement(
+							'div',
+							{ style: _styles2.default.lineup.date },
+							d.format('MMM D, dddd')
+						),
+						_react2.default.createElement(_Divider2.default, null),
+						gigs.filter(function (g) {
+							return (0, _moment2.default)(g.start).isSame(d, 'day');
+						}).sort(startTimeSort).map(function (gig) {
+							return _react2.default.createElement(_lineupItem2.default, {
+								key: gig._id,
+								gig: gig,
+								hideDates: true,
+								onSelect: _this2.select.bind(_this2, gig)
+							});
+						})
+					);
+				})
+			);
+		}
+	}]);
+
+	return PerformanceList;
+}(_react2.default.Component);
+
+exports.default = PerformanceList;
+
+/***/ }),
+/* 752 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.default = LineupItem;
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _List = __webpack_require__(29);
+
+var _gigTimespan = __webpack_require__(56);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+var _styles = __webpack_require__(743);
+
+var _styles2 = _interopRequireDefault(_styles);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 function LineupItem(_ref) {
 	var gig = _ref.gig,
@@ -85552,121 +85624,6 @@ function LineupItem(_ref) {
 		)
 	);
 }
-
-var PerformanceList = function (_React$Component) {
-	_inherits(PerformanceList, _React$Component);
-
-	function PerformanceList() {
-		var _ref2;
-
-		var _temp, _this, _ret;
-
-		_classCallCheck(this, PerformanceList);
-
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = PerformanceList.__proto__ || Object.getPrototypeOf(PerformanceList)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
-			gigs: [],
-			dates: [],
-			loading: true
-		}, _this.fetchData = function () {
-			var my = _main2.default.get('user');
-			_main2.default.service('acts').find({ query: { user_id: my._id } }).then(function (acts) {
-				return _main2.default.service('gigs').find({
-					query: {
-						act_id: { $in: acts.data.map(function (a) {
-								return a._id;
-							}) },
-						$sort: { start: 1 }
-					}
-				}).then(function (result) {
-
-					// if(result.total) {
-					// console.log("Teekets:", result)
-					var formated = result.data.map(function (g) {
-						return (0, _moment2.default)(g.start).format('YYYY-MM-DD');
-					});
-					// console.log("Formated", formated)
-					var unique = formated.filter(function (e, i, a) {
-						return a.indexOf(e) === i;
-					});
-					// console.log("Unique", unique)
-					var sorted = unique.sort();
-					var dates = sorted.map(function (s) {
-						return (0, _moment2.default)(s, 'YYYY-MM-DD');
-					});
-					// a little hacky format -> parse but
-					// works better than 0-ing time
-					// console.log("Dates", dates)
-					_this.setState({ gigs: result.data, dates: dates, loading: false });
-					// } 
-				});
-			}).catch(function (err) {
-				return console.error;
-			});
-		}, _this.select = function (gig) {
-			_reactRouter.browserHistory.push('/gigs/' + gig._id);
-		}, _temp), _possibleConstructorReturn(_this, _ret);
-	}
-
-	_createClass(PerformanceList, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			_main2.default.authenticate().then(this.fetchData);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			var _state = this.state,
-			    dates = _state.dates,
-			    gigs = _state.gigs,
-			    loading = _state.loading;
-			// console.log("LINEUP", this.state) 
-			// console.log(dates)
-
-			return _react2.default.createElement(
-				'div',
-				null,
-				loading && _react2.default.createElement(_CircularProgress2.default, null),
-				!loading && gigs.length == 0 ? _react2.default.createElement(
-					'div',
-					null,
-					'No events found.'
-				) : '',
-				dates.map(function (d) {
-					return _react2.default.createElement(
-						_List.List,
-						{ key: d },
-						_react2.default.createElement(
-							'div',
-							{ style: _styles2.default.lineup.date },
-							d.format('MMM D, dddd')
-						),
-						_react2.default.createElement(_Divider2.default, null),
-						gigs.filter(function (g) {
-							return (0, _moment2.default)(g.start).isSame(d, 'day');
-						}).sort(startTimeSort).map(function (gig) {
-							return _react2.default.createElement(LineupItem, {
-								key: gig._id,
-								gig: gig,
-								hideDates: true,
-								onSelect: _this2.select.bind(_this2, gig)
-							});
-						})
-					);
-				})
-			);
-		}
-	}]);
-
-	return PerformanceList;
-}(_react2.default.Component);
-
-exports.default = PerformanceList;
 
 /***/ })
 /******/ ]);
