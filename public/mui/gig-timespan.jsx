@@ -5,7 +5,7 @@ const GigTimespan = ({gig, showRelative, showDuration, hideDates, ...others}) =>
 	const mNow = moment();
 	const mStart = moment(gig.start);
 	const dateFormat = mNow.year() == mStart.year() ? 'ddd M/D' : 'ddd M/D/YY';
-	const timeFormat = 'h:mm a'
+	const timeFormat = 'h:mm\u00A0a'
 	const startDate = mStart.format(dateFormat);
 	const endDate = gig.end && moment(gig.end).format(dateFormat);
 	const relative = showRelative 
@@ -19,7 +19,7 @@ const GigTimespan = ({gig, showRelative, showDuration, hideDates, ...others}) =>
 	return <span className='gig-timespan' {...others}>
 			<span className='gig-start'>{!hideDates && <span>{startDate} at</span>} {mStart.format(timeFormat)}</span>
 			{endDate && <span className='gig-dash'>{'\u2013'}</span>}
-			{endDate && (<span className='gig-end'>{endDate===startDate ? '' : endDate + ' at '}{moment(gig.end).format(timeFormat)}</span>)}
+			{endDate && (<span className='gig-end'>{endDate===startDate ? '' : endDate + ' at\u00A0'}{moment(gig.end).format(timeFormat)}</span>)}
 			{' '}
 			{relative}
 			{' '}
