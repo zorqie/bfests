@@ -18,7 +18,7 @@ const GigTimespan = ({gig, showRelative, showDuration, hideDates, ...others}) =>
 	// {...others} passes the styling on
 	return <span className='gig-timespan' {...others}>
 			<span className='gig-start'>{!hideDates && <span>{startDate} at</span>} {mStart.format(timeFormat)}</span>
-			{endDate && <span className='gig-dash'>{'\u2013'}</span>}
+			{endDate && <span className='gig-dash'>{' \u2013 '}</span>}
 			{endDate && (<span className='gig-end'>{endDate===startDate ? '' : endDate + ' at\u00A0'}{moment(gig.end).format(timeFormat)}</span>)}
 			{' '}
 			{relative}
