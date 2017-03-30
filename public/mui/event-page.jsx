@@ -83,6 +83,7 @@ export default class EventPage extends React.Component {
 		.then(result => {
 			console.log("Got tickets", result)
 			if(result.total) {
+				// store tickets as a Map of _id = ticket.status pairs
 				const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
 				const {event} = this.state
 				Object.assign(event, {tickets: result.data.filter(t=>t.gig_id===event._id)})

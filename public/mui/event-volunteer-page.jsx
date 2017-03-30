@@ -16,6 +16,46 @@ import { gigJoin, gigLeave } from './utils.jsx'
 import { plusOutline, minusBox } from './icons.jsx'
 import { Kspan } from './hacks.jsx'
 
+const checkTickets = (event, tickets) => {
+	// here tickets are only Volunteering
+	// TODO consider moving to EventActions
+	const rules = event.ticket_rules
+	if(rules) {
+		const statuses = event.tickets.map(t => t.status)
+		// console.log("STATUSes", statuses)
+		rules.forEach(rule => {
+			if(rule.newStatus && rule.requires) {
+				// rule has requirements and forces a change of status; ignore actions only rules
+				if(statuses.indexOf(rule.status) > -1) {
+					// console.log("RULE!", rule)
+					// TODO use meets from event-actions!
+					if(rule.requires.length) {
+						console.log("ARRrgh! Array!", rule.requires)
+					} else {
+						const {minCount, status} = rule.requires 
+						if (tickets.filter(t => t.status===status).length >= minCount) {
+							console.log("Changing status to", rule.newStatus)
+							const ticket = event.tickets.find(t=> t.status===rule.status)
+							app.service('tickets').patch(ticket._id, {status: rule.newStatus})
+						}
+					}
+				} else if(statuses.indexOf(rule.newStatus) > -1) {
+					if(rule.requires.length) {
+						console.log("Array! ARRrgh! ", rule.requires)
+					} else {
+						const {minCount, status} = rule.requires 
+						console.log("Uh-oh", rule.requires)
+						if (tickets.filter(t => t.status===status).length < minCount) {
+							console.log("Achievment UNREQUIRED")
+						}
+					}
+				}
+			}
+		})
+	}
+}
+
+
 export default class EventPage extends React.Component {
 	state = {
 		loading: true,
@@ -73,7 +113,7 @@ export default class EventPage extends React.Component {
 			})
 			.then(page => {
 				// console.log("Got result: ", page);			
-				this.setState({...this.state, gigs: page.data, event, loading: false})
+				this.setState({gigs: page.data, event, loading: false})
 			})
 		})
 		.then(this.fetchTickets)
@@ -91,7 +131,7 @@ export default class EventPage extends React.Component {
 			if(event && passes.length) {
 				Object.assign(event, {tickets: passes})
 			}
-			this.setState({...this.state, ticketsRaw: result.data.filter(t => t.status==='Volunteering'), event, tickets})
+			this.setState({ticketsRaw: result.data.filter(t => t.status==='Volunteering'), event, tickets})
 		})
 	}
 
@@ -128,34 +168,38 @@ export default class EventPage extends React.Component {
 		// browserHistory.push('/gig/'+gig._id)
 		const { dialog } = this.state
 		Object.assign(dialog, {open: true, gig})
-		this.setState({...this.state, dialog})
+		this.setState({dialog})
 	}
 
 	ticketCreated = t => {
 		// console.log("Ticket created", t)
-		const {tickets} = this.state
+		const {event, tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: t.status})
-		this.setState({...this.state, tickets, ticketsRaw: this.state.ticketsRaw.concat(t)})
+		const tix = this.state.ticketsRaw.concat(t)
+		checkTickets(event, tix)
+		this.setState({tickets, ticketsRaw: tix})
 	}
 	ticketRemoved = t => {
 		// console.log("Ticket removed", t)
-		const {tickets} = this.state
+		const {event, tickets, ticketsRaw} = this.state
 		Object.assign(tickets, {[t.gig_id]: null})
-		this.setState({...this.state, tickets, ticketsRaw: this.state.ticketsRaw.filter(r=> r._id!==t._id)})
+		const tix = this.state.ticketsRaw.filter(r=> r._id!==t._id)
+		checkTickets(event, tix)
+		this.setState({tickets, ticketsRaw: tix})
 	}
 
 
 	gigRemoved = gig => {
 		// console.log("Removed: ", gig);
 		this.setState({
-			...this.state, 
+			
 			gigs: this.state.gigs.filter(g => g._id !== gig._id),
 		})
 	}
 	gigCreated = gig => {
 		// console.log("Added: ", gig);
 		this.setState({
-			...this.state, 
+			
 			gigs: this.state.gigs.concat(gig),
 		})
 	}
@@ -166,7 +210,7 @@ export default class EventPage extends React.Component {
 	}
 
 	dialogClose = () => {
-		this.setState({...this.state, dialog:{open:false, gig:{}}})
+		this.setState({dialog:{open:false, gig:{}}})
 	}
 
 

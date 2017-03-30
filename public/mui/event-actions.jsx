@@ -21,28 +21,49 @@ const updatePass = (event, status, update) => {
 }
 
 
+const meets = (req, tickets) => {
+	// console.log("Meet ", req)
+	if(Array.isArray(req)) {
+		// 
+		return req.reduce((result, r) => result &= meets(r, tickets), true)
+	} else if( typeof req === 'object') {
+		//object
+		// console.log("Required", req)
+		const {status, minCount, maxCount} = req
+		const matched = tickets.filter(t => t.status===status)
+		if(matched.length < minCount) {
+			return false
+		}
+	} 
+	return true
+}
+
 export const EventActions = ({event, tickets, route}) => {
 	let result = []
 	if(event.tickets && event.tickets.length) {
 		//at least one ticket
 		event.tickets.forEach(pass => {
 			const rules = event.ticket_rules.filter(r => r.status===pass.status)
+
 			rules.forEach(({requires, actions}) => {
-				if(Array.isArray(requires)) {
-					// 
-					console.log("HURRAY, ARRAY (so we ignore it for now...)", requires)
-				} else if( typeof requires === 'object') {
-					//object
-					// console.log("Required", requires)
-					const {status, minCount, maxCount} = requires
-					const matched = tickets.filter(t => t.status===status)
-					if(matched.length >= minCount) {
-						result = result.concat(actions)
-					}
-				} else {
-					// no requires or something weird
+				if(meets(requires, tickets)) {
 					result = result.concat(actions)
 				}
+				// if(Array.isArray(requires)) {
+				// 	// 
+				// 	console.log("HURRAY, ARRAY (so we ignore it for now...)", requires)
+				// } else if( typeof requires === 'object') {
+				// 	//object
+				// 	// console.log("Required", requires)
+				// 	const {status, minCount, maxCount} = requires
+				// 	const matched = tickets.filter(t => t.status===status)
+				// 	if(matched.length >= minCount) {
+				// 		result = result.concat(actions)
+				// 	}
+				// } else {
+				// 	// no requires or something weird
+				// 	result = result.concat(actions)
+				// }
 			})
 			// console.log("RULEZ!", rules)
 		})
