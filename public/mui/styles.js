@@ -32,6 +32,44 @@ const styles = {
 		textAlign: 'left',
 		whiteSpace: 'nowrap',
 	},
+	
+	lineup: {
+		date: {
+			fontFamily: 'Roboto, sans-serif',
+			fontWeight: 300,
+			fontSize: '24px'
+		},
+		item: {
+			verticalAlign: 'top',
+		},
+		time: {
+			verticalAlign: 'top',
+			display: 'inline-block',
+			fontWeight: 300,
+			width: '30%',
+		},
+		gig: {
+			display: 'inline-block',
+			width: '40%',
+		},
+		name: {
+			fontWeight: 500,
+		},
+		venue: {
+			verticalAlign: 'top',
+			display: 'inline-block',
+			fontSize: 'small',
+			fontWeight: 300,
+			letterSpacing: '2px',
+			textTransform: 'uppercase',
+			width: '30%',
+		},
+		acts: {
+			fontSize: 'small',
+			fontWeight: 300,
+			color: 'rgba(0, 0, 0, 0.870588)',
+		}
+	}
 }
 
 export default styles

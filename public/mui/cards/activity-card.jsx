@@ -73,6 +73,7 @@ export default class ActivityCard extends React.Component {
 	}
 	fetchData = () => {
 		if(this.props.tickets) {
+			console.log("Fetching tickets for ", this.props.gig)
 			app.service('gigs').find({
 				query: { 
 					parent: this.props.gig._id, 
@@ -88,12 +89,12 @@ export default class ActivityCard extends React.Component {
 		console.log("Created", shift)
 		console.log("THIS IS", this.props.gig)
 		if(shift.parent === this.props.gig._id) {
-			this.setState({...this.state, shifts: this.state.shifts.concat(shift)})
+			this.setState({shifts: this.state.shifts.concat(shift)})
 		}
 	}
 	removedListener = shift => {
 		if(shift.parent === this.props.gig._id) {
-			this.setState({...this.state, shifts: this.state.shifts.filter(s => s._id !== shift._id)})
+			this.setState({shifts: this.state.shifts.filter(s => s._id !== shift._id)})
 		}
 	}
 	patchedListener = shift => {
@@ -105,21 +106,21 @@ export default class ActivityCard extends React.Component {
 	// viewShift = shift => browserHistory.push('/shifts/'+shift._id)
 
 	viewShift = shift => {
-		console.log("Editshifting", shift)
 		const { dialog } = this.state
 		Object.assign(dialog, {open: true, shift})
-		this.setState({...this.state, dialog})
+		this.setState({dialog})
 	} 
 
 
 	dialogCancel = () => {
-		this.setState({...this.state, dialog: {open: false, shift:{}}})
+		this.setState({dialog: {open: false, shift:{}}})
 	}
 
 
 	render() {
 		const { gig, tickets, ...others /*onJoin, onLeave*/ } = this.props 
 		const { shifts, dialog } = this.state
+		console.log("CARD props", this.props)
 		const status = gig.type==='Volunteer' ? 'Volunteering' : 'Attending'
 		return <div>
 			<span style={styles.gigType}>{gig.type}</span> 
@@ -133,8 +134,9 @@ export default class ActivityCard extends React.Component {
 					actionButton={<ActionButton gig={shift} status={status} tickets={tickets} {...others}/>}
 				/>
 			)}
-
-			<div style={{marginTop:'1em'}}>{gig.type && tickets && !shifts.length && <ActionButton gig={gig} status={status} tickets={tickets} {...others}/>}</div>
+			<div style={{marginTop:'1.5em'}}>
+				{gig.type && tickets && !shifts.length && <ActionButton gig={gig} status={status} tickets={tickets} {...others}/>}
+			</div>
 			<ShiftDialog {...dialog} onCancel={this.dialogCancel} />
 		</div>
 	}

@@ -1,23 +1,23 @@
-import React from 'react';
+import React from 'react'
 
-import { Link, browserHistory } from 'react-router';
+import { Link, browserHistory } from 'react-router'
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import { 
 	red900, red700, 
 	grey100, grey400, grey500, 
-	lightGreen700, lightGreen900 } from 'material-ui/styles/colors';
+	lightGreen700, lightGreen900 } from 'material-ui/styles/colors'
 
-import AppBar from 'material-ui/AppBar';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
-import Drawer from 'material-ui/Drawer';
+import AppBar from 'material-ui/AppBar'
+import {Card, CardHeader, CardText} from 'material-ui/Card'
+import Drawer from 'material-ui/Drawer'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
-import MenuItem from 'material-ui/MenuItem';
-import Snackbar from 'material-ui/Snackbar';
+import MenuItem from 'material-ui/MenuItem'
+import Snackbar from 'material-ui/Snackbar'
 
-import app from '../main.jsx';
+import app from '../main.jsx'
 import errorHandler from './err'
 import UserCard from './user-card.jsx'
 
@@ -33,102 +33,101 @@ const theme = {
 	}
 }
 
-export default class Layout extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = { 
-			drawerOpen: false, 
-			user: null, 
-			section: 'BFest',
-			snackbarOpen: false,
-			message: '' 
-		};
+const sections = [
+	{ text: "Events", path: "/events"},		//TODO with only one section
+													// do we need them?
+]
 
-		this.sections = [
-			// { text: "Venues", path: "/venues"},
-			{ text: "Events", path: "/events"},		//TODO with only one section
-															// do we need them?
-			// { text: "Users", path: "/users"},
-		]
+export default class Layout extends React.Component {
+	state = { 
+		drawerOpen: false, 
+		user: null, 
+		section: 'BFest',
+		snackbarOpen: false,
+		message: '',
 	}
+
 	componentDidMount() {
 		app.authenticate()
 			.then(this.loginListener())
-			.catch(err => console.error);
-		app.on('authenticated', this.loginListener);
-		app.service('users').on('patched', this.patchedListener);
-		app.on('error', this.errorListener);
+			.catch(err => console.error)
+		app.on('authenticated', this.loginListener)
+		app.on('error', this.errorListener) 
+		app.service('users').on('patched', this.userPatched)
 	}
+
 	componentWillUnmount() {
 		if(app) {
-			app.removeListener('authenticated', this.loginListener);
-			app.removeListener('error', this.errorListener);
+			app.removeListener('authenticated', this.loginListener)
+			app.removeListener('error', this.errorListener)
 		}
 	}
 
-	handleUserChange = u => {
-		console.log("User loginified: ", u);
-		this.setState({snackbarOpen: true, message: "User logged in"});
+	closeDrawer = () => {
+		this.setState({drawerOpen: false})
 	}
 
-	closeDrawer = () => {
-		this.setState({...this.state, drawerOpen: false})
-	}
 	toggleDrawer = () => {
-		this.setState({...this.state, drawerOpen: !this.state.drawerOpen});
+		this.setState({drawerOpen: !this.state.drawerOpen})
 	}
+
 	handleMenu = section => {
-		// console.log("Menu: ", section);
-		const {path, text} = section;
-		this.setState({...this.state, section: text, drawerOpen: false});
-		// this.closeDrawer();
-		browserHistory.push(path);
+		// console.log("Menu: ", section)
+		const {path, text} = section
+		this.setState({section: text, drawerOpen: false})
+		// this.closeDrawer()
+		browserHistory.push(path)
 	}
 
 	handleLogout = () => {
 		app.service('users').patch(this.state.user._id, {online: false})
 		.then(u => {
-			this.setState({user: null});
-			app.logout();
-			browserHistory.push('/out');
+			this.setState({user: null})
+			app.logout()
+			browserHistory.push('/out')
 		})
 	}
+
 	errorListener = error => {
-		console.log("ERRORED out.", error);
-		this.setState({snackbarOpen: true, message: error.message});
-		// this.setState({snackbarOpen: true, message: `User logged out (${u.name}`});
+		console.log("ERRORED out.", error)
+		this.setState({snackbarOpen: true, message: error.message})
+		// this.setState({snackbarOpen: true, message: `User logged out (${u.name}`})
 	}
+
 	loginListener = u => {
-		const user = app.get('user');
+		const user = app.get('user')
 		if(!this.state.user && user) {
-			this.setState({ user });
+			this.setState({ user })
 		}
 	}
-	patchedListener = u => {
+
+	userPatched = u => {
 		if(u) {
 			const name = u.name || (u.facebook && u.facebook.name)
 			const message = name + ' signed ' + (u.online ? 'in' : 'out')
 			this.setState({snackbarOpen: true, message})
 		}
 	}
+
 	handleDrawer = (open, reason) => {
-		// console.log(`Drawer: open: ${open} for ${reason}`);
-		this.setState({...this.state, drawerOpen: open})
+		// console.log(`Drawer: open: ${open} for ${reason}`)
+		this.setState({drawerOpen: open})
 	}
-	handleSnackbarClose = () => this.setState({ snackbarOpen: false, message: ''});
+	handleSnackbarClose = () => this.setState({ snackbarOpen: false, message: ''})
 
 	render() { 
-		const {user} = this.state;
-		return ( 
+		const {user} = this.state
+		return (
 		<MuiThemeProvider muiTheme={getMuiTheme(theme)}>
 			<div>
 				<AppBar 
 					title={this.state.section}
 					iconElementRight={
-						user ? 
-							<FlatButton onClick={this.handleLogout} label="Logout"/>
-							:
-							<Link to='login'><RaisedButton primary={true} label="Login" /></Link>
+						user 
+						?	<FlatButton label="Logout" onTouchTap={this.handleLogout}/>
+						: 	<Link to='login'>
+								<RaisedButton label="Login"  primary={true}/>
+							</Link>
 					}
 					onLeftIconButtonTouchTap={this.toggleDrawer}
 					className='gyps-bar'
@@ -140,7 +139,7 @@ export default class Layout extends React.Component {
 					onRequestChange={this.handleDrawer}
 				>
 					{ user && <UserCard user={user} onNavigate={this.handleMenu}/> }
-					{this.sections.map( section => 
+					{sections.map( section => 
 						<MenuItem onTouchTap={this.handleMenu.bind(this, section)} primaryText={section.text} key={section.path}/>
 					)}
 				</Drawer>
@@ -158,4 +157,4 @@ export default class Layout extends React.Component {
 		</MuiThemeProvider>
 		)
 	}
-};
+}

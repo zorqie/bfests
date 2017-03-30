@@ -54,20 +54,20 @@ export default class GigDetailsPage extends React.Component {
 	}
 
 	fetchData = (force) => {
-		// console.log("FORCED", force)
+		// console.log("FORCED", this.props.params)
 		const gigId = this.props.params ? this.props.params.gigId : this.props.gig._id
 		// console.log("Fetching ", gigId)
 		app.service('gigs').get(gigId)
 		.then(gig => {
 				if(force || this.props.params) {
 					app.service('tickets').find({query: {gig_id: gigId}})
-					.then(result => this.setState({...this.state, gig, ticket: result.total ? result.data[0] : null}) )
+					.then(result => this.setState({gig, ticket: result.total ? result.data[0] : null}) )
 				} else {
 					this.setState({gig})
 				}
 			}
 		)
-		
+		.catch(err => console.log("It can't be: ", err))
 		// not authorized
 		// .then(() => app.service('fans')
 		// 	.find({query:{gig_id:gigId, status: 'Attending'}})
@@ -84,23 +84,33 @@ export default class GigDetailsPage extends React.Component {
 		
 		const attending = status ? tickets && tickets[gig._id] === status : (ticket && ticket.status === 'Attending')
 		
-		return <div>
-			<CardHeader 
-				title={<GigTitle gig={gig} />} 
-				subtitle={<GigTimespan gig={gig} showDuration={true} />}
-				avatar={<Avatar>{(gig.type && gig.type.charAt(0)) || ' '}</Avatar>}>
-			</CardHeader>
-			<CardText>
-				<ActivityCard 
-					gig={gig} 
-					tickets={tickets} 
-					onJoin={handleJoin} 
-					onLeave={handleLeave} 
-					onActSelect={this.viewActDetails} 
-				/>
-			</CardText>
-			<CardActions>
-			</CardActions>
-		</div>
+		return gig._id 
+			&& <div>
+				<CardHeader 
+					title={<GigTitle gig={gig} />} 
+					subtitle={<GigTimespan gig={gig} showDuration={true} />}
+					avatar={<Avatar>{(gig.type && gig.type.charAt(0)) || ' '}</Avatar>}>
+				</CardHeader>
+				<CardText>
+					<ActivityCard 
+						gig={gig} 
+						tickets={tickets} 
+						onJoin={handleJoin} 
+						onLeave={handleLeave} 
+						onActSelect={this.viewActDetails} 
+					/>
+				</CardText>
+				<CardActions>
+				</CardActions>
+			</div>
+			|| null
 	}
+}
+
+GigDetailsPage.propTypes = {
+	gig: React.PropTypes.object,
+	status: React.PropTypes.string, 
+	tickets: React.PropTypes.object, // map gig._id = status
+	onJoin: React.PropTypes.func, 
+	onLeave: React.PropTypes.func, 
 }

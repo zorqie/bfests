@@ -35,7 +35,7 @@ export default class EventPage extends React.Component {
 		app.authenticate().then(this.fetchData)
 		app.service('gigs').on('removed', this.gigRemoved)
 		app.service('gigs').on('created', this.gigCreated)
-		app.service('gigs').on('patched', this.gigPatched)
+		app.service('gigs').on('patched', this.fetchData) // just reload
 		app.service('tickets').on('created', this.ticketCreated)
 		app.service('tickets').on('removed', this.ticketRemoved)
 	}
@@ -43,7 +43,7 @@ export default class EventPage extends React.Component {
 		if(app) {
 			app.service('gigs').removeListener('removed', this.gigRemoved)
 			app.service('gigs').removeListener('created', this.gigCreated)
-			app.service('gigs').removeListener('patched', this.gigPatched)
+			app.service('gigs').removeListener('patched', this.fetchData) 
 			app.service('tickets').removeListener('removed', this.ticketRemoved)
 			app.service('tickets').removeListener('created', this.ticketCreated)
 		}
@@ -55,6 +55,7 @@ export default class EventPage extends React.Component {
 		app.service('gigs').get(eventId)
 		.then(event => {
 			document.title = event.name
+			app.emit('event.selected', event) 
 			// app.service('tickets').find({query:{gig_id: event._id}})
 			// .then(pass => {
 			// 	if(access.indexOf(pass.status) <access.length-1) {
@@ -71,7 +72,7 @@ export default class EventPage extends React.Component {
 			})
 			.then(page => {
 				// console.log("Got result: ", page);			
-				this.setState({...this.state, gigs: page.data, event})
+				this.setState({gigs: page.data, event})
 			})
 		})
 		.then(this.fetchTickets)
@@ -87,7 +88,7 @@ export default class EventPage extends React.Component {
 				const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
 				const {event} = this.state
 				Object.assign(event, {tickets: result.data.filter(t=>t.gig_id===event._id)})
-				this.setState({...this.state, event, tickets, allTickets: result.data})
+				this.setState({event, tickets, allTickets: result.data})
 			}
 		})
 	}
@@ -97,7 +98,7 @@ export default class EventPage extends React.Component {
 		this.setState({dialogOpen: false})
 	}
 	
-	handleGigJoin = gig => {
+	handleGigJoin = (gig, status) => {
 		app.service('gigs').find({query: {parent: gig._id}})
 		.then(result => {
 			if(result.total) {
@@ -105,62 +106,55 @@ export default class EventPage extends React.Component {
 				this.viewGigDetails(gig)
 			} else {
 				console.log("Go join the gig")
-				gigJoin(gig, 'Attending')
+				gigJoin(gig, status)
 			}
 		})
 	}
 
-	isAttending = gig => {
-		return this.state.tickets[gig._id] === "Attending" 
+	isAttending = (gig, status) => {
+		return this.state.tickets[gig._id] === status 
 	}
 
 	ticketCreated = t => {
-		console.log("Ticket created", t)
+		// console.log("Ticket created", t)
 		const {tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: t.status})
-		this.setState({...this.state, tickets})
+		this.setState({tickets})
 	}
 	ticketRemoved = t => {
-		console.log("Ticket removed", t)
+		// console.log("Ticket removed", t)
 		const {tickets} = this.state
 		Object.assign(tickets, {[t.gig_id]: null})
-		this.setState({...this.state, ticket: tickets})
+		this.setState({tickets})
 	}
 
 
 	gigRemoved = gig => {
-		// console.log("Removed: ", gig);
 		this.setState({
-			...this.state, 
 			gigs: this.state.gigs.filter(g => g._id !== gig._id),
 		})
 	}
 	gigCreated = gig => {
-		// console.log("Added: ", gig);
 		this.setState({
-			...this.state, 
 			gigs: this.state.gigs.concat(gig),
 		})
 	}
-	gigPatched = gig => {
-		// console.log("Updated: ", gig);
-		// do something to reflect update
-		this.fetchData()
-	}
 
 	dialogClose = () => {
-		this.setState({...this.state, dialog:{open:false, gig:{}}})
+		this.setState({dialog: {open: false, gig:{}}})
 	}
 
 	viewGigDetails = gig => {
-		// browserHistory.push('/gig/'+gig._id)
-		const { dialog } = this.state
-		Object.assign(dialog, {open: true, gig})
-		this.setState({...this.state, dialog})
+		 browserHistory.push('/gig/'+gig._id)
+		// const { dialog } = this.state
+		// Object.assign(dialog, {open: true, gig})
+		// this.setState({dialog})
 	}
 
 	render() {
 		const {event, dialog, tickets, allTickets} = this.state;
+		const status = this.props.params.status || 'Attending'
+
 		// console.log("GIGGGINGING: ", this.state);
 		const title = <b>{event.name}</b>;
 
@@ -173,35 +167,39 @@ export default class EventPage extends React.Component {
 			    />
 			    <EventActions event={event} tickets={allTickets} route={this.props.route.path} />
 				<CardText>
-					{this.state.gigs.map(
-						gig => <GigListItem 
-									key={gig._id} 
-									gig={gig} 
-									onSelect={this.viewGigDetails.bind(this, gig)}
-									rightIconButton={
-										this.isAttending(gig) ?
-										<FlatButton 
-											icon={minusBox}
-											title="Leave" 
-											onTouchTap={gigLeave.bind(null, gig, 'Attending')}
-										/>
-										:
-										<FlatButton 
-											icon={plusOutline}
-											title="Join" 
-											onTouchTap={this.handleGigJoin.bind(null, gig, 'Attending')}
-										/>
-									}
-					/>)}
+					{this.state.gigs.map(gig => 
+						<GigListItem 
+							key={gig._id} 
+							gig={gig} 
+							onSelect={this.viewGigDetails.bind(this, gig)}
+							rightIconButton={this.isAttending(gig, status) 
+								? <FlatButton 
+									icon={minusBox}
+									title="Leave" 
+									onTouchTap={gigLeave.bind(null, gig, status)}
+								/>
+								: <FlatButton 
+									icon={plusOutline}
+									title="Join" 
+									onTouchTap={this.handleGigJoin.bind(null, gig, status)}
+								/>
+							}
+						/>
+					)}
 				</CardText>
 
-				<Dialog title={dialog.title} open={dialog.open} onRequestClose={this.dialogClose} >
+				<Dialog 
+					title={dialog.title}
+					open={dialog.open} 
+					autoScrollBodyContent={true}
+					onRequestClose={this.dialogClose}
+				>
 					<GigDetailsPage 
 						gig={dialog.gig} 
 						onJoin={gigJoin} 
 						onLeave={gigLeave}
 						tickets={tickets}
-						status="Attending"
+						status={status}
 					/>
 				</Dialog>
 			</Card>

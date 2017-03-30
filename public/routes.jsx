@@ -16,7 +16,9 @@ import EventTrainPage from './mui/event-volunteer-page.jsx'
 import EventVolunteerPage from './mui/event-volunteer-page.jsx'
 import EventInfo from './mui/event-info.jsx'
 import GigDetailsPage from './mui/gig-details-page.jsx'
+import GigPage from './mui/gig-page.jsx'
 import Lineup from './mui/lineup.jsx'
+import MyGigs from './mui/my-gigs.jsx'
 import Schedule from './mui/event-schedule.jsx';
 
 const Home = () => <div style={{textAlign:'center', margin:'3em'}}>
@@ -49,11 +51,15 @@ export const routes =
 			<Route path='training/:eventId' component={EventTrainingPage} />
 			<Route path='purchase/:eventId' component={EventPurchasePage} />
 
+			<Route path='gig/:gigId' component={GigPage} />
 			
 			<Route path='schedule/:eventId(/:type)' component={Schedule} />
 
 			<Route path='lineup' component={Lineup} />
 			<Route path='tasks' component={Tasks} />
+
+			{/*TODO these should be restricted to role*/}
+			<Route path='performances' component={MyGigs} />
 
 			<Route path='gigs/:gigId' component={GigDetailsPage} />
 			

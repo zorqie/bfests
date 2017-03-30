@@ -2,10 +2,16 @@ import React from 'react'
 import { Link, browserHistory } from 'react-router'
 
 import RaisedButton from 'material-ui/RaisedButton'
+import IconMenu from 'material-ui/IconMenu'
+import MenuItem from 'material-ui/MenuItem'
+import IconButton from 'material-ui/IconButton'
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import {CardActions} from 'material-ui/Card'
 
 import app from '../main.jsx'
 import { gigJoin } from './utils.jsx'
+
+const moreButton = <IconButton><MoreVertIcon /></IconButton>
 
 const updatePass = (event, status, update) => {
 	app.authenticate()
@@ -73,21 +79,46 @@ export const EventActions = ({event, tickets, route}) => {
 		// console.log("rule", rule)
 	}
 
-	const actions = result.filter(a => a.name && (a.newStatus || (route !== a.path)))
+	const actions = result.filter(a => a.name && (a.newStatus || ('/'+route !== a.path)))
 	// console.log("ACTING", actions)
-
-	return <CardActions>
-		{actions.map( ({name, path, newStatus}) => 
-			path ? 	<Link key={event._id + name} to={path.replace(':eventId', event._id)} activeStyle={{display: 'none'}}>
-						<RaisedButton  label={name} /> 
+	const s = actions.length>2 ? {marginTop:'-4.5em', float:'right'} : {}
+	return <CardActions style={s}>
+		{actions.length > 2 
+			? <IconMenu iconButtonElement={moreButton} >
+				{actions.map( ({name, path, newStatus}) => 
+					path
+					? 	<Link 
+							key={name} 
+							to={path.replace(':eventId', event._id)} 
+							activeStyle={{display: 'none'}}
+							style={{textDecoration:'none'}}
+						>
+							<MenuItem primaryText={name} />
+						</Link>
+					: <MenuItem 
+						key={name} 
+						primaryText={name} 
+						onTouchTap={updatePass.bind(null, event, newStatus, false)} 
+					/>
+				)}
+			</IconMenu>
+			: actions.map( ({name, path, newStatus}) => 
+				path 
+					? <Link 
+						key={event._id + name} 
+						to={path.replace(':eventId', event._id)} 
+						activeStyle={{display: 'none'}}
+					>
+						<RaisedButton label={name} /> 
 					</Link>
-				:	<RaisedButton 
+					: <RaisedButton 
 						key={event._id + name} 
 						primary={true} 
 						label={name} 
 						onTouchTap={updatePass.bind(null, event, newStatus, false)} 
 					/>
-		)}
+			)
+		}
 	</CardActions>
 }
 
