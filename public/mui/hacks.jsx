@@ -74,6 +74,41 @@ export function jobsByDate(jobs) {
 	return tables
 }
 
+export function sitesByDate(tickets) {
+	let dates = new Map()
+	tickets.forEach(ticket => {
+		
+			const date = formatYMD(ticket.gig.start)
+			// console.log("ticket.date", date)
+			const t = dates.get(date) || {date, jobs: new Map}
+			// console.log("date.table", t)
+			const tjob = Object.assign({}, t.jobs.get(ticket.gig.venue_id) || {job: ticket.gig, span: 1, hours: []})
+			// console.log("TJOB", tjob)
+			hours24.forEach(hour => {
+				const show = shouldShow(date, hour, ticket.gig)
+				// console.log("shown? ", show)
+				if(show) {
+					tjob.hours[hour] = Array.of({shift: ticket.gig, show})
+				}
+			})
+			t.jobs.set(ticket.gig.venue_id, tjob)
+			dates.set(date, t)	
+	})
+	const tables = Array.from(dates.entries(), e => {
+		const {date, jobs} = e[1]
+		return {
+			date: moment(date), 
+			jobs: Array.from(jobs.entries(), j => {
+				const {job, span, hours} = j[1]
+				const compact = hours.map(h => h.length > span ? squeeze(h, span) : h)
+				return {job: job.venue, span, hours: compact}
+			})
+		}
+	})
+	console.log("TABLESes >>>>", tables)
+	return tables
+}
+
 function squeeze(hour, n) {
 	const a = new Array(n)
 	hour.forEach((h, i) => a[i%n] = h)

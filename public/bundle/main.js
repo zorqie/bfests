@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "dfc7d676c12a937f5926"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "c2b9512760ebbdcee44d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -15322,6 +15322,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.hacks = exports.hours24 = exports.sequence = exports.formatYMD = exports.Kspan = undefined;
 exports.jobsByDate = jobsByDate;
+exports.sitesByDate = sitesByDate;
 
 var _react = __webpack_require__(1);
 
@@ -15424,6 +15425,50 @@ function jobsByDate(jobs) {
 		};
 	});
 	console.log("TABLES>>>>", tables);
+	return tables;
+}
+
+function sitesByDate(tickets) {
+	var dates = new Map();
+	tickets.forEach(function (ticket) {
+
+		var date = formatYMD(ticket.gig.start);
+		// console.log("ticket.date", date)
+		var t = dates.get(date) || { date: date, jobs: new Map() };
+		// console.log("date.table", t)
+		var tjob = Object.assign({}, t.jobs.get(ticket.gig.venue_id) || { job: ticket.gig, span: 1, hours: [] });
+		// console.log("TJOB", tjob)
+		hours24.forEach(function (hour) {
+			var show = shouldShow(date, hour, ticket.gig);
+			// console.log("shown? ", show)
+			if (show) {
+				tjob.hours[hour] = Array.of({ shift: ticket.gig, show: show });
+			}
+		});
+		t.jobs.set(ticket.gig.venue_id, tjob);
+		dates.set(date, t);
+	});
+	var tables = Array.from(dates.entries(), function (e) {
+		var _e$2 = e[1],
+		    date = _e$2.date,
+		    jobs = _e$2.jobs;
+
+		return {
+			date: (0, _moment2.default)(date),
+			jobs: Array.from(jobs.entries(), function (j) {
+				var _j$2 = j[1],
+				    job = _j$2.job,
+				    span = _j$2.span,
+				    hours = _j$2.hours;
+
+				var compact = hours.map(function (h) {
+					return h.length > span ? squeeze(h, span) : h;
+				});
+				return { job: job.venue, span: span, hours: compact };
+			})
+		};
+	});
+	console.log("TABLESes >>>>", tables);
 	return tables;
 }
 
@@ -41442,7 +41487,7 @@ exports.Socket = __webpack_require__(374);
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+			value: true
 });
 exports.routes = undefined;
 
@@ -41516,67 +41561,72 @@ var _eventSchedule = __webpack_require__(734);
 
 var _eventSchedule2 = _interopRequireDefault(_eventSchedule);
 
+var _mySchedule = __webpack_require__(753);
+
+var _mySchedule2 = _interopRequireDefault(_mySchedule);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Home = function Home() {
-	return _react2.default.createElement(
-		'div',
-		{ style: { textAlign: 'center', margin: '3em' } },
-		_react2.default.createElement(
-			'h2',
-			null,
-			'Europa Roots - A Bulgarian Spring Project'
-		),
-		_react2.default.createElement(
-			'p',
-			null,
-			'For more information follow the rumors.'
-		)
-	);
+			return _react2.default.createElement(
+						'div',
+						{ style: { textAlign: 'center', margin: '3em' } },
+						_react2.default.createElement(
+									'h2',
+									null,
+									'Europa Roots - A Bulgarian Spring Project'
+						),
+						_react2.default.createElement(
+									'p',
+									null,
+									'For more information follow the rumors.'
+						)
+			);
 };
 
 var NotFound = function NotFound() {
-	return _react2.default.createElement(
-		'div',
-		{ style: { color: 'red', textAlign: 'center', margin: '3em' } },
-		_react2.default.createElement(
-			'h2',
-			null,
-			'She\'s not here.'
-		)
-	);
+			return _react2.default.createElement(
+						'div',
+						{ style: { color: 'red', textAlign: 'center', margin: '3em' } },
+						_react2.default.createElement(
+									'h2',
+									null,
+									'She\'s not here.'
+						)
+			);
 };
 
 var Tasks = function Tasks() {
-	return _react2.default.createElement(_lineup2.default, { status: 'Volunteering' });
+			return _react2.default.createElement(_lineup2.default, { status: 'Volunteering' });
 };
 
 var routes = exports.routes = _react2.default.createElement(
-	_reactRouter.Router,
-	{ history: _reactRouter.browserHistory },
-	_react2.default.createElement(
-		_reactRouter.Route,
-		{ path: '/', component: _layout2.default },
-		_react2.default.createElement(_reactRouter.IndexRoute, { component: Home }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'login', component: _loginForm2.default }),
-		_react2.default.createElement(_reactRouter.Redirect, { from: 'auth/success', to: 'events' }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'signup', component: _signupForm2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'acts/:actId', component: _actDetailsPage2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'events', component: _eventsList2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'events/:eventId', component: _eventPage2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'volunteer/:eventId', component: _eventVolunteerPage2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'train/:eventId', component: _eventVolunteerPage2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'eventinfo/:eventId', component: _eventInfo2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'training/:eventId', component: _eventTraining2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'purchase/:eventId', component: _eventPurchase2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigPage2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'schedule/:eventId(/:type)', component: _eventSchedule2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'lineup', component: _lineup2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'tasks', component: Tasks }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'performances', component: _myGigs2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: 'gigs/:gigId', component: _gigDetailsPage2.default }),
-		_react2.default.createElement(_reactRouter.Route, { path: '*', component: NotFound })
-	)
+			_reactRouter.Router,
+			{ history: _reactRouter.browserHistory },
+			_react2.default.createElement(
+						_reactRouter.Route,
+						{ path: '/', component: _layout2.default },
+						_react2.default.createElement(_reactRouter.IndexRoute, { component: Home }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'login', component: _loginForm2.default }),
+						_react2.default.createElement(_reactRouter.Redirect, { from: 'auth/success', to: 'events' }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'signup', component: _signupForm2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'acts/:actId', component: _actDetailsPage2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'events', component: _eventsList2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'events/:eventId', component: _eventPage2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'volunteer/:eventId', component: _eventVolunteerPage2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'eventinfo/:eventId', component: _eventInfo2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'purchase/:eventId', component: _eventPurchase2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'train/:eventId', component: _eventVolunteerPage2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'training/:eventId', component: _eventTraining2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigPage2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'schedule/:eventId(/:type)', component: _eventSchedule2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'my-schedule/:eventId(/:type)', component: _mySchedule2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'lineup', component: _lineup2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'tasks', component: Tasks }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'performances', component: _myGigs2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'gigs/:gigId', component: _gigDetailsPage2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: '*', component: NotFound })
+			)
 );
 
 exports.default = routes;
@@ -84465,6 +84515,9 @@ var userSections = [{
 	text: "My workshops",
 	path: "/workshops",
 	role: "master"
+}, {
+	text: "My schedule",
+	path: "/my-schedule"
 }];
 
 function UserCard(_ref) {
@@ -85624,6 +85677,210 @@ function LineupItem(_ref) {
 		)
 	);
 }
+
+/***/ }),
+/* 753 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _moment = __webpack_require__(0);
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _reactRouter = __webpack_require__(16);
+
+var _CircularProgress = __webpack_require__(532);
+
+var _CircularProgress2 = _interopRequireDefault(_CircularProgress);
+
+var _main = __webpack_require__(19);
+
+var _main2 = _interopRequireDefault(_main);
+
+var _styles = __webpack_require__(743);
+
+var _styles2 = _interopRequireDefault(_styles);
+
+var _hacks = __webpack_require__(111);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var startTimeSort = function startTimeSort(a, b) {
+	return +(a.start > b.start) || +(a.start === b.start) - 1;
+};
+var ticketStartTimeSort = function ticketStartTimeSort(a, b) {
+	return +(a.gig.start > b.gig.start) || +(a.gig.start === b.gig.start) - 1;
+};
+
+var tspan = function tspan(job, _ref) {
+	var _id = _ref._id,
+	    name = _ref.name;
+	return _react2.default.createElement(
+		'span',
+		null,
+		_react2.default.createElement(
+			_reactRouter.Link,
+			{ to: '/gigs/' + _id },
+			name
+		)
+	);
+};
+
+var VolunteerTable = function (_React$Component) {
+	_inherits(VolunteerTable, _React$Component);
+
+	function VolunteerTable() {
+		var _ref2;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, VolunteerTable);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = VolunteerTable.__proto__ || Object.getPrototypeOf(VolunteerTable)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
+			total: 0,
+			loaded: 0,
+			jobs: []
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(VolunteerTable, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			var _this2 = this;
+
+			var _props$params = this.props.params,
+			    eventId = _props$params.eventId,
+			    type = _props$params.type;
+
+			_main2.default.service('tickets').find({
+				query: {
+					// only can get my tickets, exclude ones for event
+					gig_id: { $ne: eventId }
+				}
+			}).then(function (tickets) {
+				return _this2.setState({ tickets: tickets.data.sort(ticketStartTimeSort) });
+			});
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _state = this.state,
+			    jobs = _state.jobs,
+			    tickets = _state.tickets;
+			var type = this.props.params.type;
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				!tickets && _react2.default.createElement(_CircularProgress2.default, null) || (0, _hacks.sitesByDate)(tickets).map(function (_ref3) {
+					var date = _ref3.date,
+					    jobs = _ref3.jobs;
+					return _react2.default.createElement(
+						'table',
+						{ key: date, className: 'gig-schedule' },
+						_react2.default.createElement(
+							'thead',
+							null,
+							_react2.default.createElement(
+								'tr',
+								null,
+								_react2.default.createElement(
+									'th',
+									{ colSpan: jobs.length + 1, style: _styles2.default.scheduleDate },
+									date.format('MMM D, dddd')
+								)
+							),
+							_react2.default.createElement(
+								'tr',
+								null,
+								_react2.default.createElement('th', null),
+								jobs.map(function (_ref4) {
+									var job = _ref4.job,
+									    span = _ref4.span;
+									return _react2.default.createElement(
+										'th',
+										{ key: job._id, colSpan: span },
+										_react2.default.createElement(
+											_reactRouter.Link,
+											{ to: '/gigs/' + job._id },
+											job.name
+										)
+									);
+								})
+							)
+						),
+						_react2.default.createElement(
+							'tbody',
+							null,
+							_hacks.hours24.map(function (hour) {
+								return _react2.default.createElement(
+									'tr',
+									{ key: hour },
+									_react2.default.createElement(
+										'td',
+										null,
+										hour,
+										':00'
+									),
+									jobs.map(function (_ref5) {
+										var hours = _ref5.hours,
+										    job = _ref5.job,
+										    span = _ref5.span;
+
+										return hours[hour] && (0, _hacks.sequence)(span).map(function (i) {
+											var slot = hours[hour][i];
+											var starts = slot && slot.show && slot.show.starts;
+											var c = 'j-shift ' + (slot && slot.show && (slot.show.starts ? 'j-start ' : '') + (slot.show.ends ? 'j-end' : ''));
+											return slot && _react2.default.createElement(
+												'td',
+												{ key: hour + i, className: c },
+												starts && tspan(job, slot.shift)
+											) || _react2.default.createElement(
+												'td',
+												{ key: hour + i },
+												' '
+											);
+										}) || _react2.default.createElement(
+											'td',
+											{ key: job._id + hour, colSpan: span },
+											' '
+										);
+									})
+								);
+							})
+						)
+					);
+				})
+			);
+		}
+	}]);
+
+	return VolunteerTable;
+}(_react2.default.Component);
+
+exports.default = VolunteerTable;
 
 /***/ })
 /******/ ]);

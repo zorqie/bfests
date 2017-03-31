@@ -20,6 +20,7 @@ import GigPage from './mui/gig-page.jsx'
 import Lineup from './mui/lineup.jsx'
 import MyGigs from './mui/my-gigs.jsx'
 import Schedule from './mui/event-schedule.jsx';
+import MySchedule from './mui/my-schedule.jsx';
 
 const Home = () => <div style={{textAlign:'center', margin:'3em'}}>
 	<h2>Europa Roots - A Bulgarian Spring Project</h2>
@@ -46,14 +47,17 @@ export const routes =
 			<Route path='events' component={EventsList} />
 			<Route path='events/:eventId' component={EventPage} />
 			<Route path='volunteer/:eventId' component={EventVolunteerPage} />
-			<Route path='train/:eventId' component={EventTrainPage} />
 			<Route path='eventinfo/:eventId' component={EventInfo} />
-			<Route path='training/:eventId' component={EventTrainingPage} />
+
 			<Route path='purchase/:eventId' component={EventPurchasePage} />
+			
+			<Route path='train/:eventId' component={EventTrainPage} />
+			<Route path='training/:eventId' component={EventTrainingPage} />
 
 			<Route path='gig/:gigId' component={GigPage} />
 			
 			<Route path='schedule/:eventId(/:type)' component={Schedule} />
+			<Route path='my-schedule/:eventId(/:type)' component={MySchedule} />
 
 			<Route path='lineup' component={Lineup} />
 			<Route path='tasks' component={Tasks} />
