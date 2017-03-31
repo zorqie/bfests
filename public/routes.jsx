@@ -19,6 +19,7 @@ import GigDetailsPage from './mui/gig-details-page.jsx'
 import GigPage from './mui/gig-page.jsx'
 import Lineup from './mui/lineup.jsx'
 import MyGigs from './mui/my-gigs.jsx'
+import SitePage from './mui/site-details-page.jsx'
 import Schedule from './mui/event-schedule.jsx';
 import MySchedule from './mui/my-schedule.jsx';
 
@@ -57,7 +58,9 @@ export const routes =
 			<Route path='gig/:gigId' component={GigPage} />
 			
 			<Route path='schedule/:eventId(/:type)' component={Schedule} />
-			<Route path='my-schedule/:eventId(/:type)' component={MySchedule} />
+			<Route path='my-schedule(/:eventId)' component={MySchedule} />
+			
+			<Route path='sites/:venueId' component={SitePage} />
 
 			<Route path='lineup' component={Lineup} />
 			<Route path='tasks' component={Tasks} />

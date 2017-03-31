@@ -260,7 +260,12 @@ export default class EventPage extends React.Component {
 					)}
 				</CardText>
 
-				<Dialog title={dialog.title} open={dialog.open} onRequestClose={this.dialogClose} >
+				<Dialog 
+					title={dialog.title} 
+					open={dialog.open} 
+					onRequestClose={this.dialogClose} 
+					autoScrollBodyContent={true}
+				>
 					<GigDetailsPage 
 						gig={dialog.gig} 
 						onJoin={this.shiftJoin} 
