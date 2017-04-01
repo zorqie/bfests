@@ -77,7 +77,7 @@ export default class Layout extends React.Component {
 			if(result.total) {
 				// store tickets as a Map of _id = ticket.status pairs
 				const ticketsByGig = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-				this.setState({event, ticketsByGig, tickets: result.data})
+				this.setState({ticketsByGig, tickets: result.data})
 			}
 		})
 	}
@@ -133,15 +133,17 @@ export default class Layout extends React.Component {
 		const user = app.get('user')
 		if(!this.state.user && user) {
 			this.setState({ user })
-			this.fetchTickets()
 		}
+		this.fetchTickets()
 	}
 
 	userPatched = u => {
 		if(u) {
 			const name = u.name || (u.facebook && u.facebook.name)
 			const message = name + ' signed ' + (u.online ? 'in' : 'out')
-			this.setState({snackbarOpen: true, message, tickets:[], ticketsByGig:{}})
+			this.setState({snackbarOpen: true, message, tickets:[], ticketsByGig:{}})			
+		}
+		if(app.get('user') && u._id === app.get('user')._id) {
 			this.fetchTickets()
 		}
 	}
@@ -153,7 +155,7 @@ export default class Layout extends React.Component {
 	handleSnackbarClose = () => this.setState({ snackbarOpen: false, message: ''})
 
 	render() { 
-		const {user, ticketsByGig, tickets} = this.state
+		const {user, section, ticketsByGig, tickets} = this.state
 		const {children} = this.props
 		// inject our stuff
 		const grandchildren = Object.assign({}, children, {props: {...children.props, tickets, ticketsByGig}})
@@ -161,10 +163,10 @@ export default class Layout extends React.Component {
 		<MuiThemeProvider muiTheme={getMuiTheme(theme)}>
 			<div>
 				<AppBar 
-					title={this.state.section}
+					title={section}
 					iconElementRight={
 						user 
-						?	<FlatButton label="Logout" onTouchTap={this.handleLogout}/>
+						?	<Link to='my-schedule'><FlatButton label='My schedule' style={{color: 'white'}}/></Link>
 						: 	<Link to='login'>
 								<RaisedButton label="Login"  primary={true}/>
 							</Link>
@@ -179,6 +181,7 @@ export default class Layout extends React.Component {
 					onRequestChange={this.handleDrawer}
 				>
 					{ user && <UserCard user={user} onNavigate={this.handleMenu}/> }
+					{ user && <MenuItem key='logout' primaryText="Logout" onTouchTap={this.handleLogout}/>}
 					{sections.map( section => 
 						<MenuItem onTouchTap={this.handleMenu.bind(this, section)} primaryText={section.text} key={section.path}/>
 					)}

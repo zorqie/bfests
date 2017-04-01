@@ -105,7 +105,7 @@ export default class VolunteerTable extends React.Component {
 			{tickets.length 
 			&& sitesByDate(tickets.filter(t=>t.gig && t.gig.parent).sort(ticketStartTimeSort))
 				.map( ({date, jobs}) => <DayTable key={date} date={date} jobs={jobs} /> )				
-			||  <CircularProgress />
+			||  <p>Nothing to see here.</p>
 			}
 		</div>
 	}

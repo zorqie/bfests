@@ -33,10 +33,10 @@ const userSections = [
 		path: "/workshops",
 		role: "master",
 	},
-	{
-		text: "My schedule",
-		path: "/my-schedule",
-	},
+	// {
+	// 	text: "My schedule",
+	// 	path: "/my-schedule",
+	// },
 ]
 
 export default function UserCard ({ user, onNavigate }) { 
