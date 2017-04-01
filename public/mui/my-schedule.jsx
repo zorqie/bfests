@@ -23,23 +23,40 @@ export default class VolunteerTable extends React.Component {
 	state = {
 		total: 0,
 		loaded: 0,
-		jobs: [],
+		tickets: null,
 	}
 
 	componentWillMount() {
-		const {eventId, type} = this.props.params
-		app.service('tickets').find({
-			query: {
-				// only can get my tickets, exclude ones for event
-				gig_id: {$ne: eventId}
-			}
-		}) 
-		.then(tickets => this.setState({tickets: tickets.data.sort(ticketStartTimeSort)}))
+		const {eventId} = this.props.params
+		if(eventId) {
+			app.service('tickets').find({
+				query: {
+					// only can get my tickets, exclude ones for event
+					gig_id: {$ne: eventId}
+				}
+			}) 
+			.then(tickets => this.setState({tickets: tickets.data.sort(ticketStartTimeSort)}))
+		} else {
+			app.service('gigs').find({
+				query: {
+					public: true,
+					parent: {$exists: false}
+				}
+			})
+			.then(events =>
+				app.service('tickets').find({
+					query: {
+						gig_id: {$nin: events.data.map(e=>e._id)}
+					}
+				})
+				.then(tickets => this.setState({events: events.data, tickets: tickets.data.sort(ticketStartTimeSort)}))
+			)
+		}
 	}
 
 	render() {
-		const { jobs, tickets } = this.state
-		const { type } = this.props.params
+		// TODO rename jobs => sites (to refelct reality...)
+		const { tickets } = this.state
 		return <div>
 			{ !tickets && 
 				<CircularProgress /> 
@@ -54,7 +71,7 @@ export default class VolunteerTable extends React.Component {
 							<th></th>
 							{jobs.map(({job, span}) => 
 								<th key={job._id} colSpan={span}>
-									<Link to={'/gigs/'+job._id}>{job.name}</Link>
+									<Link to={'/sites/'+job._id}>{job.name}</Link>
 								</th>
 							)}
 						</tr>

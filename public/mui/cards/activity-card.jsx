@@ -73,7 +73,7 @@ export default class ActivityCard extends React.Component {
 	}
 	fetchData = () => {
 		if(this.props.tickets) {
-			console.log("Fetching tickets for ", this.props.gig)
+			// console.log("Fetching shifts for ", this.props.gig)
 			app.service('gigs').find({
 				query: { 
 					parent: this.props.gig._id, 
@@ -120,7 +120,7 @@ export default class ActivityCard extends React.Component {
 	render() {
 		const { gig, tickets, ...others /*onJoin, onLeave*/ } = this.props 
 		const { shifts, dialog } = this.state
-		console.log("CARD props", this.props)
+		// console.log("CARD props", this.props)
 		const status = gig.type==='Volunteer' ? 'Volunteering' : 'Attending'
 		return <div>
 			<span style={styles.gigType}>{gig.type}</span> 

@@ -20,7 +20,7 @@ const venueSchema = new Schema({
 		min: [0, "Don't be negative"] 
 	},
 	type: String,
-	parent: { type: String, ref: 'Venue' }, 
+	parent: { type: String, ref: 'Venue' }, //should be parent_id, no?
 	owner: { type: String, ref: 'User'}
   // , 
   // createdAt: { type: Date, 'default': Date.now },
