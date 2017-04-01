@@ -141,7 +141,8 @@ export default class Layout extends React.Component {
 		if(u) {
 			const name = u.name || (u.facebook && u.facebook.name)
 			const message = name + ' signed ' + (u.online ? 'in' : 'out')
-			this.setState({snackbarOpen: true, message})
+			this.setState({snackbarOpen: true, message, tickets:[], ticketsByGig:{}})
+			this.fetchTickets()
 		}
 	}
 
