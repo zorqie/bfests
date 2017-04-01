@@ -12,7 +12,7 @@ const startTimeSort = (a, b) => +(a.start > b.start) || +(a.start === b.start) -
 
 const tspan = (job, {_id, name, start, end}) => 
 	<span>
-		<Link to={'/shifts/'+_id}>
+		<Link to={'/gig/'+_id}>
 		{moment(start).format('HH:mm')}-{moment(end).format('HH:mm')}
 		</Link>
 		{job.name!==name && name}
@@ -62,15 +62,14 @@ export default class VolunteerTable extends React.Component {
 		const loading = loaded != total
 		// console.log('Schedule', this.state )
 		
-		return <div>
-			{ loading && 
-				<LinearProgress 
+		return loading
+			&& 	<LinearProgress 
 					mode='determinate'
 					max={total}
 					value={loaded}
 				/> 
-				|| 
-				jobsByDate(jobs).map(({date, jobs}) => 
+			|| <div>
+				{jobsByDate(jobs).map(({date, jobs}) => 
 				<table key={date} className='gig-schedule'>
 					<thead>
 						<tr>
@@ -80,7 +79,7 @@ export default class VolunteerTable extends React.Component {
 							<th></th>
 							{jobs.map(({job, span}) => 
 								<th key={job._id} colSpan={span}>
-									<Link to={'/gigs/'+job._id}>{job.name}</Link>
+									<Link to={'/gig/'+job._id}>{job.name}</Link>
 								</th>
 							)}
 						</tr>
@@ -105,7 +104,7 @@ export default class VolunteerTable extends React.Component {
 						)}
 					</tbody>
 				</table>
-			)}				
-		</div>
+				)}				
+				</div>
 	}
 }

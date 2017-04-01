@@ -21,10 +21,10 @@ import { plusOutline, minusBox } from './icons.jsx'
 export default class EventPage extends React.Component {
 	state = {
 		event: {},
-		pass: {},
+		// pass: {},
 		gigs: [], 
-		tickets: {},
-		allTickets: [],
+		// tickets: {},
+		// allTickets: [],
 		dialog: {
 			open: false,
 			gig: {},
@@ -36,16 +36,16 @@ export default class EventPage extends React.Component {
 		app.service('gigs').on('removed', this.gigRemoved)
 		app.service('gigs').on('created', this.gigCreated)
 		app.service('gigs').on('patched', this.fetchData) // just reload
-		app.service('tickets').on('created', this.ticketCreated)
-		app.service('tickets').on('removed', this.ticketRemoved)
+		// app.service('tickets').on('created', this.ticketCreated)
+		// app.service('tickets').on('removed', this.ticketRemoved)
 	}
 	componentWillUnmount() {
 		if(app) {
 			app.service('gigs').removeListener('removed', this.gigRemoved)
 			app.service('gigs').removeListener('created', this.gigCreated)
 			app.service('gigs').removeListener('patched', this.fetchData) 
-			app.service('tickets').removeListener('removed', this.ticketRemoved)
-			app.service('tickets').removeListener('created', this.ticketCreated)
+			// app.service('tickets').removeListener('removed', this.ticketRemoved)
+			// app.service('tickets').removeListener('created', this.ticketCreated)
 		}
 	}
 
@@ -75,23 +75,23 @@ export default class EventPage extends React.Component {
 				this.setState({gigs: page.data, event})
 			})
 		})
-		.then(this.fetchTickets)
+		// .then(this.fetchTickets)
 		.catch(err => console.error("ERAR: ", err))
 	}
 
-	fetchTickets = () => {
-		app.service('tickets').find()
-		.then(result => {
-			console.log("Got tickets", result)
-			if(result.total) {
-				// store tickets as a Map of _id = ticket.status pairs
-				const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-				const {event} = this.state
-				Object.assign(event, {tickets: result.data.filter(t=>t.gig_id===event._id)})
-				this.setState({event, tickets, allTickets: result.data})
-			}
-		})
-	}
+	// fetchTickets = () => {
+	// 	app.service('tickets').find()
+	// 	.then(result => {
+	// 		// console.log("Got tickets", result)
+	// 		if(result.total) {
+	// 			// store tickets as a Map of _id = ticket.status pairs
+	// 			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
+	// 			const {event} = this.state
+	// 			Object.assign(event, {tickets: result.data.filter(t=>t.gig_id===event._id)})
+	// 			this.setState({event, tickets, allTickets: result.data})
+	// 		}
+	// 	})
+	// }
 
 	handleDialogCancel = e => {
 		// console.log("Canceling...");
@@ -105,28 +105,28 @@ export default class EventPage extends React.Component {
 				// has children
 				this.viewGigDetails(gig)
 			} else {
-				console.log("Go join the gig")
+				// console.log("Go join the gig")
 				gigJoin(gig, status)
 			}
 		})
 	}
 
-	isAttending = (gig, status) => {
-		return this.state.tickets[gig._id] === status 
+	isAttending = (gig, tickets, status) => {
+		return tickets[gig._id] === status 
 	}
 
-	ticketCreated = t => {
-		// console.log("Ticket created", t)
-		const {tickets} = this.state
-		Object.assign(tickets, {[t.gig_id]: t.status})
-		this.setState({tickets})
-	}
-	ticketRemoved = t => {
-		// console.log("Ticket removed", t)
-		const {tickets} = this.state
-		Object.assign(tickets, {[t.gig_id]: null})
-		this.setState({tickets})
-	}
+	// ticketCreated = t => {
+	// 	// console.log("Ticket created", t)
+	// 	const {tickets} = this.state
+	// 	Object.assign(tickets, {[t.gig_id]: t.status})
+	// 	this.setState({tickets})
+	// }
+	// ticketRemoved = t => {
+	// 	// console.log("Ticket removed", t)
+	// 	const {tickets} = this.state
+	// 	Object.assign(tickets, {[t.gig_id]: null})
+	// 	this.setState({tickets})
+	// }
 
 
 	gigRemoved = gig => {
@@ -152,10 +152,11 @@ export default class EventPage extends React.Component {
 	}
 
 	render() {
-		const {event, dialog, tickets, allTickets} = this.state;
+		const {event, dialog} = this.state
+		const {tickets, ticketsByGig} = this.props
 		const status = this.props.params.status || 'Attending'
 
-		// console.log("GIGGGINGING: ", this.state);
+		console.log("GIGGGINGING: ", this.props);
 		const title = <b>{event.name}</b>;
 
 		const subtitle = <GigTimespan gig={event} showRelative={true}/>;
@@ -165,14 +166,14 @@ export default class EventPage extends React.Component {
 			    	title={title} 
 			    	subtitle={subtitle} 
 			    />
-			    <EventActions event={event} tickets={allTickets} route={this.props.route.path} />
+			    <EventActions event={event} tickets={tickets} route={this.props.route.path} />
 				<CardText>
 					{this.state.gigs.map(gig => 
 						<GigListItem 
 							key={gig._id} 
 							gig={gig} 
 							onSelect={this.viewGigDetails.bind(this, gig)}
-							rightIconButton={this.isAttending(gig, status) 
+							rightIconButton={this.isAttending(gig, ticketsByGig, status) 
 								? <FlatButton 
 									icon={minusBox}
 									title="Leave" 
@@ -198,7 +199,7 @@ export default class EventPage extends React.Component {
 						gig={dialog.gig} 
 						onJoin={gigJoin} 
 						onLeave={gigLeave}
-						tickets={tickets}
+						tickets={ticketsByGig}
 						status={status}
 					/>
 				</Dialog>

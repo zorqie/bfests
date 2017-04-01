@@ -46,9 +46,10 @@ const meets = (req, tickets) => {
 
 export const EventActions = ({event, tickets, route}) => {
 	let result = []
-	if(event.tickets && event.tickets.length) {
+	const passes = event.tickets || tickets.filter(t=> t.gig_id === event._id)
+	if(passes && passes.length) {
 		//at least one ticket
-		event.tickets.forEach(pass => {
+		passes.forEach(pass => {
 			const rules = event.ticket_rules.filter(r => r.status===pass.status)
 
 			rules.forEach(({requires, actions}) => {
@@ -73,7 +74,7 @@ export const EventActions = ({event, tickets, route}) => {
 			})
 			// console.log("RULEZ!", rules)
 		})
-	} else if(event.tickets && event.ticket_rules) {
+	} else if(passes && event.ticket_rules) {
 		const rule = event.ticket_rules.find(r => r.status===null)
 		result = result.concat(rule.actions)
 		// console.log("rule", rule)

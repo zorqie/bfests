@@ -44,7 +44,7 @@ table.gig-schedule tbody tr td {
 	border-right: 1px solid rgba(0, 0, 0, 0.1);
 	transition: all 0.5s ease;
 }
-table.gig-schedule tbody tr td:hover {
+table.gig-schedule tbody tr td.j-shift:hover {
 	background-color: rgba(0, 0, 0, 0.1);
 }
 td.j-start {
@@ -74,4 +74,14 @@ table.gig-schedule thead tr th a {
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	color: rgba(0,0,0,0.5);
+}
+
+.sch-Performance {
+	background-color: rgba(0,160,255,0.05)
+}
+.sch-Workshop {
+	background-color: rgba(255,127,0,0.05)
+}
+.sch-Volunteer {
+	background-color: rgba(127,255,0,0.05)
 }

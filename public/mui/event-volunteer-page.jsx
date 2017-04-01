@@ -20,8 +20,9 @@ const checkTickets = (event, tickets) => {
 	// here tickets are only Volunteering
 	// TODO consider moving to EventActions
 	const rules = event.ticket_rules
+	const passes = event.tickets || tickets.filter(t=>t.gig._id===event._id)
 	if(rules) {
-		const statuses = event.tickets.map(t => t.status)
+		const statuses = passes.map(t => t.status)
 		// console.log("STATUSes", statuses)
 		rules.forEach(rule => {
 			if(rule.newStatus && rule.requires) {
@@ -35,7 +36,7 @@ const checkTickets = (event, tickets) => {
 						const {minCount, status} = rule.requires 
 						if (tickets.filter(t => t.status===status).length >= minCount) {
 							console.log("Changing status to", rule.newStatus)
-							const ticket = event.tickets.find(t=> t.status===rule.status)
+							const ticket = passes.find(t=> t.status===rule.status)
 							app.service('tickets').patch(ticket._id, {status: rule.newStatus})
 						}
 					}
@@ -55,15 +56,16 @@ const checkTickets = (event, tickets) => {
 	}
 }
 
+const isVolunteering = (gig, tickets) => tickets[gig._id] === "Volunteering" 
 
 export default class EventPage extends React.Component {
 	state = {
 		loading: true,
 		event: {},
-		pass: {},
+		// pass: {},
 		gigs: [], 
-		tickets: {},
-		ticketsRaw: [],
+		// tickets: {},
+		// ticketsRaw: [],
 		dialog: {
 			open: false,
 			gig: {},
@@ -75,19 +77,19 @@ export default class EventPage extends React.Component {
 		app.service('gigs').on('removed', this.gigRemoved);
 		app.service('gigs').on('created', this.gigCreated);
 		app.service('gigs').on('patched', this.gigPatched);
-		app.service('tickets').on('created', this.ticketCreated);
-		app.service('tickets').on('removed', this.ticketRemoved);
+		// app.service('tickets').on('created', this.ticketCreated);
+		// app.service('tickets').on('removed', this.ticketRemoved);
 	}
-	componentDidMount() {
-		// this.fetchTickets()
-	}
+	// componentDidMount() {
+	// 	// this.fetchTickets()
+	// }
 	componentWillUnmount() {
 		if(app) {
 			app.service('gigs').removeListener('removed', this.gigRemoved);
 			app.service('gigs').removeListener('created', this.gigCreated);
 			app.service('gigs').removeListener('patched', this.gigPatched);
-			app.service('tickets').removeListener('removed', this.ticketRemoved);
-			app.service('tickets').removeListener('created', this.ticketCreated);
+			// app.service('tickets').removeListener('removed', this.ticketRemoved);
+			// app.service('tickets').removeListener('created', this.ticketCreated);
 		}
 	}
 
@@ -116,33 +118,31 @@ export default class EventPage extends React.Component {
 				this.setState({gigs: page.data, event, loading: false})
 			})
 		})
-		.then(this.fetchTickets)
+		// .then(this.fetchTickets)
 		.catch(err => console.error("ERAR: ", err))
 	}
-	fetchTickets = () => {
-		app.service('tickets').find(/*{query:{status:"Volunteering"}}*/)
-		.then(result => {
-			// console.log("Got tickets", result)
-			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-			const {event} = this.state
-			console.log("Event", event)
-			const passes = result.data.filter(t => t.gig_id===event._id)
-			console.log("PASSED", passes)
-			if(event && passes.length) {
-				Object.assign(event, {tickets: passes})
-			}
-			this.setState({ticketsRaw: result.data.filter(t => t.status==='Volunteering'), event, tickets})
-		})
-	}
+	// fetchTickets = () => {
+	// 	app.service('tickets').find(/*{query:{status:"Volunteering"}}*/)
+	// 	.then(result => {
+	// 		// console.log("Got tickets", result)
+	// 		const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
+	// 		const {event} = this.state
+	// 		console.log("Event", event)
+	// 		const passes = result.data.filter(t => t.gig_id===event._id)
+	// 		console.log("PASSED", passes)
+	// 		if(event && passes.length) {
+	// 			Object.assign(event, {tickets: passes})
+	// 		}
+	// 		this.setState({ticketsRaw: result.data.filter(t => t.status==='Volunteering'), event, tickets})
+	// 	})
+	// }
 
 	handleDialogCancel = e => {
 		// console.log("Canceling...");
 		this.setState({dialogOpen: false})
 	}
 
-	isVolunteering = gig => {
-		return this.state.tickets[gig._id] === "Volunteering" 
-	}
+	
 
 	handleGigJoin = gig => {
 		app.service('gigs').find({query: {parent: gig._id}})
@@ -151,7 +151,7 @@ export default class EventPage extends React.Component {
 				// has children
 				this.viewGigDetails(gig)
 			} else {
-				console.log("Go join the gig")
+				console.log("Go volunteer!")
 				gigJoin(gig, 'Volunteering')
 			}
 		})
@@ -171,22 +171,22 @@ export default class EventPage extends React.Component {
 		this.setState({dialog})
 	}
 
-	ticketCreated = t => {
-		// console.log("Ticket created", t)
-		const {event, tickets} = this.state
-		Object.assign(tickets, {[t.gig_id]: t.status})
-		const tix = this.state.ticketsRaw.concat(t)
-		checkTickets(event, tix)
-		this.setState({tickets, ticketsRaw: tix})
-	}
-	ticketRemoved = t => {
-		// console.log("Ticket removed", t)
-		const {event, tickets, ticketsRaw} = this.state
-		Object.assign(tickets, {[t.gig_id]: null})
-		const tix = this.state.ticketsRaw.filter(r=> r._id!==t._id)
-		checkTickets(event, tix)
-		this.setState({tickets, ticketsRaw: tix})
-	}
+	// ticketCreated = t => {
+	// 	// console.log("Ticket created", t)
+	// 	const {event, tickets} = this.state
+	// 	Object.assign(tickets, {[t.gig_id]: t.status})
+	// 	const tix = this.state.ticketsRaw.concat(t)
+	// 	checkTickets(event, tix)
+	// 	this.setState({tickets, ticketsRaw: tix})
+	// }
+	// ticketRemoved = t => {
+	// 	// console.log("Ticket removed", t)
+	// 	const {event, tickets, ticketsRaw} = this.state
+	// 	Object.assign(tickets, {[t.gig_id]: null})
+	// 	const tix = this.state.ticketsRaw.filter(r=> r._id!==t._id)
+	// 	checkTickets(event, tix)
+	// 	this.setState({tickets, ticketsRaw: tix})
+	// }
 
 
 	gigRemoved = gig => {
@@ -215,12 +215,13 @@ export default class EventPage extends React.Component {
 
 
 	render() {
-		const {loading, gig, dialog, event, tickets, ticketsRaw} = this.state
+		const {loading, gig, dialog, event} = this.state
+		const {tickets, ticketsByGig} = this.props
 		// console.log("Volunteerizing: ", this.props)
 		const title = <b>{event.name}</b>
 
 		const subtitle = <GigTimespan gig={event} showRelative={true} />
-		const n = ticketsRaw.length
+		const n = tickets.filter(t=>t.gig.type==='Volunteer').length
 		return (!loading && 
 			<Card initiallyExpanded={true}>
 			    {/*<CardHeader title={v.name} subtitle="gig" />*/}
@@ -228,7 +229,7 @@ export default class EventPage extends React.Component {
 					title={title} 
 					subtitle={subtitle} 
 			    />
-			    <EventActions event={event} tickets={ticketsRaw} route={this.props.route.path}/>
+			    <EventActions event={event} tickets={tickets} route={this.props.route.path}/>
 				<CardText>
 					{n > 0
 						? <p>You have volunteered for <Link to='/tasks'>{n} opportunities</Link>. 
@@ -243,7 +244,7 @@ export default class EventPage extends React.Component {
 							onTouchTap={this.viewGigDetails.bind(this, gig)}
 							secondaryText={<GigTimespan gig={gig} />} 
 							rightIconButton={
-								this.isVolunteering(gig) ?
+								isVolunteering(gig, ticketsByGig) ?
 								<FlatButton 
 									icon={minusBox}
 									title="Leave" 
@@ -270,12 +271,10 @@ export default class EventPage extends React.Component {
 						gig={dialog.gig} 
 						onJoin={this.shiftJoin} 
 						onLeave={this.shiftLeave}
-						tickets={tickets}
-						status={tickets[dialog.gig._id]}
+						ticketsByGig={ticketsByGig}
+						status={ticketsByGig[dialog.gig._id]}
 					/>
 				</Dialog>
-				<CardActions>					
-				</CardActions>
 			</Card>
 		|| null)
 	}
