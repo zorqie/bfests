@@ -16,7 +16,7 @@ export default class EventPurchasePage extends React.Component {
 	}
 	render() {
 		const {event} = this.state
-		const {ticket} = this.props
+		const {tickets} = this.props
 		
 		return tickets.length 
 			&& <div style={{margin:'2em'}} >
