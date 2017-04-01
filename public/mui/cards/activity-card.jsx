@@ -72,16 +72,17 @@ export default class ActivityCard extends React.Component {
 		}
 	}
 	fetchData = () => {
-		if(this.props.tickets) {
-			// console.log("Fetching shifts for ", this.props.gig)
+		const gig_id =  this.props.gig._id || this.props.params.gigId
+		// if(this.props.tickets) {
+			console.log("Fetching shifts for ", gig_id)
 			app.service('gigs').find({
 				query: { 
-					parent: this.props.gig._id, 
+					parent: gig_id, 
 					$sort: {start: 1}
 				}
 			})
 			.then(result => this.setState({shifts: result.data}))
-		}
+		// }
 	}
 
 // Listeners
@@ -118,9 +119,9 @@ export default class ActivityCard extends React.Component {
 
 
 	render() {
-		const { gig, tickets, ...others /*onJoin, onLeave*/ } = this.props 
+		const { gig, ticketsByGig, ...others /*onJoin, onLeave*/ } = this.props 
 		const { shifts, dialog } = this.state
-		// console.log("CARD props", this.props)
+		console.log("CARD props", this.props)
 		const status = gig.type==='Volunteer' ? 'Volunteering' : 'Attending'
 		return <div>
 			<span style={styles.gigType}>{gig.type}</span> 
@@ -131,11 +132,11 @@ export default class ActivityCard extends React.Component {
 					key={shift._id} 
 					shift={shift}
 					onSelect={this.viewShift.bind(this, shift)}
-					actionButton={<ActionButton gig={shift} status={status} tickets={tickets} {...others}/>}
+					actionButton={<ActionButton gig={shift} status={status} tickets={ticketsByGig} {...others}/>}
 				/>
 			)}
 			<div style={{marginTop:'1.5em'}}>
-				{gig.type && tickets && !shifts.length && <ActionButton gig={gig} status={status} tickets={tickets} {...others}/>}
+				{gig.type && ticketsByGig && !shifts.length && <ActionButton gig={gig} status={status} tickets={ticketsByGig} {...others}/>}
 			</div>
 			<ShiftDialog {...dialog} onCancel={this.dialogCancel} />
 		</div>

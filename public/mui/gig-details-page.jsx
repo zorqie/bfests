@@ -78,11 +78,11 @@ export default class GigDetailsPage extends React.Component {
 
 	render() {
 		const { gig, fans, ticket } =  this.state
-		const { onJoin, onLeave, status, tickets } = this.props
+		const { onJoin, onLeave, status, ticketsByGig } = this.props
 		const handleJoin = onJoin || gigJoin
 		const handleLeave = onLeave || gigLeave
 		
-		const attending = status ? tickets && tickets[gig._id] === status : (ticket && ticket.status === 'Attending')
+		const attending = status ? ticketsByGig && ticketsByGig[gig._id] === status : (ticket && ticket.status === 'Attending')
 		
 		return gig._id 
 			&& <div>
@@ -94,7 +94,7 @@ export default class GigDetailsPage extends React.Component {
 				<CardText>
 					<ActivityCard 
 						gig={gig} 
-						tickets={tickets} 
+						ticketsByGig={ticketsByGig} 
 						onJoin={handleJoin} 
 						onLeave={handleLeave} 
 						onActSelect={this.viewActDetails} 
@@ -110,7 +110,7 @@ export default class GigDetailsPage extends React.Component {
 GigDetailsPage.propTypes = {
 	gig: React.PropTypes.object,
 	status: React.PropTypes.string, 
-	tickets: React.PropTypes.object, // map gig._id = status
+	ticketsByGig: React.PropTypes.object, // map gig._id = status
 	onJoin: React.PropTypes.func, 
 	onLeave: React.PropTypes.func, 
 }

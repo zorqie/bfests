@@ -7,22 +7,17 @@ import EventActions from './event-actions.jsx'
 export default class EventPurchasePage extends React.Component {
 	state={
 		event: {},
-		tickets: [],
 	}
 	componentWillMount() {
 		const {eventId} = this.props.params
 		app.service('gigs').get(eventId)
-		.then(event => {
-			app.service('tickets').find()
-			.then(result => {
-				Object.assign(event, {tickets: result.data.filter(t => t.gig_id === event._id)})
-				this.setState({event, tickets: result.data})
-			}).catch(deny)
-		})
+		.then(event => this.setState({event}))
 		.catch(deny)
 	}
 	render() {
-		const {event, tickets} = this.state
+		const {event} = this.state
+		const {ticket} = this.props
+		
 		return tickets.length 
 			&& <div style={{margin:'2em'}} >
 					<h2>{event.name} {event.venue && <span>at {event.venue.name}</span> || ''}</h2>

@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "d110a424a06e516e4dd3"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "52760ef65e0ce0f2545f"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -706,7 +706,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(16)(__webpack_require__.s = 16);
+/******/ 	return hotCreateRequire(15)(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -2539,7 +2539,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (!locales[name] && typeof module !== 'undefined' && module && module.exports) {
             try {
                 oldLocale = globalLocale._abbr;
-                __webpack_require__(742)("./" + name);
+                __webpack_require__(743)("./" + name);
                 // because defineLocale currently also sets the global locale, we
                 // want to undo that for lazy loaded locales
                 getSetGlobalLocale(oldLocale);
@@ -5071,7 +5071,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     return hooks;
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(112)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(113)(module)))
 
 /***/ }),
 /* 1 */
@@ -5177,7 +5177,7 @@ var _create = __webpack_require__(392);
 
 var _create2 = _interopRequireDefault(_create);
 
-var _typeof2 = __webpack_require__(89);
+var _typeof2 = __webpack_require__(90);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -5210,7 +5210,7 @@ exports.default = function (subClass, superClass) {
 
 exports.__esModule = true;
 
-var _typeof2 = __webpack_require__(89);
+var _typeof2 = __webpack_require__(90);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -5589,6 +5589,93 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(21);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _routes = __webpack_require__(389);
+
+var _routes2 = _interopRequireDefault(_routes);
+
+var _reactTapEventPlugin = __webpack_require__(387);
+
+var _reactTapEventPlugin2 = _interopRequireDefault(_reactTapEventPlugin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(0, _reactTapEventPlugin2.default)();
+
+// touchy-screen stuff 
+
+
+var feathers = __webpack_require__(386);
+var auth = __webpack_require__(383);
+var socketio = __webpack_require__(385);
+var hooks = __webpack_require__(384);
+var io = __webpack_require__(388);
+
+// FIXME this should be in configuration somewhere.
+// Establish a Socket.io connection
+// const socket = io('http://localhost:2017');
+var socket = io('https://gyps.herokuapp.com/');
+// Initialize our Feathers client application through Socket.io
+// with hooks and authentication.
+var app = feathers().configure(socketio(socket)).configure(hooks())
+// Use localStorage to store our login token
+.configure(auth({ storage: window.localStorage }));
+
+var Home = function Home() {
+	return _react2.default.createElement(
+		'p',
+		null,
+		'We\'re home'
+	);
+};
+var NotFound = function NotFound() {
+	return _react2.default.createElement(
+		'div',
+		{ style: { color: 'red' } },
+		_react2.default.createElement(
+			'h2',
+			null,
+			'She\'s not here.'
+		)
+	);
+};
+
+// FIXME hack to make app available to pages when not going through / first
+app.authenticate().then(function () {
+	_reactDom2.default.render(_routes2.default, document.getElementById("gyps"));
+}).catch(function (error) {
+	_reactDom2.default.render(_routes2.default, document.getElementById("gyps"));
+	console.error("Not authenticated.", error);
+});
+
+// socket.io.engine.on('upgrade', function(transport) {
+//     console.log('transport changed');
+//     app.authenticate();
+//   });
+
+// FIXME remove this!!!
+window.gyps = app;
+
+exports.default = app;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /**
  * Copyright 2013-present, Facebook, Inc.
  * All rights reserved.
@@ -5783,93 +5870,6 @@ var ReactDOMComponentTree = {
 };
 
 module.exports = ReactDOMComponentTree;
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactDom = __webpack_require__(21);
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
-var _routes = __webpack_require__(389);
-
-var _routes2 = _interopRequireDefault(_routes);
-
-var _reactTapEventPlugin = __webpack_require__(387);
-
-var _reactTapEventPlugin2 = _interopRequireDefault(_reactTapEventPlugin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-(0, _reactTapEventPlugin2.default)();
-
-// touchy-screen stuff 
-
-
-var feathers = __webpack_require__(386);
-var auth = __webpack_require__(383);
-var socketio = __webpack_require__(385);
-var hooks = __webpack_require__(384);
-var io = __webpack_require__(388);
-
-// FIXME this should be in configuration somewhere.
-// Establish a Socket.io connection
-// const socket = io('http://localhost:2017');
-var socket = io('https://gyps.herokuapp.com/');
-// Initialize our Feathers client application through Socket.io
-// with hooks and authentication.
-var app = feathers().configure(socketio(socket)).configure(hooks())
-// Use localStorage to store our login token
-.configure(auth({ storage: window.localStorage }));
-
-var Home = function Home() {
-	return _react2.default.createElement(
-		'p',
-		null,
-		'We\'re home'
-	);
-};
-var NotFound = function NotFound() {
-	return _react2.default.createElement(
-		'div',
-		{ style: { color: 'red' } },
-		_react2.default.createElement(
-			'h2',
-			null,
-			'She\'s not here.'
-		)
-	);
-};
-
-// FIXME hack to make app available to pages when not going through / first
-app.authenticate().then(function () {
-	_reactDom2.default.render(_routes2.default, document.getElementById("gyps"));
-}).catch(function (error) {
-	_reactDom2.default.render(_routes2.default, document.getElementById("gyps"));
-	console.error("Not authenticated.", error);
-});
-
-// socket.io.engine.on('upgrade', function(transport) {
-//     console.log('transport changed');
-//     app.authenticate();
-//   });
-
-// FIXME remove this!!!
-window.gyps = app;
-
-exports.default = app;
 
 /***/ }),
 /* 17 */
@@ -6683,7 +6683,7 @@ module.exports = { debugTool: debugTool };
 
 
 var store = __webpack_require__(125)('wks'),
-    uid = __webpack_require__(92),
+    uid = __webpack_require__(93),
     _Symbol = __webpack_require__(41).Symbol,
     USE_SYMBOL = typeof _Symbol == 'function';
 
@@ -6963,7 +6963,7 @@ var CallbackQueue = __webpack_require__(341);
 var PooledClass = __webpack_require__(55);
 var ReactFeatureFlags = __webpack_require__(346);
 var ReactReconciler = __webpack_require__(69);
-var Transaction = __webpack_require__(107);
+var Transaction = __webpack_require__(108);
 
 var invariant = __webpack_require__(8);
 
@@ -9965,7 +9965,7 @@ var _warning2 = _interopRequireDefault(_warning);
 
 var _PathUtils = __webpack_require__(43);
 
-var _Actions = __webpack_require__(95);
+var _Actions = __webpack_require__(96);
 
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : { default: obj };
@@ -10094,7 +10094,7 @@ var _events = __webpack_require__(146);
 
 var _events2 = _interopRequireDefault(_events);
 
-var _keycode = __webpack_require__(98);
+var _keycode = __webpack_require__(99);
 
 var _keycode2 = _interopRequireDefault(_keycode);
 
@@ -10460,7 +10460,7 @@ exports.default = EnhancedButton;
 
 
 var DOMNamespaces = __webpack_require__(151);
-var setInnerHTML = __webpack_require__(109);
+var setInnerHTML = __webpack_require__(110);
 
 var createMicrosoftUnsafeLocalFunction = __webpack_require__(158);
 var setTextContent = __webpack_require__(358);
@@ -10586,8 +10586,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _prodInvariant = __webpack_require__(12);
 
-var EventPluginRegistry = __webpack_require__(103);
-var EventPluginUtils = __webpack_require__(104);
+var EventPluginRegistry = __webpack_require__(104);
+var EventPluginUtils = __webpack_require__(105);
 var ReactErrorUtils = __webpack_require__(155);
 
 var accumulateInto = __webpack_require__(352);
@@ -10868,7 +10868,7 @@ module.exports = EventPluginHub;
 
 
 var EventPluginHub = __webpack_require__(67);
-var EventPluginUtils = __webpack_require__(104);
+var EventPluginUtils = __webpack_require__(105);
 
 var accumulateInto = __webpack_require__(352);
 var forEachAccumulated = __webpack_require__(353);
@@ -11534,7 +11534,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.gigLeave = exports.gigJoin = undefined;
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -11896,7 +11896,7 @@ var _inherits2 = __webpack_require__(6);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _typeof2 = __webpack_require__(89);
+var _typeof2 = __webpack_require__(90);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -12190,7 +12190,7 @@ var _moreVert2 = _interopRequireDefault(_moreVert);
 
 var _Card = __webpack_require__(37);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -12247,9 +12247,12 @@ var EventActions = exports.EventActions = function EventActions(_ref) {
 	    route = _ref.route;
 
 	var result = [];
-	if (event.tickets && event.tickets.length) {
+	var passes = event.tickets || tickets.filter(function (t) {
+		return t.gig_id === event._id;
+	});
+	if (passes && passes.length) {
 		//at least one ticket
-		event.tickets.forEach(function (pass) {
+		passes.forEach(function (pass) {
 			var rules = event.ticket_rules.filter(function (r) {
 				return r.status === pass.status;
 			});
@@ -12279,7 +12282,7 @@ var EventActions = exports.EventActions = function EventActions(_ref) {
 			});
 			// console.log("RULEZ!", rules)
 		});
-	} else if (event.tickets && event.ticket_rules) {
+	} else if (passes && event.ticket_rules) {
 		var rule = event.ticket_rules.find(function (r) {
 			return r.status === null;
 		});
@@ -12343,6 +12346,48 @@ exports.default = EventActions;
 
 /***/ }),
 /* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+			value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.default = GigListItem;
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _List = __webpack_require__(26);
+
+var _gigTimespan = __webpack_require__(35);
+
+var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function GigListItem(_ref) {
+			var gig = _ref.gig,
+			    onSelect = _ref.onSelect,
+			    hideDates = _ref.hideDates,
+			    others = _objectWithoutProperties(_ref, ['gig', 'onSelect', 'hideDates']);
+
+			return _react2.default.createElement(_List.ListItem, _extends({
+						primaryText: gig.name,
+						secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig, hideDates: hideDates }),
+						onTouchTap: onSelect.bind(null, gig)
+			}, others));
+}
+
+/***/ }),
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12516,7 +12561,7 @@ var hacks = exports.hacks = { Kspan: Kspan };
 exports.default = hacks;
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12605,7 +12650,7 @@ var styles = {
 exports.default = styles;
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12640,7 +12685,7 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 };
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12654,7 +12699,7 @@ module.exports = function (a, b) {
 };
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12663,7 +12708,7 @@ module.exports = function (a, b) {
 exports.f = {}.propertyIsEnumerable;
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12676,7 +12721,7 @@ module.exports = function (key) {
 };
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12845,7 +12890,7 @@ function localstorage() {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13264,7 +13309,7 @@ exports.default = _extends({
 module.exports = exports['default'];
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13292,7 +13337,7 @@ var REPLACE = exports.REPLACE = 'REPLACE';
 var POP = exports.POP = 'POP';
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13347,7 +13392,7 @@ var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isE
 };
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13379,7 +13424,7 @@ exports.default = function (property, value) {
 module.exports = exports['default'];
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13534,7 +13579,7 @@ for (var alias in aliases) {
 }
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13556,7 +13601,7 @@ function _interopRequireDefault(obj) {
 exports.default = _Dialog2.default;
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13578,7 +13623,7 @@ function _interopRequireDefault(obj) {
 exports.default = _Divider2.default;
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13600,7 +13645,7 @@ function _interopRequireDefault(obj) {
 exports.default = _FontIcon2.default;
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13896,7 +13941,7 @@ var darkWhite = exports.darkWhite = 'rgba(255, 255, 255, 0.87)';
 var lightWhite = exports.lightWhite = 'rgba(255, 255, 255, 0.54)';
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14156,7 +14201,7 @@ var EventPluginRegistry = {
 module.exports = EventPluginRegistry;
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14387,7 +14432,7 @@ var EventPluginUtils = {
 module.exports = EventPluginUtils;
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14405,7 +14450,7 @@ module.exports = EventPluginUtils;
 
 var _assign = __webpack_require__(14);
 
-var EventPluginRegistry = __webpack_require__(103);
+var EventPluginRegistry = __webpack_require__(104);
 var ReactEventEmitterMixin = __webpack_require__(631);
 var ViewportMetrics = __webpack_require__(157);
 
@@ -14720,7 +14765,7 @@ var ReactBrowserEventEmitter = _assign({}, ReactEventEmitterMixin, {
 module.exports = ReactBrowserEventEmitter;
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14797,7 +14842,7 @@ SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 module.exports = SyntheticMouseEvent;
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15027,7 +15072,7 @@ var TransactionImpl = {
 module.exports = TransactionImpl;
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15155,7 +15200,7 @@ function escapeTextContentForBrowser(text) {
 module.exports = escapeTextContentForBrowser;
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15258,7 +15303,7 @@ if (ExecutionEnvironment.canUseDOM) {
 module.exports = setInnerHTML;
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15427,7 +15472,7 @@ function localstorage() {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15573,7 +15618,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15603,7 +15648,7 @@ module.exports = function (module) {
 };
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15645,11 +15690,11 @@ var _Subheader = __webpack_require__(53);
 
 var _Subheader2 = _interopRequireDefault(_Subheader);
 
-var _Divider = __webpack_require__(100);
+var _Divider = __webpack_require__(101);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
-var _Dialog = __webpack_require__(99);
+var _Dialog = __webpack_require__(100);
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
 
@@ -15665,7 +15710,7 @@ var _gigTitle = __webpack_require__(734);
 
 var _gigTitle2 = _interopRequireDefault(_gigTitle);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -15765,12 +15810,12 @@ var GigDetailsPage = function (_React$Component) {
 			    onJoin = _props.onJoin,
 			    onLeave = _props.onLeave,
 			    status = _props.status,
-			    tickets = _props.tickets;
+			    ticketsByGig = _props.ticketsByGig;
 
 			var handleJoin = onJoin || _utils.gigJoin;
 			var handleLeave = onLeave || _utils.gigLeave;
 
-			var attending = status ? tickets && tickets[gig._id] === status : ticket && ticket.status === 'Attending';
+			var attending = status ? ticketsByGig && ticketsByGig[gig._id] === status : ticket && ticket.status === 'Attending';
 
 			return gig._id && _react2.default.createElement(
 				'div',
@@ -15788,7 +15833,7 @@ var GigDetailsPage = function (_React$Component) {
 					null,
 					_react2.default.createElement(_activityCard2.default, {
 						gig: gig,
-						tickets: tickets,
+						ticketsByGig: ticketsByGig,
 						onJoin: handleJoin,
 						onLeave: handleLeave,
 						onActSelect: this.viewActDetails
@@ -15808,52 +15853,10 @@ exports.default = GigDetailsPage;
 GigDetailsPage.propTypes = {
 	gig: _react2.default.PropTypes.object,
 	status: _react2.default.PropTypes.string,
-	tickets: _react2.default.PropTypes.object, // map gig._id = status
+	ticketsByGig: _react2.default.PropTypes.object, // map gig._id = status
 	onJoin: _react2.default.PropTypes.func,
 	onLeave: _react2.default.PropTypes.func
 };
-
-/***/ }),
-/* 114 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-			value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.default = GigListItem;
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _List = __webpack_require__(26);
-
-var _gigTimespan = __webpack_require__(35);
-
-var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-function GigListItem(_ref) {
-			var gig = _ref.gig,
-			    onSelect = _ref.onSelect,
-			    hideDates = _ref.hideDates,
-			    others = _objectWithoutProperties(_ref, ['gig', 'onSelect', 'hideDates']);
-
-			return _react2.default.createElement(_List.ListItem, _extends({
-						primaryText: gig.name,
-						secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig, hideDates: hideDates }),
-						onTouchTap: onSelect.bind(null, gig)
-			}, others));
-}
 
 /***/ }),
 /* 115 */
@@ -16022,7 +16025,7 @@ module.exports = function (it, tag, stat) {
 
 
 var shared = __webpack_require__(125)('keys'),
-    uid = __webpack_require__(92);
+    uid = __webpack_require__(93);
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
@@ -16943,7 +16946,7 @@ exports.go = exports.replaceLocation = exports.pushLocation = exports.startListe
 
 var _LocationUtils = __webpack_require__(64);
 
-var _DOMUtils = __webpack_require__(96);
+var _DOMUtils = __webpack_require__(97);
 
 var _DOMStateStorage = __webpack_require__(205);
 
@@ -17062,7 +17065,7 @@ var _runTransitionHook = __webpack_require__(138);
 
 var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-var _Actions = __webpack_require__(95);
+var _Actions = __webpack_require__(96);
 
 var _LocationUtils = __webpack_require__(64);
 
@@ -17768,11 +17771,11 @@ module.exports = __webpack_require__(698);
 
 var DOMLazyTree = __webpack_require__(66);
 var Danger = __webpack_require__(603);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstrumentation = __webpack_require__(28);
 
 var createMicrosoftUnsafeLocalFunction = __webpack_require__(158);
-var setInnerHTML = __webpack_require__(109);
+var setInnerHTML = __webpack_require__(110);
 var setTextContent = __webpack_require__(358);
 
 function getNodeAfter(parentNode, node) {
@@ -20485,7 +20488,7 @@ var _SvgIcon = __webpack_require__(38);
 
 var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
 
-var _FontIcon = __webpack_require__(101);
+var _FontIcon = __webpack_require__(102);
 
 var _FontIcon2 = _interopRequireDefault(_FontIcon);
 
@@ -20800,7 +20803,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 "use strict";
 
 
-var pIE = __webpack_require__(91),
+var pIE = __webpack_require__(92),
     createDesc = __webpack_require__(76),
     toIObject = __webpack_require__(52),
     toPrimitive = __webpack_require__(127),
@@ -21023,9 +21026,9 @@ function polling(opts) {
 var Transport = __webpack_require__(131);
 var parseqs = __webpack_require__(148);
 var parser = __webpack_require__(62);
-var inherit = __webpack_require__(90);
+var inherit = __webpack_require__(91);
 var yeast = __webpack_require__(380);
-var debug = __webpack_require__(93)('engine.io-client:polling');
+var debug = __webpack_require__(94)('engine.io-client:polling');
 
 /**
  * Module exports.
@@ -21755,7 +21758,7 @@ var _utils = __webpack_require__(203);
 /* eslint-env es6, node */
 /* eslint brace-style: 0, consistent-return: 0, no-console: 0, no-param-reassign: 0, no-var: 0 */
 
-var errors = __webpack_require__(94).errors;
+var errors = __webpack_require__(95).errors;
 
 /**
  * Lowercase the given fields either in the data submitted (as a before hook for create,
@@ -24244,7 +24247,7 @@ var _ClickAwayListener = __webpack_require__(219);
 
 var _ClickAwayListener2 = _interopRequireDefault(_ClickAwayListener);
 
-var _keycode = __webpack_require__(98);
+var _keycode = __webpack_require__(99);
 
 var _keycode2 = _interopRequireDefault(_keycode);
 
@@ -25879,7 +25882,7 @@ var _typography = __webpack_require__(579);
 
 var _typography2 = _interopRequireDefault(_typography);
 
-var _colors = __webpack_require__(102);
+var _colors = __webpack_require__(103);
 
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : { default: obj };
@@ -38005,7 +38008,7 @@ module.exports = PooledClass.addPoolingTo(CallbackQueue);
 
 
 var DOMProperty = __webpack_require__(45);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstrumentation = __webpack_require__(28);
 
 var quoteAttributeValueForBrowser = __webpack_require__(668);
@@ -38272,7 +38275,7 @@ module.exports = ReactDOMComponentFlags;
 var _assign = __webpack_require__(14);
 
 var LinkedValueUtils = __webpack_require__(153);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(33);
 
 var warning = __webpack_require__(9);
@@ -38743,9 +38746,9 @@ var _prodInvariant = __webpack_require__(12);
 var DOMLazyTree = __webpack_require__(66);
 var DOMProperty = __webpack_require__(45);
 var React = __webpack_require__(56);
-var ReactBrowserEventEmitter = __webpack_require__(105);
+var ReactBrowserEventEmitter = __webpack_require__(106);
 var ReactCurrentOwner = __webpack_require__(34);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMContainerInfo = __webpack_require__(614);
 var ReactDOMFeatureFlags = __webpack_require__(616);
 var ReactFeatureFlags = __webpack_require__(346);
@@ -38759,7 +38762,7 @@ var ReactUpdates = __webpack_require__(33);
 var emptyObject = __webpack_require__(78);
 var instantiateReactComponent = __webpack_require__(356);
 var invariant = __webpack_require__(8);
-var setInnerHTML = __webpack_require__(109);
+var setInnerHTML = __webpack_require__(110);
 var shouldUpdateReactComponent = __webpack_require__(163);
 var warning = __webpack_require__(9);
 
@@ -39712,8 +39715,8 @@ module.exports = isTextInputElement;
 
 
 var ExecutionEnvironment = __webpack_require__(19);
-var escapeTextContentForBrowser = __webpack_require__(108);
-var setInnerHTML = __webpack_require__(109);
+var escapeTextContentForBrowser = __webpack_require__(109);
+var setInnerHTML = __webpack_require__(110);
 
 /**
  * Set the textContent property of a node, ensuring that whitespace is preserved
@@ -41457,7 +41460,7 @@ var Emitter = __webpack_require__(378);
 var parser = __webpack_require__(174);
 var on = __webpack_require__(376);
 var bind = __webpack_require__(183);
-var debug = __webpack_require__(110)('socket.io-client:manager');
+var debug = __webpack_require__(111)('socket.io-client:manager');
 var indexOf = __webpack_require__(209);
 var Backoff = __webpack_require__(396);
 
@@ -42053,7 +42056,7 @@ var Emitter = __webpack_require__(378);
 var toArray = __webpack_require__(721);
 var on = __webpack_require__(376);
 var bind = __webpack_require__(183);
-var debug = __webpack_require__(110)('socket.io-client:socket');
+var debug = __webpack_require__(111)('socket.io-client:socket');
 var hasBin = __webpack_require__(204);
 
 /**
@@ -42826,7 +42829,7 @@ var _gigTimespan = __webpack_require__(35);
 
 var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
 
-var _styles = __webpack_require__(88);
+var _styles = __webpack_require__(89);
 
 var _styles2 = _interopRequireDefault(_styles);
 
@@ -42896,7 +42899,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _uberproto = __webpack_require__(111);
+var _uberproto = __webpack_require__(112);
 
 var _uberproto2 = _interopRequireDefault(_uberproto);
 
@@ -43136,7 +43139,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var url = __webpack_require__(714);
 var parser = __webpack_require__(174);
 var Manager = __webpack_require__(375);
-var debug = __webpack_require__(110)('socket.io-client');
+var debug = __webpack_require__(111)('socket.io-client');
 
 /**
  * Module exports.
@@ -43249,6 +43252,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.routes = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -43299,13 +43304,9 @@ var _eventInfo = __webpack_require__(381);
 
 var _eventInfo2 = _interopRequireDefault(_eventInfo);
 
-var _gigDetailsPage = __webpack_require__(113);
+var _gigDetailsPage = __webpack_require__(114);
 
 var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
-
-var _gigPage = __webpack_require__(733);
-
-var _gigPage2 = _interopRequireDefault(_gigPage);
 
 var _lineup = __webpack_require__(736);
 
@@ -43315,7 +43316,7 @@ var _myGigs = __webpack_require__(738);
 
 var _myGigs2 = _interopRequireDefault(_myGigs);
 
-var _siteDetailsPage = __webpack_require__(744);
+var _siteDetailsPage = __webpack_require__(741);
 
 var _siteDetailsPage2 = _interopRequireDefault(_siteDetailsPage);
 
@@ -43358,8 +43359,9 @@ var NotFound = function NotFound() {
 			);
 };
 
-var Tasks = function Tasks() {
-			return _react2.default.createElement(_lineup2.default, { status: 'Volunteering' });
+// make sure we pass along all (props)
+var Tasks = function Tasks(props) {
+			return _react2.default.createElement(_lineup2.default, _extends({}, props, { status: 'Volunteering' }));
 };
 
 var routes = exports.routes = _react2.default.createElement(
@@ -43380,7 +43382,7 @@ var routes = exports.routes = _react2.default.createElement(
 						_react2.default.createElement(_reactRouter.Route, { path: 'purchase/:eventId', component: _eventPurchase2.default }),
 						_react2.default.createElement(_reactRouter.Route, { path: 'train/:eventId', component: _eventVolunteerPage2.default }),
 						_react2.default.createElement(_reactRouter.Route, { path: 'training/:eventId', component: _eventTraining2.default }),
-						_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigPage2.default }),
+						_react2.default.createElement(_reactRouter.Route, { path: 'gig/:gigId', component: _gigDetailsPage2.default }),
 						_react2.default.createElement(_reactRouter.Route, { path: 'schedule/:eventId(/:type)', component: _eventSchedule2.default }),
 						_react2.default.createElement(_reactRouter.Route, { path: 'my-schedule(/:eventId)', component: _mySchedule2.default }),
 						_react2.default.createElement(_reactRouter.Route, { path: 'sites/:venueId', component: _siteDetailsPage2.default }),
@@ -43798,7 +43800,7 @@ module.exports = function () {
  */
 
 !function (root, name, definition) {
-  if (typeof module != 'undefined' && module.exports) module.exports = definition();else if (true) __webpack_require__(743)(name, definition);else root[name] = definition();
+  if (typeof module != 'undefined' && module.exports) module.exports = definition();else if (true) __webpack_require__(744)(name, definition);else root[name] = definition();
 }(undefined, 'bowser', function () {
   /**
     * See useragents.js for examples of navigator.userAgent
@@ -44680,7 +44682,7 @@ module.exports = function (object, index, value) {
 // all enumerable object keys, includes symbols
 var getKeys = __webpack_require__(61),
     gOPS = __webpack_require__(122),
-    pIE = __webpack_require__(91);
+    pIE = __webpack_require__(92);
 module.exports = function (it) {
   var result = getKeys(it),
       getSymbols = gOPS.f;
@@ -44852,7 +44854,7 @@ module.exports = function (object, el) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var META = __webpack_require__(92)('meta'),
+var META = __webpack_require__(93)('meta'),
     isObject = __webpack_require__(74),
     has = __webpack_require__(51),
     setDesc = __webpack_require__(42).f,
@@ -44916,7 +44918,7 @@ var meta = module.exports = {
 
 var getKeys = __webpack_require__(61),
     gOPS = __webpack_require__(122),
-    pIE = __webpack_require__(91),
+    pIE = __webpack_require__(92),
     toObject = __webpack_require__(77),
     IObject = __webpack_require__(186),
     $assign = Object.assign;
@@ -45283,7 +45285,7 @@ var global = __webpack_require__(41),
     $fails = __webpack_require__(59),
     shared = __webpack_require__(125),
     setToStringTag = __webpack_require__(123),
-    uid = __webpack_require__(92),
+    uid = __webpack_require__(93),
     wks = __webpack_require__(29),
     wksExt = __webpack_require__(129),
     wksDefine = __webpack_require__(128),
@@ -45425,7 +45427,7 @@ if (!USE_NATIVE) {
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f = $defineProperty;
   __webpack_require__(189).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(91).f = $propertyIsEnumerable;
+  __webpack_require__(92).f = $propertyIsEnumerable;
   __webpack_require__(122).f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !__webpack_require__(120)) {
@@ -45804,7 +45806,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var transports = __webpack_require__(196);
 var Emitter = __webpack_require__(133);
-var debug = __webpack_require__(93)('engine.io-client:socket');
+var debug = __webpack_require__(94)('engine.io-client:socket');
 var index = __webpack_require__(209);
 var parser = __webpack_require__(62);
 var parseuri = __webpack_require__(339);
@@ -46539,7 +46541,7 @@ Socket.prototype.filterUpgrades = function (upgrades) {
  */
 
 var Polling = __webpack_require__(197);
-var inherit = __webpack_require__(90);
+var inherit = __webpack_require__(91);
 
 /**
  * Module exports.
@@ -46780,8 +46782,8 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
 var XMLHttpRequest = __webpack_require__(132);
 var Polling = __webpack_require__(197);
 var Emitter = __webpack_require__(133);
-var inherit = __webpack_require__(90);
-var debug = __webpack_require__(93)('engine.io-client:polling-xhr');
+var inherit = __webpack_require__(91);
+var debug = __webpack_require__(94)('engine.io-client:polling-xhr');
 
 /**
  * Module exports.
@@ -47212,9 +47214,9 @@ function unloadHandler() {
 var Transport = __webpack_require__(131);
 var parser = __webpack_require__(62);
 var parseqs = __webpack_require__(148);
-var inherit = __webpack_require__(90);
+var inherit = __webpack_require__(91);
 var yeast = __webpack_require__(380);
-var debug = __webpack_require__(93)('engine.io-client:websocket');
+var debug = __webpack_require__(94)('engine.io-client:websocket');
 var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 var NodeWebSocket;
 if (false) {
@@ -48661,7 +48663,7 @@ exports.default = function () {
   };
 };
 
-var _feathersErrors = __webpack_require__(94);
+var _feathersErrors = __webpack_require__(95);
 
 var _feathersErrors2 = _interopRequireDefault(_feathersErrors);
 
@@ -49096,7 +49098,7 @@ var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "sym
   return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
 };
 
-var _feathersErrors = __webpack_require__(94);
+var _feathersErrors = __webpack_require__(95);
 
 var _feathersErrors2 = _interopRequireDefault(_feathersErrors);
 
@@ -49482,7 +49484,7 @@ var _createClass = function () {
 
 var _utils = __webpack_require__(478);
 
-var _feathersErrors = __webpack_require__(94);
+var _feathersErrors = __webpack_require__(95);
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -49802,7 +49804,7 @@ var _debug2 = _interopRequireDefault(_debug);
 
 var _feathersCommons = __webpack_require__(63);
 
-var _uberproto = __webpack_require__(111);
+var _uberproto = __webpack_require__(112);
 
 var _uberproto2 = _interopRequireDefault(_uberproto);
 
@@ -49994,7 +49996,7 @@ exports.default = function () {
 
 var _events = __webpack_require__(134);
 
-var _uberproto = __webpack_require__(111);
+var _uberproto = __webpack_require__(112);
 
 var _uberproto2 = _interopRequireDefault(_uberproto);
 
@@ -50047,7 +50049,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = createApplication;
 
-var _uberproto = __webpack_require__(111);
+var _uberproto = __webpack_require__(112);
 
 var _uberproto2 = _interopRequireDefault(_uberproto);
 
@@ -50373,7 +50375,7 @@ var _warning2 = _interopRequireDefault(_warning);
 
 var _LocationUtils = __webpack_require__(64);
 
-var _DOMUtils = __webpack_require__(96);
+var _DOMUtils = __webpack_require__(97);
 
 var _DOMStateStorage = __webpack_require__(205);
 
@@ -50561,7 +50563,7 @@ var _RefreshProtocol = __webpack_require__(491);
 
 var RefreshProtocol = _interopRequireWildcard(_RefreshProtocol);
 
-var _DOMUtils = __webpack_require__(96);
+var _DOMUtils = __webpack_require__(97);
 
 var _createHistory = __webpack_require__(137);
 
@@ -50675,7 +50677,7 @@ var _invariant2 = _interopRequireDefault(_invariant);
 
 var _ExecutionEnvironment = __webpack_require__(136);
 
-var _DOMUtils = __webpack_require__(96);
+var _DOMUtils = __webpack_require__(97);
 
 var _HashProtocol = __webpack_require__(490);
 
@@ -50852,7 +50854,7 @@ var _createHistory = __webpack_require__(137);
 
 var _createHistory2 = _interopRequireDefault(_createHistory);
 
-var _Actions = __webpack_require__(95);
+var _Actions = __webpack_require__(96);
 
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : { default: obj };
@@ -51837,7 +51839,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = calc;
 
-var _joinPrefixedValue = __webpack_require__(97);
+var _joinPrefixedValue = __webpack_require__(98);
 
 var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
 
@@ -51870,7 +51872,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = cursor;
 
-var _joinPrefixedValue = __webpack_require__(97);
+var _joinPrefixedValue = __webpack_require__(98);
 
 var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
 
@@ -52018,7 +52020,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = gradient;
 
-var _joinPrefixedValue = __webpack_require__(97);
+var _joinPrefixedValue = __webpack_require__(98);
 
 var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
 
@@ -52069,7 +52071,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = sizing;
 
-var _joinPrefixedValue = __webpack_require__(97);
+var _joinPrefixedValue = __webpack_require__(98);
 
 var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
 
@@ -53430,7 +53432,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   }
 }).call(undefined);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(112)(module), __webpack_require__(18)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(113)(module), __webpack_require__(18)))
 
 /***/ }),
 /* 523 */
@@ -55592,7 +55594,7 @@ function stubFalse() {
 }
 
 module.exports = merge;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18), __webpack_require__(112)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18), __webpack_require__(113)(module)))
 
 /***/ }),
 /* 524 */
@@ -57935,7 +57937,7 @@ var _reactEventListener = __webpack_require__(84);
 
 var _reactEventListener2 = _interopRequireDefault(_reactEventListener);
 
-var _keycode = __webpack_require__(98);
+var _keycode = __webpack_require__(99);
 
 var _keycode2 = _interopRequireDefault(_keycode);
 
@@ -58558,7 +58560,7 @@ var _reactEventListener = __webpack_require__(84);
 
 var _reactEventListener2 = _interopRequireDefault(_reactEventListener);
 
-var _keycode = __webpack_require__(98);
+var _keycode = __webpack_require__(99);
 
 var _keycode2 = _interopRequireDefault(_keycode);
 
@@ -59493,7 +59495,7 @@ var _EnhancedButton = __webpack_require__(65);
 
 var _EnhancedButton2 = _interopRequireDefault(_EnhancedButton);
 
-var _FontIcon = __webpack_require__(101);
+var _FontIcon = __webpack_require__(102);
 
 var _FontIcon2 = _interopRequireDefault(_FontIcon);
 
@@ -60061,7 +60063,7 @@ var _EnhancedButton = __webpack_require__(65);
 
 var _EnhancedButton2 = _interopRequireDefault(_EnhancedButton);
 
-var _FontIcon = __webpack_require__(101);
+var _FontIcon = __webpack_require__(102);
 
 var _FontIcon2 = _interopRequireDefault(_FontIcon);
 
@@ -66071,7 +66073,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _colors = __webpack_require__(102);
+var _colors = __webpack_require__(103);
 
 var _colorManipulator = __webpack_require__(54);
 
@@ -66153,7 +66155,7 @@ var _classCallCheck2 = __webpack_require__(2);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _colors = __webpack_require__(102);
+var _colors = __webpack_require__(103);
 
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : { default: obj };
@@ -66503,7 +66505,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof2 = __webpack_require__(89);
+var _typeof2 = __webpack_require__(90);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -67240,7 +67242,7 @@ module.exports = ARIADOMPropertyConfig;
 
 
 
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 var focusNode = __webpack_require__(199);
 
@@ -67878,7 +67880,7 @@ module.exports = CSSPropertyOperations;
 var EventPluginHub = __webpack_require__(67);
 var EventPropagators = __webpack_require__(68);
 var ExecutionEnvironment = __webpack_require__(19);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(33);
 var SyntheticEvent = __webpack_require__(39);
 
@@ -68286,8 +68288,8 @@ module.exports = DefaultEventPluginOrder;
 
 
 var EventPropagators = __webpack_require__(68);
-var ReactDOMComponentTree = __webpack_require__(15);
-var SyntheticMouseEvent = __webpack_require__(106);
+var ReactDOMComponentTree = __webpack_require__(16);
+var SyntheticMouseEvent = __webpack_require__(107);
 
 var eventTypes = {
   mouseEnter: {
@@ -69911,7 +69913,7 @@ module.exports = ReactCompositeComponent;
 
 
 
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDefaultInjection = __webpack_require__(629);
 var ReactMount = __webpack_require__(349);
 var ReactReconciler = __webpack_require__(69);
@@ -70039,10 +70041,10 @@ var DOMNamespaces = __webpack_require__(151);
 var DOMProperty = __webpack_require__(45);
 var DOMPropertyOperations = __webpack_require__(342);
 var EventPluginHub = __webpack_require__(67);
-var EventPluginRegistry = __webpack_require__(103);
-var ReactBrowserEventEmitter = __webpack_require__(105);
+var EventPluginRegistry = __webpack_require__(104);
+var ReactBrowserEventEmitter = __webpack_require__(106);
 var ReactDOMComponentFlags = __webpack_require__(343);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMInput = __webpack_require__(618);
 var ReactDOMOption = __webpack_require__(621);
 var ReactDOMSelect = __webpack_require__(344);
@@ -70052,7 +70054,7 @@ var ReactMultiChild = __webpack_require__(637);
 var ReactServerRenderingTransaction = __webpack_require__(642);
 
 var emptyFunction = __webpack_require__(25);
-var escapeTextContentForBrowser = __webpack_require__(108);
+var escapeTextContentForBrowser = __webpack_require__(109);
 var invariant = __webpack_require__(8);
 var isEventSupported = __webpack_require__(162);
 var shallowEqual = __webpack_require__(79);
@@ -71074,7 +71076,7 @@ module.exports = ReactDOMContainerInfo;
 var _assign = __webpack_require__(14);
 
 var DOMLazyTree = __webpack_require__(66);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 var ReactDOMEmptyComponent = function ReactDOMEmptyComponent(instantiate) {
   // ReactCompositeComponent uses this:
@@ -71161,7 +71163,7 @@ module.exports = ReactDOMFeatureFlags;
 
 
 var DOMChildrenOperations = __webpack_require__(150);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 /**
  * Operations used to process updates to DOM nodes.
@@ -71204,7 +71206,7 @@ var _prodInvariant = __webpack_require__(12),
 
 var DOMPropertyOperations = __webpack_require__(342);
 var LinkedValueUtils = __webpack_require__(153);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(33);
 
 var invariant = __webpack_require__(8);
@@ -71631,7 +71633,7 @@ module.exports = ReactDOMNullInputValuePropHook;
 var _assign = __webpack_require__(14);
 
 var React = __webpack_require__(56);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMSelect = __webpack_require__(344);
 
 var warning = __webpack_require__(9);
@@ -71978,9 +71980,9 @@ var _prodInvariant = __webpack_require__(12),
 
 var DOMChildrenOperations = __webpack_require__(150);
 var DOMLazyTree = __webpack_require__(66);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
-var escapeTextContentForBrowser = __webpack_require__(108);
+var escapeTextContentForBrowser = __webpack_require__(109);
 var invariant = __webpack_require__(8);
 var validateDOMNesting = __webpack_require__(164);
 
@@ -72146,7 +72148,7 @@ var _prodInvariant = __webpack_require__(12),
     _assign = __webpack_require__(14);
 
 var LinkedValueUtils = __webpack_require__(153);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(33);
 
 var invariant = __webpack_require__(8);
@@ -72449,7 +72451,7 @@ module.exports = {
 
 
 var DOMProperty = __webpack_require__(45);
-var EventPluginRegistry = __webpack_require__(103);
+var EventPluginRegistry = __webpack_require__(104);
 var ReactComponentTreeHook = __webpack_require__(22);
 
 var warning = __webpack_require__(9);
@@ -72936,7 +72938,7 @@ module.exports = ReactDebugTool;
 var _assign = __webpack_require__(14);
 
 var ReactUpdates = __webpack_require__(33);
-var Transaction = __webpack_require__(107);
+var Transaction = __webpack_require__(108);
 
 var emptyFunction = __webpack_require__(25);
 
@@ -73014,7 +73016,7 @@ var EnterLeaveEventPlugin = __webpack_require__(605);
 var HTMLDOMPropertyConfig = __webpack_require__(608);
 var ReactComponentBrowserEnvironment = __webpack_require__(610);
 var ReactDOMComponent = __webpack_require__(613);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMEmptyComponent = __webpack_require__(615);
 var ReactDOMTreeTraversal = __webpack_require__(625);
 var ReactDOMTextComponent = __webpack_require__(623);
@@ -73165,7 +73167,7 @@ var _assign = __webpack_require__(14);
 var EventListener = __webpack_require__(198);
 var ExecutionEnvironment = __webpack_require__(19);
 var PooledClass = __webpack_require__(55);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(33);
 
 var getEventTarget = __webpack_require__(161);
@@ -73361,10 +73363,10 @@ module.exports = ReactHostOperationHistoryHook;
 
 var DOMProperty = __webpack_require__(45);
 var EventPluginHub = __webpack_require__(67);
-var EventPluginUtils = __webpack_require__(104);
+var EventPluginUtils = __webpack_require__(105);
 var ReactComponentEnvironment = __webpack_require__(154);
 var ReactEmptyComponent = __webpack_require__(345);
-var ReactBrowserEventEmitter = __webpack_require__(105);
+var ReactBrowserEventEmitter = __webpack_require__(106);
 var ReactHostComponent = __webpack_require__(347);
 var ReactUpdates = __webpack_require__(33);
 
@@ -74083,10 +74085,10 @@ var _assign = __webpack_require__(14);
 
 var CallbackQueue = __webpack_require__(341);
 var PooledClass = __webpack_require__(55);
-var ReactBrowserEventEmitter = __webpack_require__(105);
+var ReactBrowserEventEmitter = __webpack_require__(106);
 var ReactInputSelection = __webpack_require__(348);
 var ReactInstrumentation = __webpack_require__(28);
-var Transaction = __webpack_require__(107);
+var Transaction = __webpack_require__(108);
 var ReactUpdateQueue = __webpack_require__(156);
 
 /**
@@ -74361,7 +74363,7 @@ module.exports = ReactRef;
 var _assign = __webpack_require__(14);
 
 var PooledClass = __webpack_require__(55);
-var Transaction = __webpack_require__(107);
+var Transaction = __webpack_require__(108);
 var ReactInstrumentation = __webpack_require__(28);
 var ReactServerUpdateQueue = __webpack_require__(643);
 
@@ -74924,7 +74926,7 @@ module.exports = SVGDOMPropertyConfig;
 
 var EventPropagators = __webpack_require__(68);
 var ExecutionEnvironment = __webpack_require__(19);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInputSelection = __webpack_require__(348);
 var SyntheticEvent = __webpack_require__(39);
 
@@ -75123,13 +75125,13 @@ var _prodInvariant = __webpack_require__(12);
 
 var EventListener = __webpack_require__(198);
 var EventPropagators = __webpack_require__(68);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var SyntheticAnimationEvent = __webpack_require__(648);
 var SyntheticClipboardEvent = __webpack_require__(649);
 var SyntheticEvent = __webpack_require__(39);
 var SyntheticFocusEvent = __webpack_require__(652);
 var SyntheticKeyboardEvent = __webpack_require__(654);
-var SyntheticMouseEvent = __webpack_require__(106);
+var SyntheticMouseEvent = __webpack_require__(107);
 var SyntheticDragEvent = __webpack_require__(651);
 var SyntheticTouchEvent = __webpack_require__(655);
 var SyntheticTransitionEvent = __webpack_require__(656);
@@ -75479,7 +75481,7 @@ module.exports = SyntheticCompositionEvent;
 
 
 
-var SyntheticMouseEvent = __webpack_require__(106);
+var SyntheticMouseEvent = __webpack_require__(107);
 
 /**
  * @interface DragEvent
@@ -75786,7 +75788,7 @@ module.exports = SyntheticTransitionEvent;
 
 
 
-var SyntheticMouseEvent = __webpack_require__(106);
+var SyntheticMouseEvent = __webpack_require__(107);
 
 /**
  * @interface WheelEvent
@@ -76076,7 +76078,7 @@ module.exports = dangerousStyleValue;
 var _prodInvariant = __webpack_require__(12);
 
 var ReactCurrentOwner = __webpack_require__(34);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstanceMap = __webpack_require__(83);
 
 var getHostComponentFromComposite = __webpack_require__(354);
@@ -76586,7 +76588,7 @@ module.exports = getVendorPrefixedEventName;
 
 
 
-var escapeTextContentForBrowser = __webpack_require__(108);
+var escapeTextContentForBrowser = __webpack_require__(109);
 
 /**
  * Escapes attribute value to prevent scripting attacks.
@@ -77763,7 +77765,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Actions = __webpack_require__(95);
+var _Actions = __webpack_require__(96);
 
 var _invariant = __webpack_require__(23);
 
@@ -78244,7 +78246,7 @@ function withRouter(WrappedComponent, options) {
 
 
 var EventConstants = __webpack_require__(606);
-var EventPluginUtils = __webpack_require__(104);
+var EventPluginUtils = __webpack_require__(105);
 var EventPropagators = __webpack_require__(68);
 var SyntheticUIEvent = __webpack_require__(70);
 var TouchEventUtils = __webpack_require__(689);
@@ -81062,7 +81064,7 @@ exports.emitEvents = function (emitter, type, name, args) {
  */
 
 var parseuri = __webpack_require__(339);
-var debug = __webpack_require__(110)('socket.io-client:url');
+var debug = __webpack_require__(111)('socket.io-client:url');
 
 /**
  * Module exports.
@@ -82258,7 +82260,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		root.wtf8 = wtf8;
 	}
 })(undefined);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(112)(module), __webpack_require__(18)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(113)(module), __webpack_require__(18)))
 
 /***/ }),
 /* 723 */
@@ -82293,7 +82295,7 @@ var _IconButton = __webpack_require__(80);
 
 var _IconButton2 = _interopRequireDefault(_IconButton);
 
-var _FontIcon = __webpack_require__(101);
+var _FontIcon = __webpack_require__(102);
 
 var _FontIcon2 = _interopRequireDefault(_FontIcon);
 
@@ -82311,11 +82313,11 @@ var _Tabs = __webpack_require__(144);
 
 var _Card = __webpack_require__(37);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
-var _gigListItem = __webpack_require__(114);
+var _gigListItem = __webpack_require__(87);
 
 var _gigListItem2 = _interopRequireDefault(_gigListItem);
 
@@ -82467,7 +82469,7 @@ var _FlatButton2 = _interopRequireDefault(_FlatButton);
 
 var _List = __webpack_require__(26);
 
-var _hacks = __webpack_require__(87);
+var _hacks = __webpack_require__(88);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -82519,7 +82521,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = __webpack_require__(17);
 
-var _Divider = __webpack_require__(100);
+var _Divider = __webpack_require__(101);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
@@ -82533,7 +82535,7 @@ var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 
 var _List = __webpack_require__(26);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -82547,7 +82549,7 @@ var _shiftDialog = __webpack_require__(726);
 
 var _shiftDialog2 = _interopRequireDefault(_shiftDialog);
 
-var _hacks = __webpack_require__(87);
+var _hacks = __webpack_require__(88);
 
 var _utils = __webpack_require__(73);
 
@@ -82635,17 +82637,18 @@ var ActivityCard = function (_React$Component) {
 				shift: {}
 			}
 		}, _this.fetchData = function () {
-			if (_this.props.tickets) {
-				// console.log("Fetching shifts for ", this.props.gig)
-				_main2.default.service('gigs').find({
-					query: {
-						parent: _this.props.gig._id,
-						$sort: { start: 1 }
-					}
-				}).then(function (result) {
-					return _this.setState({ shifts: result.data });
-				});
-			}
+			var gig_id = _this.props.gig._id || _this.props.params.gigId;
+			// if(this.props.tickets) {
+			console.log("Fetching shifts for ", gig_id);
+			_main2.default.service('gigs').find({
+				query: {
+					parent: gig_id,
+					$sort: { start: 1 }
+				}
+			}).then(function (result) {
+				return _this.setState({ shifts: result.data });
+			});
+			// }
 		}, _this.createdListener = function (shift) {
 			console.log("Created", shift);
 			console.log("THIS IS", _this.props.gig);
@@ -82708,14 +82711,14 @@ var ActivityCard = function (_React$Component) {
 
 			var _props = this.props,
 			    gig = _props.gig,
-			    tickets = _props.tickets,
-			    others = _objectWithoutProperties(_props, ['gig', 'tickets']);
+			    ticketsByGig = _props.ticketsByGig,
+			    others = _objectWithoutProperties(_props, ['gig', 'ticketsByGig']);
 
 			var _state = this.state,
 			    shifts = _state.shifts,
 			    dialog = _state.dialog;
-			// console.log("CARD props", this.props)
 
+			console.log("CARD props", this.props);
 			var status = gig.type === 'Volunteer' ? 'Volunteering' : 'Attending';
 			return _react2.default.createElement(
 				'div',
@@ -82740,13 +82743,13 @@ var ActivityCard = function (_React$Component) {
 						key: shift._id,
 						shift: shift,
 						onSelect: _this2.viewShift.bind(_this2, shift),
-						actionButton: _react2.default.createElement(ActionButton, _extends({ gig: shift, status: status, tickets: tickets }, others))
+						actionButton: _react2.default.createElement(ActionButton, _extends({ gig: shift, status: status, tickets: ticketsByGig }, others))
 					});
 				}),
 				_react2.default.createElement(
 					'div',
 					{ style: { marginTop: '1.5em' } },
-					gig.type && tickets && !shifts.length && _react2.default.createElement(ActionButton, _extends({ gig: gig, status: status, tickets: tickets }, others))
+					gig.type && ticketsByGig && !shifts.length && _react2.default.createElement(ActionButton, _extends({ gig: gig, status: status, tickets: ticketsByGig }, others))
 				),
 				_react2.default.createElement(_shiftDialog2.default, _extends({}, dialog, { onCancel: this.dialogCancel }))
 			);
@@ -82773,7 +82776,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Dialog = __webpack_require__(99);
+var _Dialog = __webpack_require__(100);
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
 
@@ -82911,7 +82914,7 @@ var _reactRouter = __webpack_require__(17);
 
 var _Card = __webpack_require__(37);
 
-var _Dialog = __webpack_require__(99);
+var _Dialog = __webpack_require__(100);
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
 
@@ -82927,11 +82930,11 @@ var _Subheader2 = _interopRequireDefault(_Subheader);
 
 var _Tabs = __webpack_require__(144);
 
-var _gigDetailsPage = __webpack_require__(113);
+var _gigDetailsPage = __webpack_require__(114);
 
 var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
 
-var _gigListItem = __webpack_require__(114);
+var _gigListItem = __webpack_require__(87);
 
 var _gigListItem2 = _interopRequireDefault(_gigListItem);
 
@@ -82943,7 +82946,7 @@ var _eventActions = __webpack_require__(86);
 
 var _eventActions2 = _interopRequireDefault(_eventActions);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -82952,8 +82955,6 @@ var _utils = __webpack_require__(73);
 var _icons = __webpack_require__(176);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -82977,10 +82978,10 @@ var EventPage = function (_React$Component) {
 
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			event: {},
-			pass: {},
+			// pass: {},
 			gigs: [],
-			tickets: {},
-			allTickets: [],
+			// tickets: {},
+			// allTickets: [],
 			dialog: {
 				open: false,
 				gig: {}
@@ -83007,24 +83008,10 @@ var EventPage = function (_React$Component) {
 					// console.log("Got result: ", page);			
 					_this.setState({ gigs: page.data, event: event });
 				});
-			}).then(_this.fetchTickets).catch(function (err) {
+			})
+			// .then(this.fetchTickets)
+			.catch(function (err) {
 				return console.error("ERAR: ", err);
-			});
-		}, _this.fetchTickets = function () {
-			_main2.default.service('tickets').find().then(function (result) {
-				console.log("Got tickets", result);
-				if (result.total) {
-					// store tickets as a Map of _id = ticket.status pairs
-					var tickets = result.data.reduce(function (o, t) {
-						return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
-					}, {});
-					var event = _this.state.event;
-
-					Object.assign(event, { tickets: result.data.filter(function (t) {
-							return t.gig_id === event._id;
-						}) });
-					_this.setState({ event: event, tickets: tickets, allTickets: result.data });
-				}
 			});
 		}, _this.handleDialogCancel = function (e) {
 			// console.log("Canceling...");
@@ -83035,24 +83022,12 @@ var EventPage = function (_React$Component) {
 					// has children
 					_this.viewGigDetails(gig);
 				} else {
-					console.log("Go join the gig");
+					// console.log("Go join the gig")
 					(0, _utils.gigJoin)(gig, status);
 				}
 			});
-		}, _this.isAttending = function (gig, status) {
-			return _this.state.tickets[gig._id] === status;
-		}, _this.ticketCreated = function (t) {
-			// console.log("Ticket created", t)
-			var tickets = _this.state.tickets;
-
-			Object.assign(tickets, _defineProperty({}, t.gig_id, t.status));
-			_this.setState({ tickets: tickets });
-		}, _this.ticketRemoved = function (t) {
-			// console.log("Ticket removed", t)
-			var tickets = _this.state.tickets;
-
-			Object.assign(tickets, _defineProperty({}, t.gig_id, null));
-			_this.setState({ tickets: tickets });
+		}, _this.isAttending = function (gig, tickets, status) {
+			return tickets[gig._id] === status;
 		}, _this.gigRemoved = function (gig) {
 			_this.setState({
 				gigs: _this.state.gigs.filter(function (g) {
@@ -83080,8 +83055,8 @@ var EventPage = function (_React$Component) {
 			_main2.default.service('gigs').on('removed', this.gigRemoved);
 			_main2.default.service('gigs').on('created', this.gigCreated);
 			_main2.default.service('gigs').on('patched', this.fetchData); // just reload
-			_main2.default.service('tickets').on('created', this.ticketCreated);
-			_main2.default.service('tickets').on('removed', this.ticketRemoved);
+			// app.service('tickets').on('created', this.ticketCreated)
+			// app.service('tickets').on('removed', this.ticketRemoved)
 		}
 	}, {
 		key: 'componentWillUnmount',
@@ -83090,10 +83065,39 @@ var EventPage = function (_React$Component) {
 				_main2.default.service('gigs').removeListener('removed', this.gigRemoved);
 				_main2.default.service('gigs').removeListener('created', this.gigCreated);
 				_main2.default.service('gigs').removeListener('patched', this.fetchData);
-				_main2.default.service('tickets').removeListener('removed', this.ticketRemoved);
-				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
+				// app.service('tickets').removeListener('removed', this.ticketRemoved)
+				// app.service('tickets').removeListener('created', this.ticketCreated)
 			}
 		}
+
+		// fetchTickets = () => {
+		// 	app.service('tickets').find()
+		// 	.then(result => {
+		// 		// console.log("Got tickets", result)
+		// 		if(result.total) {
+		// 			// store tickets as a Map of _id = ticket.status pairs
+		// 			const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
+		// 			const {event} = this.state
+		// 			Object.assign(event, {tickets: result.data.filter(t=>t.gig_id===event._id)})
+		// 			this.setState({event, tickets, allTickets: result.data})
+		// 		}
+		// 	})
+		// }
+
+		// ticketCreated = t => {
+		// 	// console.log("Ticket created", t)
+		// 	const {tickets} = this.state
+		// 	Object.assign(tickets, {[t.gig_id]: t.status})
+		// 	this.setState({tickets})
+		// }
+		// ticketRemoved = t => {
+		// 	// console.log("Ticket removed", t)
+		// 	const {tickets} = this.state
+		// 	Object.assign(tickets, {[t.gig_id]: null})
+		// 	this.setState({tickets})
+		// }
+
+
 	}, {
 		key: 'render',
 		value: function render() {
@@ -83101,13 +83105,14 @@ var EventPage = function (_React$Component) {
 
 			var _state = this.state,
 			    event = _state.event,
-			    dialog = _state.dialog,
-			    tickets = _state.tickets,
-			    allTickets = _state.allTickets;
+			    dialog = _state.dialog;
+			var _props = this.props,
+			    tickets = _props.tickets,
+			    ticketsByGig = _props.ticketsByGig;
 
 			var status = this.props.params.status || 'Attending';
 
-			// console.log("GIGGGINGING: ", this.state);
+			console.log("GIGGGINGING: ", this.props);
 			var title = _react2.default.createElement(
 				'b',
 				null,
@@ -83123,7 +83128,7 @@ var EventPage = function (_React$Component) {
 					title: title,
 					subtitle: subtitle
 				}),
-				_react2.default.createElement(_eventActions2.default, { event: event, tickets: allTickets, route: this.props.route.path }),
+				_react2.default.createElement(_eventActions2.default, { event: event, tickets: tickets, route: this.props.route.path }),
 				_react2.default.createElement(
 					_Card.CardText,
 					null,
@@ -83132,7 +83137,7 @@ var EventPage = function (_React$Component) {
 							key: gig._id,
 							gig: gig,
 							onSelect: _this2.viewGigDetails.bind(_this2, gig),
-							rightIconButton: _this2.isAttending(gig, status) ? _react2.default.createElement(_FlatButton2.default, {
+							rightIconButton: _this2.isAttending(gig, ticketsByGig, status) ? _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.minusBox,
 								title: 'Leave',
 								onTouchTap: _utils.gigLeave.bind(null, gig, status)
@@ -83156,7 +83161,7 @@ var EventPage = function (_React$Component) {
 						gig: dialog.gig,
 						onJoin: _utils.gigJoin,
 						onLeave: _utils.gigLeave,
-						tickets: tickets,
+						tickets: ticketsByGig,
 						status: status
 					})
 				)
@@ -83186,7 +83191,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -83221,8 +83226,7 @@ var EventPurchasePage = function (_React$Component) {
 		}
 
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = EventPurchasePage.__proto__ || Object.getPrototypeOf(EventPurchasePage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-			event: {},
-			tickets: []
+			event: {}
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -83234,20 +83238,15 @@ var EventPurchasePage = function (_React$Component) {
 			var eventId = this.props.params.eventId;
 
 			_main2.default.service('gigs').get(eventId).then(function (event) {
-				_main2.default.service('tickets').find().then(function (result) {
-					Object.assign(event, { tickets: result.data.filter(function (t) {
-							return t.gig_id === event._id;
-						}) });
-					_this2.setState({ event: event, tickets: result.data });
-				}).catch(_err2.default);
+				return _this2.setState({ event: event });
 			}).catch(_err2.default);
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			var _state = this.state,
-			    event = _state.event,
-			    tickets = _state.tickets;
+			var event = this.state.event;
+			var ticket = this.props.ticket;
+
 
 			return tickets.length && _react2.default.createElement(
 				'div',
@@ -83308,15 +83307,15 @@ var _LinearProgress = __webpack_require__(548);
 
 var _LinearProgress2 = _interopRequireDefault(_LinearProgress);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
-var _styles = __webpack_require__(88);
+var _styles = __webpack_require__(89);
 
 var _styles2 = _interopRequireDefault(_styles);
 
-var _hacks = __webpack_require__(87);
+var _hacks = __webpack_require__(88);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -83340,7 +83339,7 @@ var tspan = function tspan(job, _ref) {
 		null,
 		_react2.default.createElement(
 			_reactRouter.Link,
-			{ to: '/shifts/' + _id },
+			{ to: '/gig/' + _id },
 			(0, _moment2.default)(start).format('HH:mm'),
 			'-',
 			(0, _moment2.default)(end).format('HH:mm')
@@ -83417,14 +83416,14 @@ var VolunteerTable = function (_React$Component) {
 			var loading = loaded != total;
 			// console.log('Schedule', this.state )
 
-			return _react2.default.createElement(
+			return loading && _react2.default.createElement(_LinearProgress2.default, {
+				mode: 'determinate',
+				max: total,
+				value: loaded
+			}) || _react2.default.createElement(
 				'div',
 				null,
-				loading && _react2.default.createElement(_LinearProgress2.default, {
-					mode: 'determinate',
-					max: total,
-					value: loaded
-				}) || (0, _hacks.jobsByDate)(jobs).map(function (_ref3) {
+				(0, _hacks.jobsByDate)(jobs).map(function (_ref3) {
 					var date = _ref3.date,
 					    jobs = _ref3.jobs;
 					return _react2.default.createElement(
@@ -83462,7 +83461,7 @@ var VolunteerTable = function (_React$Component) {
 										{ key: job._id, colSpan: span },
 										_react2.default.createElement(
 											_reactRouter.Link,
-											{ to: '/gigs/' + job._id },
+											{ to: '/gig/' + job._id },
 											job.name
 										)
 									);
@@ -83537,7 +83536,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -83649,7 +83648,7 @@ var _reactRouter = __webpack_require__(17);
 
 var _Card = __webpack_require__(37);
 
-var _Dialog = __webpack_require__(99);
+var _Dialog = __webpack_require__(100);
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
 
@@ -83665,7 +83664,7 @@ var _Subheader2 = _interopRequireDefault(_Subheader);
 
 var _Tabs = __webpack_require__(144);
 
-var _gigDetailsPage = __webpack_require__(113);
+var _gigDetailsPage = __webpack_require__(114);
 
 var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
 
@@ -83677,7 +83676,7 @@ var _eventActions = __webpack_require__(86);
 
 var _eventActions2 = _interopRequireDefault(_eventActions);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -83685,11 +83684,9 @@ var _utils = __webpack_require__(73);
 
 var _icons = __webpack_require__(176);
 
-var _hacks = __webpack_require__(87);
+var _hacks = __webpack_require__(88);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -83701,8 +83698,11 @@ var checkTickets = function checkTickets(event, tickets) {
 	// here tickets are only Volunteering
 	// TODO consider moving to EventActions
 	var rules = event.ticket_rules;
+	var passes = event.tickets || tickets.filter(function (t) {
+		return t.gig._id === event._id;
+	});
 	if (rules) {
-		var statuses = event.tickets.map(function (t) {
+		var statuses = passes.map(function (t) {
 			return t.status;
 		});
 		// console.log("STATUSes", statuses)
@@ -83723,7 +83723,7 @@ var checkTickets = function checkTickets(event, tickets) {
 							return t.status === status;
 						}).length >= minCount) {
 							console.log("Changing status to", rule.newStatus);
-							var ticket = event.tickets.find(function (t) {
+							var ticket = passes.find(function (t) {
 								return t.status === rule.status;
 							});
 							_main2.default.service('tickets').patch(ticket._id, { status: rule.newStatus });
@@ -83750,6 +83750,10 @@ var checkTickets = function checkTickets(event, tickets) {
 	}
 };
 
+var isVolunteering = function isVolunteering(gig, tickets) {
+	return tickets[gig._id] === "Volunteering";
+};
+
 var EventPage = function (_React$Component) {
 	_inherits(EventPage, _React$Component);
 
@@ -83767,10 +83771,10 @@ var EventPage = function (_React$Component) {
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = EventPage.__proto__ || Object.getPrototypeOf(EventPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			loading: true,
 			event: {},
-			pass: {},
+			// pass: {},
 			gigs: [],
-			tickets: {},
-			ticketsRaw: [],
+			// tickets: {},
+			// ticketsRaw: [],
 			dialog: {
 				open: false,
 				gig: {}
@@ -83797,41 +83801,21 @@ var EventPage = function (_React$Component) {
 					// console.log("Got result: ", page);			
 					_this.setState({ gigs: page.data, event: event, loading: false });
 				});
-			}).then(_this.fetchTickets).catch(function (err) {
+			})
+			// .then(this.fetchTickets)
+			.catch(function (err) {
 				return console.error("ERAR: ", err);
-			});
-		}, _this.fetchTickets = function () {
-			_main2.default.service('tickets').find().then(function (result) {
-				// console.log("Got tickets", result)
-				var tickets = result.data.reduce(function (o, t) {
-					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
-				}, {});
-				var event = _this.state.event;
-
-				console.log("Event", event);
-				var passes = result.data.filter(function (t) {
-					return t.gig_id === event._id;
-				});
-				console.log("PASSED", passes);
-				if (event && passes.length) {
-					Object.assign(event, { tickets: passes });
-				}
-				_this.setState({ ticketsRaw: result.data.filter(function (t) {
-						return t.status === 'Volunteering';
-					}), event: event, tickets: tickets });
 			});
 		}, _this.handleDialogCancel = function (e) {
 			// console.log("Canceling...");
 			_this.setState({ dialogOpen: false });
-		}, _this.isVolunteering = function (gig) {
-			return _this.state.tickets[gig._id] === "Volunteering";
 		}, _this.handleGigJoin = function (gig) {
 			_main2.default.service('gigs').find({ query: { parent: gig._id } }).then(function (result) {
 				if (result.total) {
 					// has children
 					_this.viewGigDetails(gig);
 				} else {
-					console.log("Go join the gig");
+					console.log("Go volunteer!");
 					(0, _utils.gigJoin)(gig, 'Volunteering');
 				}
 			});
@@ -83845,29 +83829,6 @@ var EventPage = function (_React$Component) {
 
 			Object.assign(dialog, { open: true, gig: gig });
 			_this.setState({ dialog: dialog });
-		}, _this.ticketCreated = function (t) {
-			// console.log("Ticket created", t)
-			var _this$state = _this.state,
-			    event = _this$state.event,
-			    tickets = _this$state.tickets;
-
-			Object.assign(tickets, _defineProperty({}, t.gig_id, t.status));
-			var tix = _this.state.ticketsRaw.concat(t);
-			checkTickets(event, tix);
-			_this.setState({ tickets: tickets, ticketsRaw: tix });
-		}, _this.ticketRemoved = function (t) {
-			// console.log("Ticket removed", t)
-			var _this$state2 = _this.state,
-			    event = _this$state2.event,
-			    tickets = _this$state2.tickets,
-			    ticketsRaw = _this$state2.ticketsRaw;
-
-			Object.assign(tickets, _defineProperty({}, t.gig_id, null));
-			var tix = _this.state.ticketsRaw.filter(function (r) {
-				return r._id !== t._id;
-			});
-			checkTickets(event, tix);
-			_this.setState({ tickets: tickets, ticketsRaw: tix });
 		}, _this.gigRemoved = function (gig) {
 			// console.log("Removed: ", gig);
 			_this.setState({
@@ -83898,14 +83859,13 @@ var EventPage = function (_React$Component) {
 			_main2.default.service('gigs').on('removed', this.gigRemoved);
 			_main2.default.service('gigs').on('created', this.gigCreated);
 			_main2.default.service('gigs').on('patched', this.gigPatched);
-			_main2.default.service('tickets').on('created', this.ticketCreated);
-			_main2.default.service('tickets').on('removed', this.ticketRemoved);
+			// app.service('tickets').on('created', this.ticketCreated);
+			// app.service('tickets').on('removed', this.ticketRemoved);
 		}
-	}, {
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			// this.fetchTickets()
-		}
+		// componentDidMount() {
+		// 	// this.fetchTickets()
+		// }
+
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
@@ -83913,10 +83873,44 @@ var EventPage = function (_React$Component) {
 				_main2.default.service('gigs').removeListener('removed', this.gigRemoved);
 				_main2.default.service('gigs').removeListener('created', this.gigCreated);
 				_main2.default.service('gigs').removeListener('patched', this.gigPatched);
-				_main2.default.service('tickets').removeListener('removed', this.ticketRemoved);
-				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
+				// app.service('tickets').removeListener('removed', this.ticketRemoved);
+				// app.service('tickets').removeListener('created', this.ticketCreated);
 			}
 		}
+		// fetchTickets = () => {
+		// 	app.service('tickets').find(/*{query:{status:"Volunteering"}}*/)
+		// 	.then(result => {
+		// 		// console.log("Got tickets", result)
+		// 		const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
+		// 		const {event} = this.state
+		// 		console.log("Event", event)
+		// 		const passes = result.data.filter(t => t.gig_id===event._id)
+		// 		console.log("PASSED", passes)
+		// 		if(event && passes.length) {
+		// 			Object.assign(event, {tickets: passes})
+		// 		}
+		// 		this.setState({ticketsRaw: result.data.filter(t => t.status==='Volunteering'), event, tickets})
+		// 	})
+		// }
+
+		// ticketCreated = t => {
+		// 	// console.log("Ticket created", t)
+		// 	const {event, tickets} = this.state
+		// 	Object.assign(tickets, {[t.gig_id]: t.status})
+		// 	const tix = this.state.ticketsRaw.concat(t)
+		// 	checkTickets(event, tix)
+		// 	this.setState({tickets, ticketsRaw: tix})
+		// }
+		// ticketRemoved = t => {
+		// 	// console.log("Ticket removed", t)
+		// 	const {event, tickets, ticketsRaw} = this.state
+		// 	Object.assign(tickets, {[t.gig_id]: null})
+		// 	const tix = this.state.ticketsRaw.filter(r=> r._id!==t._id)
+		// 	checkTickets(event, tix)
+		// 	this.setState({tickets, ticketsRaw: tix})
+		// }
+
+
 	}, {
 		key: 'render',
 		value: function render() {
@@ -83926,9 +83920,10 @@ var EventPage = function (_React$Component) {
 			    loading = _state.loading,
 			    gig = _state.gig,
 			    dialog = _state.dialog,
-			    event = _state.event,
-			    tickets = _state.tickets,
-			    ticketsRaw = _state.ticketsRaw;
+			    event = _state.event;
+			var _props = this.props,
+			    tickets = _props.tickets,
+			    ticketsByGig = _props.ticketsByGig;
 			// console.log("Volunteerizing: ", this.props)
 
 			var title = _react2.default.createElement(
@@ -83938,7 +83933,9 @@ var EventPage = function (_React$Component) {
 			);
 
 			var subtitle = _react2.default.createElement(_gigTimespan2.default, { gig: event, showRelative: true });
-			var n = ticketsRaw.length;
+			var n = tickets.filter(function (t) {
+				return t.gig.type === 'Volunteer';
+			}).length;
 			return !loading && _react2.default.createElement(
 				_Card.Card,
 				{ initiallyExpanded: true },
@@ -83946,7 +83943,7 @@ var EventPage = function (_React$Component) {
 					title: title,
 					subtitle: subtitle
 				}),
-				_react2.default.createElement(_eventActions2.default, { event: event, tickets: ticketsRaw, route: this.props.route.path }),
+				_react2.default.createElement(_eventActions2.default, { event: event, tickets: tickets, route: this.props.route.path }),
 				_react2.default.createElement(
 					_Card.CardText,
 					null,
@@ -83973,7 +83970,7 @@ var EventPage = function (_React$Component) {
 							primaryText: gig.name,
 							onTouchTap: _this2.viewGigDetails.bind(_this2, gig),
 							secondaryText: _react2.default.createElement(_gigTimespan2.default, { gig: gig }),
-							rightIconButton: _this2.isVolunteering(gig) ? _react2.default.createElement(_FlatButton2.default, {
+							rightIconButton: isVolunteering(gig, ticketsByGig) ? _react2.default.createElement(_FlatButton2.default, {
 								icon: _icons.minusBox,
 								title: 'Leave',
 								onTouchTap: _utils.gigLeave.bind(_this2, gig, 'Volunteering')
@@ -83997,11 +83994,10 @@ var EventPage = function (_React$Component) {
 						gig: dialog.gig,
 						onJoin: this.shiftJoin,
 						onLeave: this.shiftLeave,
-						tickets: tickets,
-						status: tickets[dialog.gig._id]
+						ticketsByGig: ticketsByGig,
+						status: ticketsByGig[dialog.gig._id]
 					})
-				),
-				_react2.default.createElement(_Card.CardActions, null)
+				)
 			) || null;
 		}
 	}]);
@@ -84054,7 +84050,7 @@ var _eventInfo = __webpack_require__(381);
 
 var _eventInfo2 = _interopRequireDefault(_eventInfo);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -84209,155 +84205,7 @@ var EventsList = function (_React$Component) {
 exports.default = EventsList;
 
 /***/ }),
-/* 733 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _moment = __webpack_require__(0);
-
-var _moment2 = _interopRequireDefault(_moment);
-
-var _Card = __webpack_require__(37);
-
-var _FlatButton = __webpack_require__(24);
-
-var _FlatButton2 = _interopRequireDefault(_FlatButton);
-
-var _List = __webpack_require__(26);
-
-var _Subheader = __webpack_require__(53);
-
-var _Subheader2 = _interopRequireDefault(_Subheader);
-
-var _gigTimespan = __webpack_require__(35);
-
-var _gigTimespan2 = _interopRequireDefault(_gigTimespan);
-
-var _gigDetailsPage = __webpack_require__(113);
-
-var _gigDetailsPage2 = _interopRequireDefault(_gigDetailsPage);
-
-var _main = __webpack_require__(16);
-
-var _main2 = _interopRequireDefault(_main);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var GigPage = function (_React$Component) {
-	_inherits(GigPage, _React$Component);
-
-	function GigPage() {
-		var _ref;
-
-		var _temp, _this, _ret;
-
-		_classCallCheck(this, GigPage);
-
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GigPage.__proto__ || Object.getPrototypeOf(GigPage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-			gig: {},
-			tickets: {}
-		}, _this.fetchData = function () {
-			var gigId = _this.props.params.gigId;
-
-
-			return _main2.default.service('gigs').get(gigId).then(function (gig) {
-				return _main2.default.service('tickets').find().then(function (result) {
-					console.log("Got tickets", result);
-					if (result.total) {
-						// store tickets as a Map of _id = ticket.status pairs
-						var tickets = result.data.reduce(function (o, t) {
-							return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
-						}, {});
-						_this.setState({ gig: gig, tickets: tickets });
-					}
-				});
-			});
-		}, _this.ticketCreated = function (t) {
-			// console.log("T created", t)
-			var tickets = _this.state.tickets;
-
-			Object.assign(tickets, _defineProperty({}, t.gig_id, t.status));
-			_this.setState({ tickets: tickets });
-		}, _this.ticketRemoved = function (t) {
-			// console.log("T removed", t)
-			var tickets = _this.state.tickets;
-
-			Object.assign(tickets, _defineProperty({}, t.gig_id, null));
-			_this.setState({ tickets: tickets });
-		}, _temp), _possibleConstructorReturn(_this, _ret);
-	}
-
-	_createClass(GigPage, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			_main2.default.authenticate().then(this.fetchData).catch(function (err) {
-				return console.error("It can't be: ", err);
-			});
-		}
-	}, {
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			_main2.default.service('tickets').on('created', this.ticketCreated);
-			_main2.default.service('tickets').on('removed', this.ticketRemoved);
-		}
-	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			_main2.default.service('tickets').removeListener('created', this.ticketCreated);
-			_main2.default.service('tickets').removeListener('removed', this.ticketRemoved);
-		}
-
-		// TODO these are copies from event-page. Must move up
-
-	}, {
-		key: 'render',
-		value: function render() {
-			var _state = this.state,
-			    gig = _state.gig,
-			    tickets = _state.tickets;
-			// console.log("GIIG", gig)
-
-			return gig._id && _react2.default.createElement(_gigDetailsPage2.default, { params: this.props.params, status: 'Attending', tickets: tickets }) || null;
-		}
-	}]);
-
-	return GigPage;
-}(_react2.default.Component);
-// <Card>
-// 	<CardHeader title={gig.name}/>
-// 	<CardText>
-// 		<p>{gig.acts && gig.acts.map(a => a.name).join(',')} at the {venue.name}</p>
-// 	</CardText>
-// </Card>
-
-
-exports.default = GigPage;
-
-/***/ }),
+/* 733 */,
 /* 734 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -84412,6 +84260,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -84428,7 +84278,7 @@ var _getMuiTheme = __webpack_require__(222);
 
 var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
 
-var _colors = __webpack_require__(102);
+var _colors = __webpack_require__(103);
 
 var _AppBar = __webpack_require__(526);
 
@@ -84456,7 +84306,7 @@ var _Snackbar = __webpack_require__(557);
 
 var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -84464,11 +84314,13 @@ var _err = __webpack_require__(175);
 
 var _err2 = _interopRequireDefault(_err);
 
-var _userCard = __webpack_require__(741);
+var _userCard = __webpack_require__(742);
 
 var _userCard2 = _interopRequireDefault(_userCard);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -84508,7 +84360,40 @@ var Layout = function (_React$Component) {
 			user: null,
 			section: 'BFest',
 			snackbarOpen: false,
-			message: ''
+			message: '',
+			ticketsByGig: {},
+			tickets: []
+		}, _this.fetchTickets = function () {
+			_main2.default.service('tickets').find().then(function (result) {
+				// console.log("Got tickets", result)
+				if (result.total) {
+					// store tickets as a Map of _id = ticket.status pairs
+					var ticketsByGig = result.data.reduce(function (o, t) {
+						return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
+					}, {});
+					_this.setState({ event: event, ticketsByGig: ticketsByGig, tickets: result.data });
+				}
+			});
+		}, _this.ticketCreated = function (t) {
+			console.log("Ticket created", t);
+			var _this$state = _this.state,
+			    tickets = _this$state.tickets,
+			    ticketsByGig = _this$state.ticketsByGig;
+
+			Object.assign(ticketsByGig, _defineProperty({}, t.gig_id, t.status));
+			_main2.default.service('tickets').get(t._id).then(function (ticket) {
+				return _this.setState({ ticketsByGig: ticketsByGig, tickets: tickets.concat(ticket) });
+			});
+		}, _this.ticketRemoved = function (t) {
+			// console.log("Ticket removed", t)
+			var _this$state2 = _this.state,
+			    tickets = _this$state2.tickets,
+			    ticketsByGig = _this$state2.ticketsByGig;
+
+			Object.assign(ticketsByGig, _defineProperty({}, t.gig_id, null));
+			_this.setState({ ticketsByGig: ticketsByGig, tickets: tickets.filter(function (tk) {
+					return tk._id !== t._id;
+				}) });
 		}, _this.closeDrawer = function () {
 			_this.setState({ drawerOpen: false });
 		}, _this.toggleDrawer = function () {
@@ -84535,6 +84420,7 @@ var Layout = function (_React$Component) {
 			var user = _main2.default.get('user');
 			if (!_this.state.user && user) {
 				_this.setState({ user: user });
+				_this.fetchTickets();
 			}
 		}, _this.userPatched = function (u) {
 			if (u) {
@@ -84559,6 +84445,8 @@ var Layout = function (_React$Component) {
 			_main2.default.on('authenticated', this.loginListener);
 			_main2.default.on('error', this.errorListener);
 			_main2.default.service('users').on('patched', this.userPatched);
+			_main2.default.service('tickets').on('created', this.ticketCreated);
+			_main2.default.service('tickets').on('removed', this.ticketRemoved);
 		}
 	}, {
 		key: 'componentWillUnmount',
@@ -84566,15 +84454,26 @@ var Layout = function (_React$Component) {
 			if (_main2.default) {
 				_main2.default.removeListener('authenticated', this.loginListener);
 				_main2.default.removeListener('error', this.errorListener);
+				_main2.default.service('tickets').removeListener('removed', this.ticketRemoved);
+				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
 			}
 		}
+
+		// Listen for tickets
+
 	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
-			var user = this.state.user;
+			var _state = this.state,
+			    user = _state.user,
+			    ticketsByGig = _state.ticketsByGig,
+			    tickets = _state.tickets;
+			var children = this.props.children;
+			// inject our stuff
 
+			var grandchildren = Object.assign({}, children, { props: _extends({}, children.props, { tickets: tickets, ticketsByGig: ticketsByGig }) });
 			return _react2.default.createElement(
 				_MuiThemeProvider2.default,
 				{ muiTheme: (0, _getMuiTheme2.default)(theme) },
@@ -84604,7 +84503,7 @@ var Layout = function (_React$Component) {
 							return _react2.default.createElement(_MenuItem2.default, { onTouchTap: _this2.handleMenu.bind(_this2, section), primaryText: section.text, key: section.path });
 						})
 					),
-					this.props.children,
+					grandchildren,
 					_react2.default.createElement(
 						'footer',
 						{ style: { position: 'fixed', bottom: 0, right: 8, fontSize: 'smaller' } },
@@ -84659,15 +84558,15 @@ var _Subheader = __webpack_require__(53);
 
 var _Subheader2 = _interopRequireDefault(_Subheader);
 
-var _Divider = __webpack_require__(100);
+var _Divider = __webpack_require__(101);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
-var _gigListItem = __webpack_require__(114);
+var _gigListItem = __webpack_require__(87);
 
 var _gigListItem2 = _interopRequireDefault(_gigListItem);
 
@@ -84679,7 +84578,7 @@ var _lineupItem = __webpack_require__(382);
 
 var _lineupItem2 = _interopRequireDefault(_lineupItem);
 
-var _styles = __webpack_require__(88);
+var _styles = __webpack_require__(89);
 
 var _styles2 = _interopRequireDefault(_styles);
 
@@ -84690,6 +84589,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function days(tickets) {
+	// console.log("Teekets:", result)
+	var formated = tickets.map(function (t) {
+		return (0, _moment2.default)(t.gig.start).format('YYYY-MM-DD');
+	});
+	// console.log("Formated", formated)
+	var unique = formated.filter(function (e, i, a) {
+		return a.indexOf(e) === i;
+	});
+	// console.log("Unique", unique)
+	var sorted = unique.sort();
+	var dates = sorted.map(function (s) {
+		return (0, _moment2.default)(s, 'YYYY-MM-DD');
+	});
+	console.log("DAYS:: ", dates);
+	return dates;
+}
 
 var Lineup = function (_React$Component) {
 	_inherits(Lineup, _React$Component);
@@ -84705,63 +84622,31 @@ var Lineup = function (_React$Component) {
 			args[_key] = arguments[_key];
 		}
 
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Lineup.__proto__ || Object.getPrototypeOf(Lineup)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-			tickets: [],
-			dates: [],
-			loading: true
-		}, _this.fetchData = function () {
-			var status = _this.props.status || 'Attending';
-			_main2.default.service('tickets').find({ query: { status: status } }).then(function (result) {
-
-				// if(result.total) {
-				// console.log("Teekets:", result)
-				var formated = result.data.map(function (t) {
-					return (0, _moment2.default)(t.gig.start).format('YYYY-MM-DD');
-				});
-				// console.log("Formated", formated)
-				var unique = formated.filter(function (e, i, a) {
-					return a.indexOf(e) === i;
-				});
-				// console.log("Unique", unique)
-				var sorted = unique.sort();
-				var dates = sorted.map(function (s) {
-					return (0, _moment2.default)(s, 'YYYY-MM-DD');
-				});
-				// a little hacky format -> parse but
-				// works better than 0-ing time
-				// console.log("Dates", dates)
-				_this.setState({ tickets: result.data, dates: dates, loading: false });
-				// } 
-			}).catch(function (err) {
-				return console.error;
-			});
-		}, _this.select = function (gig) {
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Lineup.__proto__ || Object.getPrototypeOf(Lineup)).call.apply(_ref, [this].concat(args))), _this), _this.select = function (gig) {
 			_reactRouter.browserHistory.push('/gigs/' + gig._id);
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
 	_createClass(Lineup, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			_main2.default.authenticate().then(this.fetchData);
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
-			var _state = this.state,
-			    dates = _state.dates,
-			    tickets = _state.tickets,
-			    loading = _state.loading;
-			// console.log("LINEUP", this.state) 
-			// console.log(dates)
+			var _props = this.props,
+			    tickets = _props.tickets,
+			    status = _props.status;
+			// console.log("LINEUP props", this.props)
 
+			var filtered = tickets && tickets.filter(function (t) {
+				return t.status === (status || 'Attending');
+			});
+
+			// console.log("LINEUP filtered", filtered) 
+			// console.log(dates)
 			return _react2.default.createElement(
 				'div',
 				{ style: _styles2.default.lineup.container },
-				loading && _react2.default.createElement(_CircularProgress2.default, null),
-				!loading && tickets.length == 0 ? _react2.default.createElement(
+				filtered && filtered.length == 0 ? _react2.default.createElement(
 					_Subheader2.default,
 					null,
 					'No events found. ',
@@ -84771,7 +84656,7 @@ var Lineup = function (_React$Component) {
 						'Choose some'
 					)
 				) : '',
-				dates.map(function (d) {
+				filtered && days(filtered).map(function (d) {
 					return _react2.default.createElement(
 						_List.List,
 						{ key: d },
@@ -84781,7 +84666,7 @@ var Lineup = function (_React$Component) {
 							d.format('MMM D, dddd')
 						),
 						_react2.default.createElement(_Divider2.default, null),
-						tickets.filter(function (t) {
+						filtered.filter(function (t) {
 							return (0, _moment2.default)(t.gig.start).isSame(d, 'day');
 						}).sort(function (a, b) {
 							return +(a.gig.start > b.gig.start) || +(a.gig.start === b.gig.start) - 1;
@@ -84842,7 +84727,7 @@ var _TextField2 = _interopRequireDefault(_TextField);
 
 var _reactRouter = __webpack_require__(17);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -85018,15 +84903,15 @@ var _CircularProgress2 = _interopRequireDefault(_CircularProgress);
 
 var _List = __webpack_require__(26);
 
-var _Divider = __webpack_require__(100);
+var _Divider = __webpack_require__(101);
 
 var _Divider2 = _interopRequireDefault(_Divider);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
-var _gigListItem = __webpack_require__(114);
+var _gigListItem = __webpack_require__(87);
 
 var _gigListItem2 = _interopRequireDefault(_gigListItem);
 
@@ -85038,7 +84923,7 @@ var _lineupItem = __webpack_require__(382);
 
 var _lineupItem2 = _interopRequireDefault(_lineupItem);
 
-var _styles = __webpack_require__(88);
+var _styles = __webpack_require__(89);
 
 var _styles2 = _interopRequireDefault(_styles);
 
@@ -85193,15 +85078,15 @@ var _CircularProgress = __webpack_require__(141);
 
 var _CircularProgress2 = _interopRequireDefault(_CircularProgress);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
-var _styles = __webpack_require__(88);
+var _styles = __webpack_require__(89);
 
 var _styles2 = _interopRequireDefault(_styles);
 
-var _hacks = __webpack_require__(87);
+var _hacks = __webpack_require__(88);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -85220,14 +85105,107 @@ var ticketStartTimeSort = function ticketStartTimeSort(a, b) {
 
 var tspan = function tspan(job, _ref) {
 	var _id = _ref._id,
-	    name = _ref.name;
+	    name = _ref.name,
+	    type = _ref.type;
 	return _react2.default.createElement(
 		'span',
 		null,
 		_react2.default.createElement(
 			_reactRouter.Link,
-			{ to: '/gigs/' + _id },
+			{ to: '/gig/' + _id },
 			name
+		)
+	);
+};
+
+var JobHeader = function JobHeader(_ref2) {
+	var job = _ref2.job,
+	    span = _ref2.span;
+	return _react2.default.createElement(
+		'th',
+		{ colSpan: span },
+		_react2.default.createElement(
+			_reactRouter.Link,
+			{ to: '/sites/' + job._id },
+			job.name
+		)
+	);
+};
+
+var HourRow = function HourRow(_ref3) {
+	var hour = _ref3.hour,
+	    jobs = _ref3.jobs;
+	return _react2.default.createElement(
+		'tr',
+		null,
+		_react2.default.createElement(
+			'td',
+			null,
+			hour,
+			':00'
+		),
+		jobs.map(function (_ref4) {
+			var hours = _ref4.hours,
+			    job = _ref4.job,
+			    span = _ref4.span;
+
+			return hours[hour] && (0, _hacks.sequence)(span).map(function (i) {
+				var slot = hours[hour][i];
+				var starts = slot && slot.show && slot.show.starts;
+				var c = 'j-shift sch-' + slot.shift.type + ' ' + (slot && slot.show && (slot.show.starts ? 'j-start ' : '') + (slot.show.ends ? 'j-end' : ''));
+				return slot && _react2.default.createElement(
+					'td',
+					{ key: hour + i, className: c },
+					starts && tspan(job, slot.shift)
+				) || _react2.default.createElement(
+					'td',
+					{ key: hour + i },
+					' '
+				);
+			}) || _react2.default.createElement(
+				'td',
+				{ key: job._id + hour, colSpan: span },
+				' '
+			);
+		})
+	);
+};
+
+var DayTable = function DayTable(_ref5) {
+	var date = _ref5.date,
+	    jobs = _ref5.jobs;
+	return _react2.default.createElement(
+		'table',
+		{ className: 'gig-schedule' },
+		_react2.default.createElement(
+			'thead',
+			null,
+			_react2.default.createElement(
+				'tr',
+				null,
+				_react2.default.createElement(
+					'th',
+					{ colSpan: jobs.length + 1, style: _styles2.default.scheduleDate },
+					date.format('MMM D, dddd')
+				)
+			),
+			_react2.default.createElement(
+				'tr',
+				null,
+				_react2.default.createElement('th', null),
+				jobs.map(function (_ref6) {
+					var job = _ref6.job,
+					    span = _ref6.span;
+					return _react2.default.createElement(JobHeader, { key: job._id, job: job, span: span });
+				})
+			)
+		),
+		_react2.default.createElement(
+			'tbody',
+			null,
+			_hacks.hours24.map(function (hour) {
+				return _react2.default.createElement(HourRow, { key: date + hour, hour: hour, jobs: jobs });
+			})
 		)
 	);
 };
@@ -85236,146 +85214,69 @@ var VolunteerTable = function (_React$Component) {
 	_inherits(VolunteerTable, _React$Component);
 
 	function VolunteerTable() {
-		var _ref2;
-
-		var _temp, _this, _ret;
-
 		_classCallCheck(this, VolunteerTable);
 
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = VolunteerTable.__proto__ || Object.getPrototypeOf(VolunteerTable)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
-			total: 0,
-			loaded: 0,
-			tickets: null
-		}, _temp), _possibleConstructorReturn(_this, _ret);
+		return _possibleConstructorReturn(this, (VolunteerTable.__proto__ || Object.getPrototypeOf(VolunteerTable)).apply(this, arguments));
 	}
 
 	_createClass(VolunteerTable, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			var _this2 = this;
+		key: 'shouldComponentUpdate',
 
-			var eventId = this.props.params.eventId;
+		/*state = {
+  	total: 0,
+  	loaded: 0,
+  	tickets: null,
+  }*/
 
-			if (eventId) {
-				_main2.default.service('tickets').find({
-					query: {
-						// only can get my tickets, exclude ones for event
-						gig_id: { $ne: eventId }
-					}
-				}).then(function (tickets) {
-					return _this2.setState({ tickets: tickets.data.sort(ticketStartTimeSort) });
-				});
-			} else {
-				_main2.default.service('gigs').find({
-					query: {
-						public: true,
-						parent: { $exists: false }
-					}
-				}).then(function (events) {
-					return _main2.default.service('tickets').find({
-						query: {
-							gig_id: { $nin: events.data.map(function (e) {
-									return e._id;
-								}) }
-						}
-					}).then(function (tickets) {
-						return _this2.setState({ events: events.data, tickets: tickets.data.sort(ticketStartTimeSort) });
-					});
-				});
-			}
+		/*	componentWillMount() {
+  		const {eventId} = this.props.params
+  		if(eventId) {
+  			app.service('tickets').find({
+  				query: {
+  					// only can get my tickets, exclude ones for event
+  					gig_id: {$ne: eventId}
+  				}
+  			}) 
+  			.then(tickets => this.setState({tickets: tickets.data.sort(ticketStartTimeSort)}))
+  		} else {
+  			app.service('gigs').find({
+  				query: {
+  					public: true,
+  					parent: {$exists: false}
+  				}
+  			})
+  			.then(events =>
+  				app.service('tickets').find({
+  					query: {
+  						gig_id: {$nin: events.data.map(e=>e._id)}
+  					}
+  				})
+  				.then(tickets => this.setState({events: events.data, tickets: tickets.data.sort(ticketStartTimeSort)}))
+  			)
+  	}
+  }*/
+
+		value: function shouldComponentUpdate(nextProps) {
+			console.log("THIS", this.props.tickets.length);
+			console.log("NEXT --- ", nextProps.tickets.length);
+			return this.props.tickets.length !== nextProps.tickets.length;
 		}
 	}, {
 		key: 'render',
 		value: function render() {
 			// TODO rename jobs => sites (to refelct reality...)
-			var tickets = this.state.tickets;
+			var tickets = this.props.tickets;
 
 			return _react2.default.createElement(
 				'div',
 				null,
-				!tickets && _react2.default.createElement(_CircularProgress2.default, null) || (0, _hacks.sitesByDate)(tickets).map(function (_ref3) {
-					var date = _ref3.date,
-					    jobs = _ref3.jobs;
-					return _react2.default.createElement(
-						'table',
-						{ key: date, className: 'gig-schedule' },
-						_react2.default.createElement(
-							'thead',
-							null,
-							_react2.default.createElement(
-								'tr',
-								null,
-								_react2.default.createElement(
-									'th',
-									{ colSpan: jobs.length + 1, style: _styles2.default.scheduleDate },
-									date.format('MMM D, dddd')
-								)
-							),
-							_react2.default.createElement(
-								'tr',
-								null,
-								_react2.default.createElement('th', null),
-								jobs.map(function (_ref4) {
-									var job = _ref4.job,
-									    span = _ref4.span;
-									return _react2.default.createElement(
-										'th',
-										{ key: job._id, colSpan: span },
-										_react2.default.createElement(
-											_reactRouter.Link,
-											{ to: '/sites/' + job._id },
-											job.name
-										)
-									);
-								})
-							)
-						),
-						_react2.default.createElement(
-							'tbody',
-							null,
-							_hacks.hours24.map(function (hour) {
-								return _react2.default.createElement(
-									'tr',
-									{ key: hour },
-									_react2.default.createElement(
-										'td',
-										null,
-										hour,
-										':00'
-									),
-									jobs.map(function (_ref5) {
-										var hours = _ref5.hours,
-										    job = _ref5.job,
-										    span = _ref5.span;
-
-										return hours[hour] && (0, _hacks.sequence)(span).map(function (i) {
-											var slot = hours[hour][i];
-											var starts = slot && slot.show && slot.show.starts;
-											var c = 'j-shift ' + (slot && slot.show && (slot.show.starts ? 'j-start ' : '') + (slot.show.ends ? 'j-end' : ''));
-											return slot && _react2.default.createElement(
-												'td',
-												{ key: hour + i, className: c },
-												starts && tspan(job, slot.shift)
-											) || _react2.default.createElement(
-												'td',
-												{ key: hour + i },
-												' '
-											);
-										}) || _react2.default.createElement(
-											'td',
-											{ key: job._id + hour, colSpan: span },
-											' '
-										);
-									})
-								);
-							})
-						)
-					);
-				})
+				tickets.length && (0, _hacks.sitesByDate)(tickets.filter(function (t) {
+					return t.gig && t.gig.parent;
+				}).sort(ticketStartTimeSort)).map(function (_ref7) {
+					var date = _ref7.date,
+					    jobs = _ref7.jobs;
+					return _react2.default.createElement(DayTable, { key: date, date: date, jobs: jobs });
+				}) || _react2.default.createElement(_CircularProgress2.default, null)
 			);
 		}
 	}]);
@@ -85422,7 +85323,7 @@ var _TextField = __webpack_require__(145);
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -85575,6 +85476,131 @@ exports.default = SignupForm;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = __webpack_require__(17);
+
+var _main = __webpack_require__(15);
+
+var _main2 = _interopRequireDefault(_main);
+
+var _gigListItem = __webpack_require__(87);
+
+var _gigListItem2 = _interopRequireDefault(_gigListItem);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SitePage = function (_React$Component) {
+	_inherits(SitePage, _React$Component);
+
+	function SitePage() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
+		_classCallCheck(this, SitePage);
+
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = SitePage.__proto__ || Object.getPrototypeOf(SitePage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+			venue: null,
+			gigs: []
+		}, _this.viewGig = function (gig) {
+			return _reactRouter.browserHistory.push('/gig/' + gig._id);
+		}, _temp), _possibleConstructorReturn(_this, _ret);
+	}
+
+	_createClass(SitePage, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			var _this2 = this;
+
+			var venueId = this.props.params.venueId;
+
+			_main2.default.service('venues').get(venueId).then(function (venue) {
+				if (venue.parent) {
+					// get parent first
+					_main2.default.service('venues').get(venue.parent).then(function (parent) {
+						Object.assign(venue, { parentVenue: parent });
+						_this2.setState({ venue: venue });
+					});
+				} else {
+					_this2.setState({ venue: venue });
+				}
+				_main2.default.service('gigs').find({
+					query: {
+						venue_id: venue._id,
+						parent: { $exists: true }, // should be "this" event but we don't have such
+						$sort: { start: 1 }
+					}
+				}).then(function (result) {
+					return _this2.setState({ gigs: result.data });
+				});
+			});
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this3 = this;
+
+			var _state = this.state,
+			    venue = _state.venue,
+			    gigs = _state.gigs;
+
+			return venue && _react2.default.createElement(
+				'div',
+				{ style: { margin: '2em' } },
+				_react2.default.createElement(
+					'h2',
+					null,
+					venue.name,
+					' ',
+					venue.parentVenue ? _react2.default.createElement(
+						'span',
+						{ style: { fontWeight: 300 } },
+						' at ' + venue.parentVenue.name
+					) : ''
+				),
+				_react2.default.createElement(
+					'p',
+					null,
+					venue.description
+				),
+				gigs.length && gigs.map(function (gig) {
+					return _react2.default.createElement(_gigListItem2.default, { key: gig._id, gig: gig, onSelect: _this3.viewGig });
+				})
+			) || null;
+		}
+	}]);
+
+	return SitePage;
+}(_react2.default.Component);
+
+exports.default = SitePage;
+
+/***/ }),
+/* 742 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 exports.default = UserCard;
 
 var _react = __webpack_require__(1);
@@ -85595,7 +85621,7 @@ var _MenuItem = __webpack_require__(143);
 
 var _MenuItem2 = _interopRequireDefault(_MenuItem);
 
-var _main = __webpack_require__(16);
+var _main = __webpack_require__(15);
 
 var _main2 = _interopRequireDefault(_main);
 
@@ -85652,7 +85678,7 @@ function UserCard(_ref) {
 }
 
 /***/ }),
-/* 742 */
+/* 743 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -85901,141 +85927,16 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 742;
+webpackContext.id = 743;
 
 /***/ }),
-/* 743 */
+/* 744 */
 /***/ (function(module, exports) {
 
 module.exports = function() {
 	throw new Error("define cannot be used indirect");
 };
 
-
-/***/ }),
-/* 744 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRouter = __webpack_require__(17);
-
-var _main = __webpack_require__(16);
-
-var _main2 = _interopRequireDefault(_main);
-
-var _gigListItem = __webpack_require__(114);
-
-var _gigListItem2 = _interopRequireDefault(_gigListItem);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SitePage = function (_React$Component) {
-	_inherits(SitePage, _React$Component);
-
-	function SitePage() {
-		var _ref;
-
-		var _temp, _this, _ret;
-
-		_classCallCheck(this, SitePage);
-
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = SitePage.__proto__ || Object.getPrototypeOf(SitePage)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-			venue: null,
-			gigs: []
-		}, _this.viewGig = function (gig) {
-			return _reactRouter.browserHistory.push('/gig/' + gig._id);
-		}, _temp), _possibleConstructorReturn(_this, _ret);
-	}
-
-	_createClass(SitePage, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			var _this2 = this;
-
-			var venueId = this.props.params.venueId;
-
-			_main2.default.service('venues').get(venueId).then(function (venue) {
-				if (venue.parent) {
-					// get parent first
-					_main2.default.service('venues').get(venue.parent).then(function (parent) {
-						Object.assign(venue, { parentVenue: parent });
-						_this2.setState({ venue: venue });
-					});
-				} else {
-					_this2.setState({ venue: venue });
-				}
-				_main2.default.service('gigs').find({
-					query: {
-						venue_id: venue._id,
-						parent: { $exists: true }, // should be "this" event but we don't have such
-						$sort: { start: 1 }
-					}
-				}).then(function (result) {
-					return _this2.setState({ gigs: result.data });
-				});
-			});
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this3 = this;
-
-			var _state = this.state,
-			    venue = _state.venue,
-			    gigs = _state.gigs;
-
-			return venue && _react2.default.createElement(
-				'div',
-				{ style: { margin: '2em' } },
-				_react2.default.createElement(
-					'h2',
-					null,
-					venue.name,
-					' ',
-					venue.parentVenue ? _react2.default.createElement(
-						'span',
-						{ style: { fontWeight: 300 } },
-						' at ' + venue.parentVenue.name
-					) : ''
-				),
-				_react2.default.createElement(
-					'p',
-					null,
-					venue.description
-				),
-				gigs.length && gigs.map(function (gig) {
-					return _react2.default.createElement(_gigListItem2.default, { key: gig._id, gig: gig, onSelect: _this3.viewGig });
-				})
-			) || null;
-		}
-	}]);
-
-	return SitePage;
-}(_react2.default.Component);
-
-exports.default = SitePage;
 
 /***/ })
 /******/ ]);

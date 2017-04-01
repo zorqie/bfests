@@ -16,7 +16,6 @@ import EventTrainPage from './mui/event-volunteer-page.jsx'
 import EventVolunteerPage from './mui/event-volunteer-page.jsx'
 import EventInfo from './mui/event-info.jsx'
 import GigDetailsPage from './mui/gig-details-page.jsx'
-import GigPage from './mui/gig-page.jsx'
 import Lineup from './mui/lineup.jsx'
 import MyGigs from './mui/my-gigs.jsx'
 import SitePage from './mui/site-details-page.jsx'
@@ -32,7 +31,8 @@ const NotFound = () => <div style={{color:'red', textAlign:'center', margin:'3em
 	<h2>She's not here.</h2>
 </div>
 
-const Tasks = () => <Lineup status='Volunteering' />
+// make sure we pass along all (props)
+const Tasks = (props) => <Lineup {...props} status='Volunteering' />
 
 export const routes = 
 	<Router history={browserHistory}>
@@ -43,6 +43,10 @@ export const routes =
 			<Redirect from='auth/success' to='events' />
 			<Route path='signup' component={SignupForm} />
 			
+			{// TODO move items under event/:id
+				// like event/:eventId/gig/:gigId and keep tickets object in Event
+			}
+
 			<Route path='acts/:actId' component={ActDetailsPage} />
 			
 			<Route path='events' component={EventsList} />
@@ -55,7 +59,7 @@ export const routes =
 			<Route path='train/:eventId' component={EventTrainPage} />
 			<Route path='training/:eventId' component={EventTrainingPage} />
 
-			<Route path='gig/:gigId' component={GigPage} />
+			<Route path='gig/:gigId' component={GigDetailsPage} />
 			
 			<Route path='schedule/:eventId(/:type)' component={Schedule} />
 			<Route path='my-schedule(/:eventId)' component={MySchedule} />

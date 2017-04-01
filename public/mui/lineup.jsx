@@ -13,56 +13,40 @@ import GigTimespan from './gig-timespan.jsx'
 import LineupItem from './lineup-item.jsx'
 import styles from './styles'
 
-export default class Lineup extends React.Component {
-	state = {
-		tickets: [],
-		dates: [],
-		loading: true,
-	}
-	componentWillMount() {
-		app.authenticate().then(this.fetchData)
-	}
-	fetchData = () => {
-		const status = this.props.status || 'Attending'
-		app.service('tickets').find({query: {status}})
-		.then(result => {
-			
-			// if(result.total) {
-				// console.log("Teekets:", result)
-				const formated = result.data.map(t => moment(t.gig.start).format('YYYY-MM-DD'))
-				// console.log("Formated", formated)
-				const unique = formated.filter((e, i, a) => a.indexOf(e)===i)
-				// console.log("Unique", unique)
-				const sorted = unique.sort()
-				const dates = sorted.map(s => moment(s, 'YYYY-MM-DD'))
-								// a little hacky format -> parse but
-								// works better than 0-ing time
-				// console.log("Dates", dates)
-				this.setState({tickets: result.data, dates, loading: false})
-			// } 
-		})
-		.catch(err => console.error)
-	}
+function days(tickets) {
+	// console.log("Teekets:", result)
+	const formated = tickets.map(t => moment(t.gig.start).format('YYYY-MM-DD'))
+	// console.log("Formated", formated)
+	const unique = formated.filter((e, i, a) => a.indexOf(e)===i)
+	// console.log("Unique", unique)
+	const sorted = unique.sort()
+	const dates = sorted.map(s => moment(s, 'YYYY-MM-DD'))
+	console.log("DAYS:: ", dates)
+	return dates
+}
 
+export default class Lineup extends React.Component {
 	select = gig => {
 		browserHistory.push('/gigs/' + gig._id)
 	} 
 
 	render() {
-		const { dates, tickets, loading } = this.state
-		// console.log("LINEUP", this.state) 
+		const { tickets, status } = this.props
+		// console.log("LINEUP props", this.props)
+		const filtered = tickets && tickets.filter(t=> t.status===(status || 'Attending'))
+		
+		// console.log("LINEUP filtered", filtered) 
 		// console.log(dates)
 		return <div style={styles.lineup.container}>
-			{ loading && <CircularProgress />}
-			{ !loading && tickets.length==0 ?
+			{ filtered && filtered.length==0 ?
 				<Subheader>No events found. <Link to='/events'>Choose some</Link></Subheader> 
 				: ''
 			}
-			{dates.map(d =>
+			{ filtered && days(filtered).map(d =>
 				<List key={d}>
 					<Subheader style={styles.lineup.date}>{d.format('MMM D, dddd')}</Subheader>
 					<Divider/>
-					{tickets.filter(t => moment(t.gig.start).isSame(d, 'day'))
+					{filtered.filter(t => moment(t.gig.start).isSame(d, 'day'))
 						.sort((a, b) => +(a.gig.start > b.gig.start) || +(a.gig.start === b.gig.start) - 1)
 						.map(({gig}) => 
 							<LineupItem
