@@ -80,7 +80,7 @@ export default class Layout extends React.Component {
 				this.setState({ticketsByGig, tickets: result.data})
 			}
 		})
-		.catch(deny)
+		.catch(err => console.error)
 	}
 
 // Listen for tickets

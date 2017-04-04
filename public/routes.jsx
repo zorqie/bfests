@@ -38,6 +38,7 @@ const Tasks = (props) => <Lineup {...props} status='Volunteering' />
 
 export const routes = 
 	<Router history={browserHistory}>
+		<Route path='/checkqr/:ticketId/:seqId/:userId' component={QrPage} />
 		<Route path='/' component={Layout}>
 			<IndexRoute component={Home} />
 
@@ -51,7 +52,7 @@ export const routes =
 
 			<Route path='acts/:actId' component={ActDetailsPage} />
 			
-			<Route path='events' component={EventsList} />
+			<Route path='/events' component={EventsList} />
 			<Route path='events/:eventId' component={EventPage} />
 			<Route path='volunteer/:eventId' component={EventVolunteerPage} />
 			<Route path='eventinfo/:eventId' component={EventInfo} />
@@ -78,11 +79,10 @@ export const routes =
 			
 			<Route path='passes(/:eventId)' component={Passes} />
 
-			<Route path='checkqr/:ticketId/:seqId/:userId' component={QrPage} />
-
-
 			<Route path='*' component={NotFound} />
 		</Route>
+
+
 	</Router>
 
 export default routes;
