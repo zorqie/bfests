@@ -18,7 +18,7 @@ import MenuItem from 'material-ui/MenuItem'
 import Snackbar from 'material-ui/Snackbar'
 
 import app from '../main.jsx'
-import errorHandler from './err'
+import deny from './err'
 import UserCard from './user-card.jsx'
 
 const theme = {
@@ -80,6 +80,7 @@ export default class Layout extends React.Component {
 				this.setState({ticketsByGig, tickets: result.data})
 			}
 		})
+		.catch(deny)
 	}
 
 // Listen for tickets

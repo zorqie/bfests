@@ -18,6 +18,8 @@ import EventInfo from './mui/event-info.jsx'
 import GigDetailsPage from './mui/gig-details-page.jsx'
 import Lineup from './mui/lineup.jsx'
 import MyGigs from './mui/my-gigs.jsx'
+import Passes from './mui/passes.jsx'
+import QrPage from './mui/qr-check.jsx'
 import SitePage from './mui/site-details-page.jsx'
 import Schedule from './mui/event-schedule.jsx';
 import MySchedule from './mui/my-schedule.jsx';
@@ -74,6 +76,11 @@ export const routes =
 
 			<Route path='gigs/:gigId' component={GigDetailsPage} />
 			
+			<Route path='passes(/:eventId)' component={Passes} />
+
+			<Route path='checkqr/:ticketId/:seqId/:userId' component={QrPage} />
+
+
 			<Route path='*' component={NotFound} />
 		</Route>
 	</Router>

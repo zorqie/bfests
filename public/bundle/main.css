@@ -85,3 +85,21 @@ table.gig-schedule thead tr th a {
 .sch-Volunteer {
 	background-color: rgba(127,255,0,0.05)
 }
+
+.qr-check {
+	margin: 2em;
+	min-height: 5em;
+	vertical-align: middle;
+	color: white;
+	font-size: 24px;
+	letter-spacing: 4px;
+	text-transform: uppercase;
+}
+.qr-check .qr-valid {
+	padding: 1em;
+	background-color: rgb(104, 159, 56);
+}
+.qr-check .qr-fail {
+	padding: 1em;
+	background-color: red;
+}
