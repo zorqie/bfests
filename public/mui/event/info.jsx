@@ -11,9 +11,13 @@ const defaultInfo =
 function EventInfo({event, tickets}) {
 	// tickets is all user's tickets
 	const {info} = event
-	event.tickets && event.tickets.forEach(t => console.log("T: ", t))
-	const text = info && event.tickets && event.tickets.map(t => info.filter(i => i.status===t.status).map(i => i.text))
-	return text && <div style={{padding:'1em'}}>{text.map((t, i) => <p key={i}>{t}</p>)}</div> || defaultInfo
+	const passes = tickets.filter(t => t.gig._id === event._id)
+	const text = info && passes && passes.map(t => info.filter(i => i.status===t.status).map(i => i.text))
+	return text 
+		&& <div style={{padding:'1em'}}>
+			{text.map((t, i) => <p key={i}>{t}</p>)}
+		</div> 
+		|| defaultInfo
 }
 
 export default EventInfo

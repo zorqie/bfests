@@ -5,22 +5,23 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import {List, ListItem} from 'material-ui/List'
-import Subheader from 'material-ui/Subheader'
-import {Tabs, Tab} from 'material-ui/Tabs'
 
-import GigDetailsPage from './gig-details-page.jsx'
-import GigTimespan from './gig-timespan.jsx'
-import EventActions from './event-actions.jsx'
-import app from '../main.jsx'
-import { gigJoin, gigLeave } from './utils.jsx'
-import { plusOutline, minusBox } from './icons.jsx'
-import { Kspan } from './hacks.jsx'
+import app from '../../main.jsx'
+
+import GigDetailsPage from '../gig-details-page.jsx'
+import GigTimespan from '../gig-timespan.jsx'
+
+import EventActions from './actions.jsx'
+
+import { gigJoin, gigLeave } from '../utils.jsx'
+import { plusOutline, minusBox } from '../icons.jsx'
+import { Kspan } from '../hacks.jsx'
 
 const checkTickets = (event, tickets) => {
 	// here tickets are only Volunteering
 	// TODO consider moving to EventActions
 	const rules = event.ticket_rules
-	const passes = event.tickets || tickets.filter(t=>t.gig._id===event._id)
+	const passes = tickets.filter(t => t.gig._id===event._id)
 	if(rules) {
 		const statuses = passes.map(t => t.status)
 		// console.log("STATUSes", statuses)
@@ -62,34 +63,24 @@ export default class EventPage extends React.Component {
 	state = {
 		loading: true,
 		event: {},
-		// pass: {},
 		gigs: [], 
-		// tickets: {},
-		// ticketsRaw: [],
-		dialog: {
-			open: false,
-			gig: {},
-		},
+
 	}
 	
 	componentWillMount() {
 		app.authenticate().then(this.fetchData)
+
+		// TODO do we REALLY need these
 		app.service('gigs').on('removed', this.gigRemoved);
 		app.service('gigs').on('created', this.gigCreated);
 		app.service('gigs').on('patched', this.gigPatched);
-		// app.service('tickets').on('created', this.ticketCreated);
-		// app.service('tickets').on('removed', this.ticketRemoved);
 	}
-	// componentDidMount() {
-	// 	// this.fetchTickets()
-	// }
+	
 	componentWillUnmount() {
 		if(app) {
 			app.service('gigs').removeListener('removed', this.gigRemoved);
 			app.service('gigs').removeListener('created', this.gigCreated);
 			app.service('gigs').removeListener('patched', this.gigPatched);
-			// app.service('tickets').removeListener('removed', this.ticketRemoved);
-			// app.service('tickets').removeListener('created', this.ticketCreated);
 		}
 	}
 
@@ -99,18 +90,12 @@ export default class EventPage extends React.Component {
 		app.service('gigs').get(eventId)
 		.then(event => {
 			document.title = event.name;
-			// app.service('tickets').find({query:{gig_id: event._id}})
-			// .then(pass => {
-			// 	if(access.indexOf(pass.status) <access.length-1) {
 
-			// 	}
-			// })
 			app.service('gigs').find({
 				query: {
 					parent: eventId,
 					type: 'Volunteer',
 					$sort: { start: 1 },
-					// $limit: this.props.limit || 7
 				}
 			})
 			.then(page => {
@@ -118,28 +103,7 @@ export default class EventPage extends React.Component {
 				this.setState({gigs: page.data, event, loading: false})
 			})
 		})
-		// .then(this.fetchTickets)
 		.catch(err => console.error("ERAR: ", err))
-	}
-	// fetchTickets = () => {
-	// 	app.service('tickets').find(/*{query:{status:"Volunteering"}}*/)
-	// 	.then(result => {
-	// 		// console.log("Got tickets", result)
-	// 		const tickets = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-	// 		const {event} = this.state
-	// 		console.log("Event", event)
-	// 		const passes = result.data.filter(t => t.gig_id===event._id)
-	// 		console.log("PASSED", passes)
-	// 		if(event && passes.length) {
-	// 			Object.assign(event, {tickets: passes})
-	// 		}
-	// 		this.setState({ticketsRaw: result.data.filter(t => t.status==='Volunteering'), event, tickets})
-	// 	})
-	// }
-
-	handleDialogCancel = e => {
-		// console.log("Canceling...");
-		this.setState({dialogOpen: false})
 	}
 
 	
@@ -157,49 +121,24 @@ export default class EventPage extends React.Component {
 		})
 	}
 	
-	shiftJoin = gig => {
-		gigJoin(gig, 'Volunteering')
-	}
-	shiftLeave = gig => {
-		gigLeave(gig, 'Volunteering')
-	}
-
 	viewGigDetails = gig => {
-		// browserHistory.push('/gig/'+gig._id)
-		const { dialog } = this.state
-		Object.assign(dialog, {open: true, gig})
-		this.setState({dialog})
+		browserHistory.push('/gig/'+gig._id)
+		// const { dialog } = this.state
+		// Object.assign(dialog, {open: true, gig})
+		// this.setState({dialog})
 	}
 
-	// ticketCreated = t => {
-	// 	// console.log("Ticket created", t)
-	// 	const {event, tickets} = this.state
-	// 	Object.assign(tickets, {[t.gig_id]: t.status})
-	// 	const tix = this.state.ticketsRaw.concat(t)
-	// 	checkTickets(event, tix)
-	// 	this.setState({tickets, ticketsRaw: tix})
-	// }
-	// ticketRemoved = t => {
-	// 	// console.log("Ticket removed", t)
-	// 	const {event, tickets, ticketsRaw} = this.state
-	// 	Object.assign(tickets, {[t.gig_id]: null})
-	// 	const tix = this.state.ticketsRaw.filter(r=> r._id!==t._id)
-	// 	checkTickets(event, tix)
-	// 	this.setState({tickets, ticketsRaw: tix})
-	// }
 
-
+// TODO do we need these
 	gigRemoved = gig => {
 		// console.log("Removed: ", gig);
 		this.setState({
-			
 			gigs: this.state.gigs.filter(g => g._id !== gig._id),
 		})
 	}
 	gigCreated = gig => {
 		// console.log("Added: ", gig);
-		this.setState({
-			
+		this.setState({			
 			gigs: this.state.gigs.concat(gig),
 		})
 	}
@@ -208,11 +147,6 @@ export default class EventPage extends React.Component {
 		// do something to reflect update
 		this.fetchData()
 	}
-
-	dialogClose = () => {
-		this.setState({dialog:{open:false, gig:{}}})
-	}
-
 
 	render() {
 		const {loading, gig, dialog, event} = this.state
@@ -260,21 +194,6 @@ export default class EventPage extends React.Component {
 						/>
 					)}
 				</CardText>
-
-				<Dialog 
-					title={dialog.title} 
-					open={dialog.open} 
-					onRequestClose={this.dialogClose} 
-					autoScrollBodyContent={true}
-				>
-					<GigDetailsPage 
-						gig={dialog.gig} 
-						onJoin={this.shiftJoin} 
-						onLeave={this.shiftLeave}
-						ticketsByGig={ticketsByGig}
-						status={ticketsByGig[dialog.gig._id]}
-					/>
-				</Dialog>
 			</Card>
 		|| null)
 	}

@@ -1,13 +1,13 @@
 import React from 'react'
 import moment from 'moment'
-import { Link } from 'react-router'
+import Link from 'react-router/lib/Link'
 
 import LinearProgress from 'material-ui/LinearProgress'
 
-import app from '../main.jsx'
-import styles from './styles'
-import deny from './err'
-import {jobsByDate, sequence, hours24} from './hacks.jsx'
+import app from '../../main.jsx'
+import styles from '../styles'
+import deny from '../err'
+import {jobsByDate, sequence, hours24} from '../hacks.jsx'
 
 const startTimeSort = (a, b) => +(a.start > b.start) || +(a.start === b.start) - 1
 

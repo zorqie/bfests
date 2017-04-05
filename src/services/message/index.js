@@ -12,8 +12,8 @@ module.exports = function(){
   let options = {
     Model: MessageModel,
     paginate: {
-      default: 5,
-      max: 25
+      default: 25,
+      max: 250
     }
   };
 

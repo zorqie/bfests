@@ -11,7 +11,7 @@ const Schema = mongoose.Schema;
 
 const ActSchema = new Schema({
 	_id: 		{ type: String, 'default': shortid.generate},
-	name:		{ type: String, required: true },
+	name:		{ type: String, required: '{PATH} is required!' },
 	description: String,
 	poster_uri: String,
 	avatar_uri: String, 

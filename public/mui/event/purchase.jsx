@@ -1,8 +1,8 @@
 import React from 'react'
 
-import app from '../main.jsx'
-import deny from './err'
-import EventActions from './event-actions.jsx'
+import app from '../../main.jsx'
+import deny from '../err'
+import EventActions from './actions.jsx'
 
 export default class EventPurchasePage extends React.Component {
 	state={

@@ -1,5 +1,9 @@
 import app from '../main.jsx'
 
+export function isAttending(gig, tickets, status='Attending') {
+	return tickets && tickets[gig._id] === status
+}
+
 export const gigJoin = (gig, status='Attending') => {
 		const ticket = {gig_id: gig._id, status}
 		app.service('tickets').create(ticket)

@@ -48,7 +48,7 @@ export default class Layout extends React.Component {
 		ticketsByGig: {},
 		tickets: [],
 	}
-
+	
 	componentDidMount() {
 		app.authenticate()
 			.then(this.loginListener())
@@ -167,8 +167,8 @@ export default class Layout extends React.Component {
 					title={section}
 					iconElementRight={
 						user 
-						?	<Link to='my-schedule'><FlatButton label='My schedule' style={{color: 'white'}}/></Link>
-						: 	<Link to='login'>
+						?	<Link to='/my-schedule'><FlatButton label='My schedule' style={{color: 'white'}}/></Link>
+						: 	<Link to='/login'>
 								<RaisedButton label="Login"  primary={true}/>
 							</Link>
 					}

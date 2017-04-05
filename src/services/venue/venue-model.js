@@ -12,7 +12,7 @@ const Schema = mongoose.Schema;
 
 const venueSchema = new Schema({
 	_id:    	{ type: String, 'default': shortid.generate},
-	name:		{ type: String, required: true },
+	name:		{ type: String, required: '{PATH} is required' },
 	description:	String,
 	capacity:	{ 
 		type: Number, 

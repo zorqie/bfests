@@ -1,116 +1,77 @@
 import React from 'react'
-import moment from 'moment'
 import { browserHistory } from 'react-router';
 
-import Avatar from 'material-ui/Avatar'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import RaisedButton from 'material-ui/RaisedButton'
-import {List, ListItem} from 'material-ui/List'
-import Subheader from 'material-ui/Subheader'
-import Divider from 'material-ui/Divider'
-import Dialog from 'material-ui/Dialog'
-
-import ActsList from './acts-list.jsx'
-import GigTimespan from './gig-timespan.jsx'
-import GigTitle from './gig-title.jsx'
 import app from '../main.jsx'
+import deny from './err'
 import { gigJoin, gigLeave } from './utils.jsx'
 
-import ActivityCard from './cards/activity-card.jsx'
+import GigCard from './gig-card.jsx'
 
 export default class GigDetailsPage extends React.Component {
 	state = {
-		fans: [],  
-		gig: this.props.gig || {},
-		ticket: {},
-	}
-
-	componentWillMount() {
-		app.authenticate().then(this.fetchData)
-		.catch(err => console.error("It can't be, an erro: ", err))
+		gig: {},
+		shifts: [],
+		loaded: false,
 	}
 
 	componentDidMount() {
+		app.authenticate().then(this.fetchData)
+		.catch(deny)
 		// attach listeners
-		app.service('tickets').on('created', this.ticketListener)
-		app.service('tickets').on('removed', this.ticketListener)
 		app.service('gigs').on('patched', this.fetchData)
 	}
 
 	componentWillUnmount() {
 		// remove listners
+		// console.log("UNMOUNTIFYING")
 		app.service('gigs').removeListener('patched', this.fetchData)
-		app.service('tickets').removeListener('created', this.ticketListener)
-		app.service('tickets').removeListener('removed', this.ticketListener)
 	}
 
-	ticketListener = t => {
-		// console.log("HEARD a ticket", t)
-		// console.log("Our tic", this.state.ticket)
-		// our ticket may be null
-		// no need to check owner_id, it's hooked on service
-		t.gig_id===this.state.gig._id && this.fetchData(true)
+	componentWillReceiveProps(next) {
+		// console.log("this.state", this.state)
+		// console.log("next.params", next.params)
+		// console.log("this.params", this.props.params)
+		if (next.params !==this.props.params) {
+			this.setState({loaded: false})
+			this.fetchData(next.params)
+		}
 	}
 
-	fetchData = (force) => {
-		// console.log("FORCED", this.props.params)
-		const gigId = this.props.params ? this.props.params.gigId : this.props.gig._id
-		// console.log("Fetching ", gigId)
-		app.service('gigs').get(gigId)
-		.then(gig => {
-				if(force || this.props.params) {
-					app.service('tickets').find({query: {gig_id: gigId}})
-					.then(result => this.setState({gig, ticket: result.total ? result.data[0] : null}) )
-				} else {
-					this.setState({gig})
-				}
-			}
-		)
-		.catch(err => console.log("It can't be: ", err))
-		// not authorized
-		// .then(() => app.service('fans')
-		// 	.find({query:{gig_id:gigId, status: 'Attending'}})
-		// 	.then(result => this.setState({fans: result.data})))
+	fetchData = (params) => {
+		const gigId = params.gigId || this.props.params.gigId
+		console.log("Fetching ", gigId)
+		if(gigId) {
+			app.service('gigs').get(gigId)
+			.then(gig => {
+				this.setState({gig})
+				return app.service('gigs').find({
+					query: {parent: gig._id}
+				})
+			})
+			.then(result => this.setState({shifts: result.data, loaded: true}))
+			.catch(err => console.log("It can't be: ", err))
+		}
 	} 
 
 	viewActDetails = act => browserHistory.push('/acts/'+act._id)
 
 	render() {
-		const { gig, fans, ticket } =  this.state
-		const { onJoin, onLeave, status, ticketsByGig } = this.props
+		const { gig, shifts, loaded } =  this.state
+		const { onJoin, onLeave, ticketsByGig } = this.props
+
 		const handleJoin = onJoin || gigJoin
 		const handleLeave = onLeave || gigLeave
-		
-		const attending = status ? ticketsByGig && ticketsByGig[gig._id] === status : (ticket && ticket.status === 'Attending')
-		
-		return gig._id 
-			&& <div>
-				<CardHeader 
-					title={<GigTitle gig={gig} />} 
-					subtitle={<GigTimespan gig={gig} showDuration={true} />}
-					avatar={<Avatar>{(gig.type && gig.type.charAt(0)) || ' '}</Avatar>}>
-				</CardHeader>
-				<CardText>
-					<ActivityCard 
-						gig={gig} 
-						ticketsByGig={ticketsByGig} 
-						onJoin={handleJoin} 
-						onLeave={handleLeave} 
-						onActSelect={this.viewActDetails} 
-					/>
-				</CardText>
-				<CardActions>
-				</CardActions>
-			</div>
+				
+		const gigProps = {gig, shifts, handleJoin, handleLeave, ticketsByGig, viewActDetails: this.viewActDetails}
+
+		return loaded 
+			&& <GigCard {...gigProps} /> 
 			|| null
 	}
 }
 
 GigDetailsPage.propTypes = {
-	gig: React.PropTypes.object,
-	status: React.PropTypes.string, 
-	ticketsByGig: React.PropTypes.object, // map gig._id = status
+	ticketsByGig: React.PropTypes.object.isRequired, // map gig._id = status
 	onJoin: React.PropTypes.func, 
 	onLeave: React.PropTypes.func, 
 }

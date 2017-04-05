@@ -11,14 +11,14 @@ const Schema = mongoose.Schema;
 
 const gigSchema = new Schema({
 	_id:		{ type: String, 'default': shortid.generate},
-	name: 		{ type: String, required: true },
+	name: 		{ type: String, required: '{PATH} is required' },
 	description:{ type: String },
 	info: 		{ type: [Schema.Types.Mixed] },
-	type: 		{ type: String, required: true },
+	type: 		{ type: String, required: '{PATH} is required' },
 	capacity: 	{ type: Number},
 	public: 	{ type: Boolean, 'default': false },
 	mandatory: 	{ type: Boolean },
-	start: 		{ type: Date, required: true},
+	start: 		{ type: Date, required: '{PATH} is required'},
 	end:   		{ type: Date },
 	
 	poster_uri: {type: String},

@@ -8,8 +8,8 @@ import IconButton from 'material-ui/IconButton'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import {CardActions} from 'material-ui/Card'
 
-import app from '../main.jsx'
-import { gigJoin } from './utils.jsx'
+import app from '../../main.jsx'
+import { gigJoin } from '../utils.jsx'
 
 const moreButton = <IconButton><MoreVertIcon /></IconButton>
 
@@ -46,7 +46,9 @@ const meets = (req, tickets) => {
 
 export const EventActions = ({event, tickets, route}) => {
 	let result = []
-	const passes = event.tickets || tickets.filter(t=> t.gig_id === event._id)
+	const passes = tickets.filter(t=> t.gig_id === event._id)
+	// console.log("ACTIONS FOR EVENT", event)
+	// console.log("PASSES", passes)
 	if(passes && passes.length) {
 		//at least one ticket
 		passes.forEach(pass => {
