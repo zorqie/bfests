@@ -70,10 +70,6 @@ export default class Layout extends React.Component {
 			app.service('tickets').removeListener('created', this.ticketCreated)
 		}
 	}
-	shouldComponentUpdate(nextProps, nextState) {
-		console.log("NEXT STATE", nextState)
-		return this.state.tickets.length != nextState.tickets.length
-	}
 
 	loginListener = u => {
 		console.log("Login listener")
@@ -89,9 +85,9 @@ export default class Layout extends React.Component {
 		app.service('tickets').find()
 		.then(result => {
 				// store tickets as a Map of _id = ticket.status pairs
-			console.log("Got tickets", result)
+			// console.log("Got tickets", result)
 			const ticketsByGig = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-			console.log("Got by gig", result)
+			// console.log("Got by gig", result)
 			this.setState({ticketsByGig, tickets: result.data, loaded: true})
 		})
 		.catch(err => console.error)
@@ -170,14 +166,11 @@ export default class Layout extends React.Component {
 	handleSnackbarClose = () => this.setState({ snackbarOpen: false, message: ''})
 
 	render() { 
-		console.log("THIS STATE", this.state)
 		if(!this.state.loaded) return null
 		const {user, section, ticketsByGig, tickets} = this.state
 		const {children} = this.props
 		// inject our stuff
 		const grandchildren = Object.assign({}, children, {props: {...children.props, tickets, ticketsByGig}})
-		console.log("Tickets", tickets)
-		console.log("grandchildren", grandchildren)
 		return (
 		<MuiThemeProvider muiTheme={getMuiTheme(theme)}>
 			<div>

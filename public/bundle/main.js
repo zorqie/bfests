@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "0bae429ead4da06ba53c"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f07fb706d1dd96a15dc5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -97990,11 +97990,11 @@ var Layout = function (_React$Component) {
 			_this.setState({ loaded: false });
 			_main2.default.service('tickets').find().then(function (result) {
 				// store tickets as a Map of _id = ticket.status pairs
-				console.log("Got tickets", result);
+				// console.log("Got tickets", result)
 				var ticketsByGig = result.data.reduce(function (o, t) {
 					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
 				}, {});
-				console.log("Got by gig", result);
+				// console.log("Got by gig", result)
 				_this.setState({ ticketsByGig: ticketsByGig, tickets: result.data, loaded: true });
 			}).catch(function (err) {
 				return console.error;
@@ -98089,12 +98089,6 @@ var Layout = function (_React$Component) {
 				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
 			}
 		}
-	}, {
-		key: 'shouldComponentUpdate',
-		value: function shouldComponentUpdate(nextProps, nextState) {
-			console.log("NEXT STATE", nextState);
-			return this.state.tickets.length != nextState.tickets.length;
-		}
 
 		// Listen for tickets
 
@@ -98103,7 +98097,6 @@ var Layout = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
-			console.log("THIS STATE", this.state);
 			if (!this.state.loaded) return null;
 			var _state = this.state,
 			    user = _state.user,
@@ -98114,8 +98107,6 @@ var Layout = function (_React$Component) {
 			// inject our stuff
 
 			var grandchildren = Object.assign({}, children, { props: _extends({}, children.props, { tickets: tickets, ticketsByGig: ticketsByGig }) });
-			console.log("Tickets", tickets);
-			console.log("grandchildren", grandchildren);
 			return _react2.default.createElement(
 				_MuiThemeProvider2.default,
 				{ muiTheme: (0, _getMuiTheme2.default)(theme) },
