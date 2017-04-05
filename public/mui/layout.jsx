@@ -47,7 +47,6 @@ export default class Layout extends React.Component {
 		message: '',
 		ticketsByGig: {},
 		tickets: [],
-		loaded: false,
 	}
 	
 	componentDidMount() {
@@ -72,7 +71,6 @@ export default class Layout extends React.Component {
 	}
 
 	loginListener = u => {
-		console.log("Login listener")
 		const user = app.get('user')
 		if(!this.state.user && user) {
 			this.setState({ user })
@@ -81,14 +79,13 @@ export default class Layout extends React.Component {
 	}
 
 	fetchTickets = () => {
-		this.setState({loaded: false})
 		app.service('tickets').find()
 		.then(result => {
 				// store tickets as a Map of _id = ticket.status pairs
 			// console.log("Got tickets", result)
 			const ticketsByGig = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
 			// console.log("Got by gig", result)
-			this.setState({ticketsByGig, tickets: result.data, loaded: true})
+			this.setState({ticketsByGig, tickets: result.data})
 		})
 		.catch(err => console.error)
 	}
@@ -166,7 +163,6 @@ export default class Layout extends React.Component {
 	handleSnackbarClose = () => this.setState({ snackbarOpen: false, message: ''})
 
 	render() { 
-		if(!this.state.loaded) return null
 		const {user, section, ticketsByGig, tickets} = this.state
 		const {children} = this.props
 		// inject our stuff
