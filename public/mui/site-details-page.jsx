@@ -9,7 +9,7 @@ export default class SitePage extends React.Component {
 		venue: null,
 		gigs: [],
 	}
-	componentWillMount() {
+	componentDidMount() {
 		const {venueId} = this.props.params
 		app.service('venues').get(venueId)
 		.then(venue => {
@@ -30,7 +30,11 @@ export default class SitePage extends React.Component {
 					$sort: {start: 1}
 				}
 			})
-			.then(result => this.setState({gigs: result.data}))
+			.then(result => {
+				const ids = result.data.map(g => g._id)
+				const gigs = result.data.filter(g => !ids.includes(g.parent))
+				this.setState({gigs})
+			})
 		})
 	}
 
@@ -41,9 +45,9 @@ export default class SitePage extends React.Component {
 		return venue && <div style={{margin:'2em'}}>
 			<h2>{venue.name} {venue.parentVenue ? <span style={{fontWeight:300}}>{' at ' + venue.parentVenue.name}</span>: ''}</h2>
 			<p>{venue.description}</p>
-			{gigs.length
-				&& gigs.map(gig => <GigListItem key={gig._id} gig={gig} onSelect={this.viewGig} />)
-			}
+			{gigs.map(gig => 
+				<GigListItem key={gig._id} gig={gig} onSelect={this.viewGig} />
+			)}
 		</div>
 		|| null
 	}
