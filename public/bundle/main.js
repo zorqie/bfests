@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "acdd8b9cc4275a530afa"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "0bae429ead4da06ba53c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -97977,40 +97977,57 @@ var Layout = function (_React$Component) {
 			snackbarOpen: false,
 			message: '',
 			ticketsByGig: {},
-			tickets: []
+			tickets: [],
+			loaded: false
+		}, _this.loginListener = function (u) {
+			console.log("Login listener");
+			var user = _main2.default.get('user');
+			if (!_this.state.user && user) {
+				_this.setState({ user: user });
+			}
+			_this.fetchTickets();
 		}, _this.fetchTickets = function () {
+			_this.setState({ loaded: false });
 			_main2.default.service('tickets').find().then(function (result) {
-				// console.log("Got tickets", result)
-				if (result.total) {
-					// store tickets as a Map of _id = ticket.status pairs
-					var ticketsByGig = result.data.reduce(function (o, t) {
-						return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
-					}, {});
-					_this.setState({ ticketsByGig: ticketsByGig, tickets: result.data });
-				}
+				// store tickets as a Map of _id = ticket.status pairs
+				console.log("Got tickets", result);
+				var ticketsByGig = result.data.reduce(function (o, t) {
+					return Object.assign(o, _defineProperty({}, t.gig_id, t.status));
+				}, {});
+				console.log("Got by gig", result);
+				_this.setState({ ticketsByGig: ticketsByGig, tickets: result.data, loaded: true });
 			}).catch(function (err) {
 				return console.error;
 			});
 		}, _this.ticketCreated = function (t) {
-			console.log("Ticket created", t);
-			var _this$state = _this.state,
-			    tickets = _this$state.tickets,
-			    ticketsByGig = _this$state.ticketsByGig;
+			var user = _this.state.user;
 
-			Object.assign(ticketsByGig, _defineProperty({}, t.gig_id, t.status));
-			_main2.default.service('tickets').get(t._id).then(function (ticket) {
-				return _this.setState({ ticketsByGig: ticketsByGig, tickets: tickets.concat(ticket) });
-			});
+			if (user && t.owner_id === user._id) {
+				console.log("Ticket created", t);
+				var _this$state = _this.state,
+				    tickets = _this$state.tickets,
+				    ticketsByGig = _this$state.ticketsByGig;
+
+				Object.assign(ticketsByGig, _defineProperty({}, t.gig_id, t.status));
+				_main2.default.service('tickets').get(t._id).then(function (ticket) {
+					return _this.setState({ ticketsByGig: ticketsByGig, tickets: tickets.concat(ticket) });
+				});
+			}
 		}, _this.ticketRemoved = function (t) {
 			// console.log("Ticket removed", t)
-			var _this$state2 = _this.state,
-			    tickets = _this$state2.tickets,
-			    ticketsByGig = _this$state2.ticketsByGig;
+			var user = _this.state.user;
 
-			Object.assign(ticketsByGig, _defineProperty({}, t.gig_id, null));
-			_this.setState({ ticketsByGig: ticketsByGig, tickets: tickets.filter(function (tk) {
-					return tk._id !== t._id;
-				}) });
+			if (user && t.owner_id === user._id) {
+				console.log("Ticket removed", t);
+				var _this$state2 = _this.state,
+				    tickets = _this$state2.tickets,
+				    ticketsByGig = _this$state2.ticketsByGig;
+
+				Object.assign(ticketsByGig, _defineProperty({}, t.gig_id, null));
+				_this.setState({ ticketsByGig: ticketsByGig, tickets: tickets.filter(function (tk) {
+						return tk._id !== t._id;
+					}) });
+			}
 		}, _this.closeDrawer = function () {
 			_this.setState({ drawerOpen: false });
 		}, _this.toggleDrawer = function () {
@@ -98033,12 +98050,6 @@ var Layout = function (_React$Component) {
 			console.log("ERRORED out.", error);
 			_this.setState({ snackbarOpen: true, message: error.message });
 			// this.setState({snackbarOpen: true, message: `User logged out (${u.name}`})
-		}, _this.loginListener = function (u) {
-			var user = _main2.default.get('user');
-			if (!_this.state.user && user) {
-				_this.setState({ user: user });
-			}
-			_this.fetchTickets();
 		}, _this.userPatched = function (u) {
 			if (u) {
 				var name = u.name || u.facebook && u.facebook.name;
@@ -98078,6 +98089,12 @@ var Layout = function (_React$Component) {
 				_main2.default.service('tickets').removeListener('created', this.ticketCreated);
 			}
 		}
+	}, {
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			console.log("NEXT STATE", nextState);
+			return this.state.tickets.length != nextState.tickets.length;
+		}
 
 		// Listen for tickets
 
@@ -98086,6 +98103,8 @@ var Layout = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
+			console.log("THIS STATE", this.state);
+			if (!this.state.loaded) return null;
 			var _state = this.state,
 			    user = _state.user,
 			    section = _state.section,
@@ -98095,6 +98114,8 @@ var Layout = function (_React$Component) {
 			// inject our stuff
 
 			var grandchildren = Object.assign({}, children, { props: _extends({}, children.props, { tickets: tickets, ticketsByGig: ticketsByGig }) });
+			console.log("Tickets", tickets);
+			console.log("grandchildren", grandchildren);
 			return _react2.default.createElement(
 				_MuiThemeProvider2.default,
 				{ muiTheme: (0, _getMuiTheme2.default)(theme) },
@@ -98879,8 +98900,8 @@ var VolunteerTable = function (_React$Component) {
   }*/
 
 		value: function shouldComponentUpdate(nextProps) {
-			console.log("THIS", this.props.tickets.length);
-			console.log("NEXT --- ", nextProps.tickets.length);
+			// console.log("THIS", this.props.tickets.length)
+			// console.log("NEXT --- ", nextProps.tickets.length)
 			return this.props.tickets.length !== nextProps.tickets.length;
 		}
 	}, {

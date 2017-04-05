@@ -93,8 +93,8 @@ export default class VolunteerTable extends React.Component {
 }*/
 
 	shouldComponentUpdate(nextProps) {
-		console.log("THIS", this.props.tickets.length)
-		console.log("NEXT --- ", nextProps.tickets.length)
+		// console.log("THIS", this.props.tickets.length)
+		// console.log("NEXT --- ", nextProps.tickets.length)
 		return this.props.tickets.length !== nextProps.tickets.length
 	}
 

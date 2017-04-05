@@ -8,12 +8,11 @@ module.exports = function() {
 	const app = this;
 
 	const options = {
-		Model: Ticket
-		// ,
-		// paginate: {
-		//   default: 50,
-		//   max: 250
-		// }
+		Model: Ticket,
+		paginate: {
+		  default: 5000,
+		  max: 250000
+		}
 	};
 
 	// Initialize our service with any options it requires

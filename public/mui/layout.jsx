@@ -47,6 +47,7 @@ export default class Layout extends React.Component {
 		message: '',
 		ticketsByGig: {},
 		tickets: [],
+		loaded: false,
 	}
 	
 	componentDidMount() {
@@ -69,33 +70,53 @@ export default class Layout extends React.Component {
 			app.service('tickets').removeListener('created', this.ticketCreated)
 		}
 	}
+	shouldComponentUpdate(nextProps, nextState) {
+		console.log("NEXT STATE", nextState)
+		return this.state.tickets.length != nextState.tickets.length
+	}
+
+	loginListener = u => {
+		console.log("Login listener")
+		const user = app.get('user')
+		if(!this.state.user && user) {
+			this.setState({ user })
+		}
+		this.fetchTickets()
+	}
 
 	fetchTickets = () => {
+		this.setState({loaded: false})
 		app.service('tickets').find()
 		.then(result => {
-			// console.log("Got tickets", result)
-			if(result.total) {
 				// store tickets as a Map of _id = ticket.status pairs
-				const ticketsByGig = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
-				this.setState({ticketsByGig, tickets: result.data})
-			}
+			console.log("Got tickets", result)
+			const ticketsByGig = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
+			console.log("Got by gig", result)
+			this.setState({ticketsByGig, tickets: result.data, loaded: true})
 		})
 		.catch(err => console.error)
 	}
 
 // Listen for tickets
 	ticketCreated = t => {
-		console.log("Ticket created", t)
-		const {tickets, ticketsByGig} = this.state
-		Object.assign(ticketsByGig, {[t.gig_id]: t.status})
-		app.service('tickets').get(t._id)
-		.then(ticket => this.setState({ticketsByGig, tickets: tickets.concat(ticket)}) )
+		const {user} = this.state
+		if(user && t.owner_id===user._id) {
+			console.log("Ticket created", t)
+			const {tickets, ticketsByGig} = this.state
+			Object.assign(ticketsByGig, {[t.gig_id]: t.status})
+			app.service('tickets').get(t._id)
+			.then(ticket => this.setState({ticketsByGig, tickets: tickets.concat(ticket)}) )
+		}
 	}
 	ticketRemoved = t => {
 		// console.log("Ticket removed", t)
-		const {tickets, ticketsByGig} = this.state
-		Object.assign(ticketsByGig, {[t.gig_id]: null})
-		this.setState({ticketsByGig, tickets: tickets.filter(tk => tk._id!==t._id)})
+		const {user} = this.state
+		if(user && t.owner_id===user._id) {
+			console.log("Ticket removed", t)
+			const {tickets, ticketsByGig} = this.state
+			Object.assign(ticketsByGig, {[t.gig_id]: null})
+			this.setState({ticketsByGig, tickets: tickets.filter(tk => tk._id!==t._id)})
+		}
 	}
 
 
@@ -130,13 +151,6 @@ export default class Layout extends React.Component {
 		// this.setState({snackbarOpen: true, message: `User logged out (${u.name}`})
 	}
 
-	loginListener = u => {
-		const user = app.get('user')
-		if(!this.state.user && user) {
-			this.setState({ user })
-		}
-		this.fetchTickets()
-	}
 
 	userPatched = u => {
 		if(u) {
@@ -156,10 +170,14 @@ export default class Layout extends React.Component {
 	handleSnackbarClose = () => this.setState({ snackbarOpen: false, message: ''})
 
 	render() { 
+		console.log("THIS STATE", this.state)
+		if(!this.state.loaded) return null
 		const {user, section, ticketsByGig, tickets} = this.state
 		const {children} = this.props
 		// inject our stuff
 		const grandchildren = Object.assign({}, children, {props: {...children.props, tickets, ticketsByGig}})
+		console.log("Tickets", tickets)
+		console.log("grandchildren", grandchildren)
 		return (
 		<MuiThemeProvider muiTheme={getMuiTheme(theme)}>
 			<div>
