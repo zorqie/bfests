@@ -14,9 +14,9 @@ function shouldShow(date, hour, job) {
 	const mStart = moment(job.start)
 	// console.log("T: ", t.format("YYYY-MM-DD HH:mm"))
 	const starts = mStart.isSame(t, 'hour')
-	const mEnd  = job.end && moment(job.end)
+	const mEnd  = job.end && moment(job.end) || moment(job.start).add(1, 'hour')
 	// console.log("end: ", mEnd.format("YYYY-MM-DD HH:mm"))
-	const ends = mEnd && mEnd.diff(t, 'hours') == 1 //mEnd.isSame(t, 'hour')
+	const ends = job.end && mEnd && mEnd.diff(t, 'hours') == 1 //mEnd.isSame(t, 'hour')
 	
 	const show = t.isSameOrAfter(mStart, 'hour') && t.isBefore(mEnd, 'hour')
 	return show ? {show, starts, ends} : null

@@ -72,7 +72,7 @@ export default class ActDetailsPage extends React.Component {
 		})
 		.catch(err => console.error("ERAR: ", err))
 	}
-	selectGig = gig => browserHistory.push('/gigs/'+gig._id)
+	selectGig = gig => browserHistory.push('/gig/'+gig._id)
 
 	render() {
 		// console.log("VenuePage props: ", this.props);

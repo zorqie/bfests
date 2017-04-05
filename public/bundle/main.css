@@ -8,8 +8,6 @@ html, body, * {
 	background-blend-mode: multiply;
 }
 .gig-duration {
-	display: block !important;
-	float: right !important;
 }
 .gig-duration, .gig-relative {
 	margin-left: 1em;
@@ -21,6 +19,26 @@ html, body, * {
 .gig-duration::after {
 	content: ')' !important;
 }
+
+.gig-acts a {
+	color: inherit !important;
+	white-space: nowrap !important;
+}
+a.gig-venue {
+	color: inherit;
+	letter-spacing: 2px !important;
+	white-space: nowrap !important;
+	text-transform: uppercase;
+	text-decoration: none !important;
+	transition: all 0.5s ease;
+	font-size: smaller;
+	padding: 0 4px;
+	border-bottom: 2px solid white;
+}
+a.gig-venue:hover {
+	border-bottom: 2px solid grey;
+}
+
 table.gig-schedule {
 	margin-bottom: 2em;
 	padding-right: 2em;

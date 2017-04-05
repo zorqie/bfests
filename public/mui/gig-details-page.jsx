@@ -71,7 +71,7 @@ export default class GigDetailsPage extends React.Component {
 }
 
 GigDetailsPage.propTypes = {
-	ticketsByGig: React.PropTypes.object.isRequired, // map gig._id = status
+	ticketsByGig: React.PropTypes.object, // map gig._id = status
 	onJoin: React.PropTypes.func, 
 	onLeave: React.PropTypes.func, 
 }

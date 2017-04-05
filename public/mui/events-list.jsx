@@ -50,6 +50,7 @@ export default class EventsList extends React.Component {
 		const {events} = this.state
 		const {tickets} = this.props
 		const auth = !!app.get('user')
+		console.log("AUTH", auth)
 		// console.log("E-vents", events)
 		// console.log("teekettes", tickets)
 		return <div>
@@ -67,12 +68,17 @@ export default class EventsList extends React.Component {
 					<CardText actAsExpander={true}>
 						<p>{event.description}</p>
 						<EventInfo event={event} tickets={tickets} />
+
 					</CardText>
 										
-					{auth && <EventActions event={event} tickets={tickets} />}
+					{auth 
+						&& <EventActions event={event} tickets={tickets} />
+						
+					}
 					
 				</Card>
 			)}
+			{!auth &&  <p>To use this system you must <Link to='/login'>sign in</Link></p>}
 		</div>
 	}
 }

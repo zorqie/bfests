@@ -52,7 +52,7 @@ const DayTable = ({date, jobs}) =>
 			</tr>
 		</thead>
 		<tbody>
-			{hours24.map(hour => <HourRow key={date+hour} hour={hour} jobs={jobs} /> )}
+			{hours24.map(hour => hour>7 && <HourRow key={date+hour} hour={hour} jobs={jobs} /> )}
 		</tbody>
 	</table>
 

@@ -168,7 +168,7 @@ export default class Layout extends React.Component {
 					iconElementRight={
 						user 
 						?	<Link to='/my-schedule'><FlatButton label='My schedule' style={{color: 'white'}}/></Link>
-						: 	<Link to='/login'>
+						: 	<Link to='/login' activeStyle={{display: 'none'}}>
 								<RaisedButton label="Login"  primary={true}/>
 							</Link>
 					}
