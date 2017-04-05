@@ -10,7 +10,7 @@ import app from '../../main.jsx'
 import { addIcon } from '../icons.jsx'
 import GigTimespan from '../gig-timespan.jsx'
 import { Kspan } from '../hacks.jsx'
-import { gigJoin, gigLeave, isAttending } from '../utils.jsx'
+import { gigJoin, gigLeave, isAttending, viewGig } from '../utils.jsx'
 
 import styles from '../styles'
 
@@ -36,13 +36,9 @@ function ShiftItem({shift, onSelect, actionButton}) {
 
 export default class ActivityCard extends React.Component {
 
-	viewShift = shift => {
-		browserHistory.push('/gig/' + shift._id)
-	} 
-
 	render() {
 		const { gig, shifts, ticketsByGig, ...others /*onJoin, onLeave*/ } = this.props 
-		console.log("CARD props", this.props)
+		// console.log("CARD props", this.props)
 		const status = gig.type==='Volunteer' ? 'Volunteering' : 'Attending'
 		return gig._id && <div>
 			<span style={styles.gigType}>{gig.type}</span> 
@@ -52,7 +48,7 @@ export default class ActivityCard extends React.Component {
 				<ShiftItem 
 					key={shift._id} 
 					shift={shift}
-					onSelect={this.viewShift.bind(this, shift)}
+					onSelect={viewGig.bind(this, shift)}
 					actionButton={<ActionButton gig={shift} status={status} tickets={ticketsByGig} {...others}/>}
 				/>
 			)}

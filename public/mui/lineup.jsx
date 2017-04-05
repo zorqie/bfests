@@ -11,6 +11,7 @@ import app from '../main.jsx'
 import GigListItem from './gig-list-item.jsx'
 import GigTimespan from './gig-timespan.jsx'
 import LineupItem from './lineup-item.jsx'
+import {viewGig} from './utils.jsx'
 import styles from './styles'
 
 function days(tickets) {
@@ -26,9 +27,6 @@ function days(tickets) {
 }
 
 export default class Lineup extends React.Component {
-	select = gig => {
-		browserHistory.push('/gigs/' + gig._id)
-	} 
 
 	render() {
 		const { tickets, status } = this.props
@@ -53,7 +51,7 @@ export default class Lineup extends React.Component {
 								key={gig._id}
 								gig={gig}
 								hideDates={true}
-								onSelect={this.select.bind(this, gig)}
+								onSelect={viewGig.bind(this, gig)}
 							/>
 					)}
 				</List>

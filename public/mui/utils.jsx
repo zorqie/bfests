@@ -1,4 +1,9 @@
 import app from '../main.jsx'
+import {browserHistory} from 'react-router'
+
+export function viewGig(gig) {
+	browserHistory.push('/gig/' + gig._id)
+}
 
 export function isAttending(gig, tickets, status='Attending') {
 	return tickets && tickets[gig._id] === status
