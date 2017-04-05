@@ -14,7 +14,7 @@ const startTimeSort = (a, b) => +(a.start > b.start) || +(a.start === b.start) -
 const tspan = (job, {_id, name, start, end}) => 
 	<span>
 		<Link to={'/gig/'+_id}>
-		{moment(start).format('HH:mm')}-{moment(end).format('HH:mm')}
+		{moment(start).format('HH:mm')}-{end ? moment(end).format('HH:mm') : ''}
 		</Link>
 		{job.name!==name && name}
 	</span>
@@ -31,7 +31,7 @@ export default class VolunteerTable extends React.Component {
 		app.service('gigs').find({
 			query: {
 				parent: eventId,
-				type: type || 'Volunteer',
+				type: type || {$ne: 'Volunteer'},
 				$sort: {start: 1}
 			}
 		})
@@ -75,7 +75,7 @@ export default class VolunteerTable extends React.Component {
 				<table key={date} className='gig-schedule'>
 					<thead>
 						<tr>
-							<th colSpan={jobs.length+1} style={styles.scheduleDate}>{date.format('MMM D, dddd')} <span className="sch-type">- {type || 'Volunteer'} Schedule</span></th>
+							<th colSpan={jobs.length+1} style={styles.scheduleDate}>{date.format('MMM D, dddd')} <span className="sch-type">- {type || ''} Schedule</span></th>
 						</tr>
 						<tr>
 							<th></th>

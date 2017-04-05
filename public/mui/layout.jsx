@@ -65,12 +65,14 @@ export default class Layout extends React.Component {
 		if(app) {
 			app.removeListener('authenticated', this.loginListener)
 			app.removeListener('error', this.errorListener)
+			app.service('users').removeListener('patched', this.userPatched)
 			app.service('tickets').removeListener('removed', this.ticketRemoved)
 			app.service('tickets').removeListener('created', this.ticketCreated)
 		}
 	}
 
 	loginListener = u => {
+		console.log("Authenticated", u)
 		const user = app.get('user')
 		if(!this.state.user && user) {
 			this.setState({ user })
@@ -149,9 +151,10 @@ export default class Layout extends React.Component {
 		if(u) {
 			const name = u.name || (u.facebook && u.facebook.name)
 			const message = name + ' signed ' + (u.online ? 'in' : 'out')
-			this.setState({snackbarOpen: true, message, tickets:[], ticketsByGig:{}})			
+			this.setState({snackbarOpen: true, message})			
 		}
 		if(app.get('user') && u._id === app.get('user')._id) {
+			console.log("Get new tickets")
 			this.fetchTickets()
 		}
 	}

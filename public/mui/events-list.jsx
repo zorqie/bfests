@@ -50,12 +50,12 @@ export default class EventsList extends React.Component {
 		const {events} = this.state
 		const {tickets} = this.props
 		const auth = !!app.get('user')
-		console.log("AUTH", auth)
+		// console.log("AUTH", auth)
 		// console.log("E-vents", events)
 		// console.log("teekettes", tickets)
 		return <div>
 			{events.map(event => 
-				<Card key={event._id} style={styles.card} initiallyExpanded={false} >
+				<Card key={event._id} style={styles.card} initiallyExpanded={true} >
 				    <CardTitle 
 				    	title={<EventTitle event={event} auth={auth} />} 
 				    	subtitle={<GigTimespan gig={event} showRelative={true}/>} 

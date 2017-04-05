@@ -1,6 +1,8 @@
 import React from 'react'
 import moment from 'moment'
 
+export const unique = array => array.filter((e, i, a) => a.indexOf(e)===i)
+
 export const Kspan = ({onKeyboardFocus, ...others}) => <span {...others}/>; 
 
 export const formatYMD = t => moment(t).format('YYYY-MM-DD')
@@ -70,7 +72,7 @@ export function jobsByDate(jobs) {
 			})
 		}
 	})
-	console.log("TABLES>>>>", tables)
+	// console.log("TABLES>>>>", tables)
 	return tables
 }
 
@@ -105,7 +107,7 @@ export function sitesByDate(tickets) {
 			})
 		}
 	})
-	console.log("TABLESes >>>>", tables)
+	// console.log("TABLESes >>>>", tables)
 	return tables
 }
 

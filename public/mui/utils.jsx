@@ -5,6 +5,11 @@ export function viewGig(gig) {
 	browserHistory.push('/gig/' + gig._id)
 }
 
+export function viewAct(act) {
+	browserHistory.push('/acts/' + act._id)
+}
+
+
 export function isAttending(gig, tickets, status='Attending') {
 	return tickets && tickets[gig._id] === status
 }

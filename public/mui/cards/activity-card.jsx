@@ -9,8 +9,9 @@ import {ListItem} from 'material-ui/List'
 import app from '../../main.jsx'
 import { addIcon } from '../icons.jsx'
 import GigTimespan from '../gig-timespan.jsx'
+import ActsList from '../acts-list.jsx'
 import { Kspan } from '../hacks.jsx'
-import { gigJoin, gigLeave, isAttending, viewGig } from '../utils.jsx'
+import { gigJoin, gigLeave, isAttending, viewGig, viewAct } from '../utils.jsx'
 
 import styles from '../styles'
 
@@ -44,6 +45,9 @@ export default class ActivityCard extends React.Component {
 			<span style={styles.gigType}>{gig.type}</span> 
 			<h2>{gig.name}</h2>
 			<p>{gig.description}</p>
+			{gig.type!=='Volunteer'
+				&& <ActsList acts={gig.acts} onSelect={viewAct}/>
+			}
 			{shifts.map(shift => 
 				<ShiftItem 
 					key={shift._id} 

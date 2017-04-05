@@ -11,7 +11,7 @@ export default function ActsList ({ acts, compact, onSelect, onEdit, onDelete })
 			<ListItem 
 				key={act._id} 
 				primaryText={act.name}
-				onTouchTap={onSelect.bind(null, act)}
+				onTouchTap={onSelect ? onSelect.bind(null, act) : ()=>null}
 				secondaryText={compact ? '' : (act.description || ' ')}
 				rightIconButton={<Kspan>
 					{onEdit && <FlatButton label="Edit" onTouchTap={onEdit.bind(null, act)}/>}
