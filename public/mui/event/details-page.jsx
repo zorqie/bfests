@@ -97,7 +97,7 @@ export default class EventPage extends React.Component {
 			}
 			return acc			
 		}, 0)
-		console.log("SOME::::::::::::: ", some)
+		// console.log("SOME::::::::::::: ", some)
 		return all || some
 	}
 	
@@ -118,7 +118,7 @@ export default class EventPage extends React.Component {
 		const {tickets, ticketsByGig} = this.props
 		const status = this.props.params.status || 'Attending' // TODO this is meaningless
 
-		console.log("GIGGGINGING: ", tickets);
+		// console.log("GIGGGINGING: ", tickets);
 		const title = <b>{event.name}</b>;
 
 		const subtitle = <GigTimespan gig={event} showRelative={true}/>;

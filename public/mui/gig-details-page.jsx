@@ -39,16 +39,15 @@ export default class GigDetailsPage extends React.Component {
 
 	fetchData = (params) => {
 		const gigId = params.gigId || this.props.params.gigId
-		// console.log("Fetching ", gigId)
+		console.log("Fetching ", gigId)
 		if(gigId) {
 			app.service('gigs').get(gigId)
 			.then(gig => {
-				this.setState({gig})
-				return app.service('gigs').find({
+				app.service('gigs').find({
 					query: {parent: gig._id}
 				})
+				.then(result => this.setState({gig, shifts: result.data, loaded: true}))
 			})
-			.then(result => this.setState({shifts: result.data, loaded: true}))
 			.catch(err => console.log("It can't be: ", err))
 		}
 	} 
@@ -63,7 +62,7 @@ export default class GigDetailsPage extends React.Component {
 		const handleLeave = onLeave || gigLeave
 				
 		const gigProps = {gig, shifts, handleJoin, handleLeave, ticketsByGig, viewActDetails: this.viewActDetails}
-
+		// console.log("Hooked gig", gig)
 		return loaded 
 			&& <GigCard {...gigProps} /> 
 			|| null

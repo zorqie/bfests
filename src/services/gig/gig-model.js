@@ -16,6 +16,7 @@ const gigSchema = new Schema({
 	info: 		{ type: [Schema.Types.Mixed] },
 	type: 		{ type: String, required: '{PATH} is required' },
 	capacity: 	{ type: Number},
+	attending: 	{ type: [String]}, 						//Array of ticket id's
 	public: 	{ type: Boolean, 'default': false },
 	mandatory: 	{ type: Boolean },
 	start: 		{ type: Date, required: '{PATH} is required'},

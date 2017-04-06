@@ -5,8 +5,9 @@ import {List, ListItem} from 'material-ui/List';
 
 import { Kspan } from './hacks.jsx'
 
-export default function ActsList ({ acts, compact, onSelect, onEdit, onDelete }) {
+export default function ActsList ({ acts, compact, title, onSelect, onEdit, onDelete }) {
 	return <List>
+		{title || ''}
 		{acts.map(act => 
 			<ListItem 
 				key={act._id} 
