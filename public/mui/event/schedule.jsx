@@ -88,8 +88,8 @@ export default class VolunteerTable extends React.Component {
 					</thead>
 					<tbody>
 						{hours24.map(hour => 
-							<tr key={hour}>
-								<td>{hour}:00</td>
+							hour > 7 && <tr key={hour}>
+								<td>{hour%24}:00</td>
 								{jobs.map(({hours, job, span}) => {
 									return hours[hour] && 
 										sequence(span).map(i => {

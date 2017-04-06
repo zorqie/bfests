@@ -38,7 +38,7 @@ export default class EventPage extends React.Component {
 	}
 
 	fetchData = () => {
-		const { eventId } = this.props.params
+		const { eventId, type } = this.props.params
 
 		app.service('gigs').get(eventId)
 		.then(event => {
@@ -47,13 +47,13 @@ export default class EventPage extends React.Component {
 			app.service('gigs').find({
 				query: {
 					parent: eventId,
-					type: {$ne: 'Volunteer'},
+					type: type || {$ne: 'Volunteer'},
 					$sort: { start: 1 },
 					// $limit: this.props.limit || 7
 				}
 			})
 			.then(page => {
-				// console.log("Got result: ", page);			
+				// console.log("Got result: ", page)	
 				this.setState({gigs: page.data, event})
 			})
 		})
@@ -75,7 +75,31 @@ export default class EventPage extends React.Component {
 		})
 	}
 
-	isAttending = (gig, tickets, status) => tickets[gig._id] === status 
+	handleGigLeave = (gig, status) => {
+		app.service('gigs').find({query: {parent: gig._id}})
+		.then(result => {
+			if(result.total) {
+				// has children
+				this.viewGigDetails(gig)
+			} else {
+				// console.log("Go join the gig")
+				gigLeave(gig, status)
+			}
+		})
+	}
+
+	isAttending = (gig, ticketsByGig, status, tickets) => {
+		const all = ticketsByGig[gig._id] === status 
+		const some = tickets && tickets.reduce((acc, t) => {
+			if(t.gig.parent===gig._id) {
+				const any = ticketsByGig[t.gig._id] === status
+				return acc + any
+			}
+			return acc			
+		}, 0)
+		console.log("SOME::::::::::::: ", some)
+		return all || some
+	}
 	
 	gigRemoved = gig => 
 		this.setState({
@@ -92,9 +116,9 @@ export default class EventPage extends React.Component {
 	render() {
 		const {event} = this.state
 		const {tickets, ticketsByGig} = this.props
-		const status = this.props.params.status || 'Attending'
+		const status = this.props.params.status || 'Attending' // TODO this is meaningless
 
-		// console.log("GIGGGINGING: ", this.props);
+		console.log("GIGGGINGING: ", tickets);
 		const title = <b>{event.name}</b>;
 
 		const subtitle = <GigTimespan gig={event} showRelative={true}/>;
@@ -111,11 +135,11 @@ export default class EventPage extends React.Component {
 							key={gig._id} 
 							gig={gig} 
 							onSelect={this.viewGigDetails.bind(this, gig)}
-							rightIconButton={this.isAttending(gig, ticketsByGig, status) 
+							rightIconButton={this.isAttending(gig, ticketsByGig, status, tickets) 
 								? <FlatButton 
 									icon={minusBox}
 									title="Leave" 
-									onTouchTap={gigLeave.bind(null, gig, status)}
+									onTouchTap={this.handleGigLeave.bind(null, gig, status)}
 								/>
 								: <FlatButton 
 									icon={plusOutline}

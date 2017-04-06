@@ -9,7 +9,7 @@ export const formatYMD = t => moment(t).format('YYYY-MM-DD')
 
 export const sequence = n => Array.from(Array(n).keys())
 
-export const hours24 = sequence(24)
+export const hours24 = sequence(27)
 
 function shouldShow(date, hour, job) {
 	const t = moment(date).add(hour, 'hours')
