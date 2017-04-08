@@ -15,8 +15,8 @@ const io = require('socket.io-client')
 
 // FIXME this should be in configuration somewhere.
 // Establish a Socket.io connection
-// const socket = io('http://localhost:2017')
-const socket = io('https://gyps.herokuapp.com/') 
+const socket = io('http://localhost:2017')
+// const socket = io('https://gyps.herokuapp.com/') 
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 const app = feathers()

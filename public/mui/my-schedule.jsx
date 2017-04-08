@@ -48,7 +48,7 @@ const DayTable = ({date, jobs}) =>
 			</tr>
 			<tr>
 				<th></th>
-				{jobs.map(({job, span}) => <JobHeader key={job._id} job={job} span={span} />)}
+				{jobs.map(({job, span}) => job && <JobHeader key={job._id} job={job} span={span} />)}
 			</tr>
 		</thead>
 		<tbody>

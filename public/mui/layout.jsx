@@ -99,8 +99,12 @@ export default class Layout extends React.Component {
 			console.log("Ticket created", t)
 			const {tickets, ticketsByGig} = this.state
 			Object.assign(ticketsByGig, {[t.gig_id]: t.status})
-			app.service('tickets').get(t._id)
-			.then(ticket => this.setState({ticketsByGig, tickets: tickets.concat(ticket)}) )
+			// roundtrip to populate gig ?!
+			// app.service('tickets').get(t._id)
+			// .then(ticket => this.setState({ticketsByGig, tickets: tickets.concat(ticket)}) )
+			
+			// updateAttendance hook populates gig on create so no need for round-trip
+			this.setState({ticketsByGig, tickets: tickets.concat(t)})
 		}
 	}
 	ticketRemoved = t => {

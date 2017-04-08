@@ -3,6 +3,7 @@ import {browserHistory} from 'react-router'
 
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
+import CircularProgress from 'material-ui/CircularProgress'
 import {List, ListItem} from 'material-ui/List'
 
 import app from '../../main.jsx'
@@ -114,7 +115,7 @@ export default class EventPage extends React.Component {
 	viewGigDetails = gig =>  browserHistory.push('/gig/'+gig._id)
 
 	render() {
-		const {event} = this.state
+		const {event, gigs} = this.state
 		const {tickets, ticketsByGig} = this.props
 		const status = this.props.params.status || 'Attending' // TODO this is meaningless
 
@@ -123,14 +124,14 @@ export default class EventPage extends React.Component {
 
 		const subtitle = <GigTimespan gig={event} showRelative={true}/>;
 
-		return <Card>
+		return gigs.length && <Card>
 			    <CardTitle 
 			    	title={title} 
 			    	subtitle={subtitle} 
 			    />
 			    <EventActions event={event} tickets={tickets} route={this.props.route.path} />
 				<CardText>
-					{this.state.gigs.map(gig => 
+					{gigs.map(gig => 
 						<GigListItem 
 							key={gig._id} 
 							gig={gig} 
@@ -151,6 +152,6 @@ export default class EventPage extends React.Component {
 					)}
 				</CardText>
 			</Card>
-		
+			|| <CircularProgress />
 	}
 }

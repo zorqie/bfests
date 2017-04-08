@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 // const hooks = require('feathers-hooks');
 const hooks = require('feathers-hooks-common');
 const auth = require('feathers-authentication').hooks;
+const updateAttendance = require('./update-gig-hook')
 
 exports.before = {
 	all: [
@@ -35,25 +36,23 @@ const schema = {
 	}]	
 }
 
-exports.after = {
-	all: [],
-	find: [
-		hooks.remove('createdAt', 'updatedAt'),
-		// hooks.populate({schema})
-		hooks.populate('gig', {
+const popGig = hooks.populate('gig', {
 			service: 'gigs',
 			field: 'gig_id'  
 		})
+
+exports.after = {
+	all: [hooks.remove('createdAt', 'updatedAt')],
+	find: [
+		// hooks.populate({schema})
+		popGig
 	],
 	get: [
 		hooks.remove('createdAt', 'updatedAt'),
-		hooks.populate('gig', {
-			service: 'gigs',
-			field: 'gig_id'  
-		})
+		popGig
 	],
-	create: [],
+	create: [updateAttendance(), popGig],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [updateAttendance()]
 };

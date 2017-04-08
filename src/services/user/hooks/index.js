@@ -3,6 +3,7 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
+const checkUnique = require('./unique-hook')
 
 exports.before = {
   all: [],
@@ -23,6 +24,7 @@ exports.before = {
     })
   ],
   create: [
+    checkUnique(), 
     auth.hashPassword()
   ],
   update: [

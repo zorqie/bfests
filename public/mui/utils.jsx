@@ -17,7 +17,8 @@ export function isAttending(gig, tickets, status='Attending') {
 export const gigJoin = (gig, status='Attending') => {
 		const ticket = {gig_id: gig._id, status}
 		app.service('tickets').create(ticket)
-		.catch(err=>{
+		.catch(err => {
+			app.emit('error', err)
 			console.error("What could be wrong", err)
 			console.error("This", JSON.stringify(err))
 		})
@@ -32,5 +33,10 @@ export const gigLeave = (gig, status='Attending') => {
 				gig_id: gig._id, 
 				status
 			}
+		})
+		.catch(err => {
+			app.emit('error', err)
+			console.error("What could be wrong", err)
+			console.error("This", JSON.stringify(err))
 		})
 	}
