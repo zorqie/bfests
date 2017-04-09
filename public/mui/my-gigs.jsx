@@ -53,7 +53,7 @@ export default class PerformanceList extends React.Component {
 	}
 
 	select = gig => {
-		browserHistory.push('/gigs/' + gig._id)
+		browserHistory.push('/my-gigs/' + gig._id)
 	}
 
 	render() {

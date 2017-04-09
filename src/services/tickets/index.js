@@ -12,7 +12,8 @@ module.exports = function() {
 		paginate: {
 		  default: 5000,
 		  max: 250000
-		}
+		},
+		lean: true
 	};
 
 	// Initialize our service with any options it requires

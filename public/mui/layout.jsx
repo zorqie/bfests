@@ -108,7 +108,7 @@ export default class Layout extends React.Component {
 		}
 	}
 	ticketRemoved = t => {
-		// console.log("Ticket removed", t)
+		console.log("Ticket removed", t)
 		const {user} = this.state
 		if(user && t.owner_id===user._id) {
 			console.log("Ticket removed", t)

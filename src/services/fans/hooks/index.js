@@ -19,28 +19,23 @@ exports.before = {
 	remove: []
 };
 
-// THIS DOESN'T work on client, the old-style hook does.
+// THIS DOESN'T work on client unless lean:true
 const schema = {
-	service: 'tickets',
+	service: 'fans',
 	include: [{
-		service: 'gigs',
-		nameAs: 'gig',
-		parentField: 'gig_id',
-		childField: '_id',
-		include: [{
-			service: 'venues',
-			parentField: 'venue',
-			childField: '_id'
-		}]
+		service: 'users',
+		nameAs: 'user',
+		parentField: 'owner_id',
+		childField: '_id'
 	}]	
 }
 
 exports.after = {
 	all: [],
 	find: [
-		hooks.populate('user', { service: 'users', field: 'owner_id'}),
+		// hooks.populate('user', { service: 'users', field: 'owner_id'}),
+		hooks.populate({schema}),
 		hooks.remove('createdAt', 'updatedAt', 'user._id'),
-		// hooks.populate({schema})
 	],
 	get: [
 		hooks.remove('createdAt', 'updatedAt'),

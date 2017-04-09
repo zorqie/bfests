@@ -20,6 +20,7 @@ import EventInfo from './mui/event/info.jsx'
 import GigDetailsPage from './mui/gig-details-page.jsx'
 import Lineup from './mui/lineup.jsx'
 import MyGigs from './mui/my-gigs.jsx'
+import MyGigDetails from './mui/my-gig-details.jsx'
 import Passes from './mui/passes.jsx'
 import QrPage from './mui/qr-check.jsx'
 import SitePage from './mui/site-details-page.jsx'
@@ -68,8 +69,8 @@ export const routes =
 			<Route path='lineup' component={Lineup} />
 			<Route path='tasks' component={Tasks} />
 
-			{/*TODO these should be restricted to role*/}
-			<Route path='performances' component={MyGigs} />
+			<Route path='my-gigs' component={MyGigs} />
+			<Route path='my-gigs/:gigId' component={MyGigDetails} />
 
 			<Route path='passes(/:eventId)' component={Passes} />
 

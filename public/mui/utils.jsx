@@ -31,6 +31,7 @@ export const gigLeave = (gig, status='Attending') => {
 		.remove(null, {
 			query: {
 				gig_id: gig._id, 
+				owner_id: app.get('user')._id,
 				status
 			}
 		})

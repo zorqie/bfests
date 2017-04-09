@@ -13,8 +13,8 @@ function updateAttendance(options) {
 
 			// TODO consider adding all tickets
 			// perhaps in gig.tickets[status]=[_id,...]
-			return result.status==='Attending'
-				? Promise.resolve(
+			if (result.status==='Attending' || result.status==='Volunteering') {
+				return Promise.resolve(
 						GigModel.findByIdAndUpdate(result.gig_id, {
 							$push: {
 								attending: result._id
@@ -31,20 +31,23 @@ function updateAttendance(options) {
 						// 	// never...
 						// 	hook.result.gig = gig
 						// }
+						hook.app.service('gigs').emit('patched', gig)
 						
 						return hook
 					}) 
-				: hook
+			}
 
 		} else if (hook.method==='remove') {
 			// result is an array (!!!) of tickets
 			return Promise.all(result.map(t => 
 						GigModel.findByIdAndUpdate(t.gig_id, {
-							$pullAll: {
-								attending: [t._id]
+							$pull: {
+								attending: t._id
 							}
 						}, {new: true})
-						// .then(gig => null) // noop but we need it, otherwise it never executes
+						.then(gig => 
+							hook.app.service('gigs').emit('patched', gig)
+						)
 					)
 				) 
 				.then(updates => {
@@ -53,10 +56,10 @@ function updateAttendance(options) {
 				})
 				.catch(err => console.error);
 
-		} else {
-			// Not our problem
-			return hook
-		}
+		} 
+		
+		// Not our problem
+		return hook
 	};
 };
 

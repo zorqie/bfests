@@ -38,7 +38,8 @@ export default class EventPage extends React.Component {
 		}
 	}
 
-	fetchData = () => {
+	fetchData = (g) => {
+		console.log("Fetch", g)
 		const { eventId, type } = this.props.params
 
 		app.service('gigs').get(eventId)

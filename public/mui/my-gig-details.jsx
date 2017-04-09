@@ -6,13 +6,12 @@ import app from '../main.jsx'
 import deny from './err'
 import { gigJoin, gigLeave } from './utils.jsx'
 
-import GigCard from './gig-card.jsx'
+import GigHeader from './gig-header.jsx'
 
-export default class GigDetailsPage extends React.Component {
+export default class MyGigDetails extends React.Component {
 	state = {
 		gig: {},
-		shifts: [],
-		loaded: false,
+		fans: [],
 	}
 
 	componentDidMount() {
@@ -44,10 +43,15 @@ export default class GigDetailsPage extends React.Component {
 		if(gigId) {
 			app.service('gigs').get(gigId)
 			.then(gig => {
-				app.service('gigs').find({
-					query: {parent: gig._id}
+				this.setState({gig})
+
+				app.service('fans').find({
+					query: {
+						gig_id: gig._id,
+						$sort: {createdAt: -1}
+					}
 				})
-				.then(result => this.setState({gig, shifts: result.data, loaded: true}))
+				.then(result => result && this.setState({fans: result.data, total: result.total}))
 			})
 			.catch(err => console.log("It can't be: ", err))
 		}
@@ -56,22 +60,19 @@ export default class GigDetailsPage extends React.Component {
 	viewActDetails = act => browserHistory.push('/acts/'+act._id)
 
 	render() {
-		const { gig, shifts, loaded } =  this.state
-		const { onJoin, onLeave, ticketsByGig } = this.props
+		const { gig, fans, total } =  this.state
 
-		const handleJoin = onJoin || gigJoin
-		const handleLeave = onLeave || gigLeave
-				
-		const gigProps = {gig, shifts, handleJoin, handleLeave, ticketsByGig, viewActDetails: this.viewActDetails}
-		// console.log("Hooked gig", gig)
-		return loaded 
-			&& <GigCard {...gigProps} /> 
-			|| null
+		// console.log("Hooked", this.state)
+		return <div>
+					<GigHeader gig={gig} />
+					{fans.length 
+						&&	<div className='gig-fans'>
+								<div>Attending: {total}</div>
+								{fans.map(t => 
+									<span key={t._id}>{t.user.name}</span>)
+								}
+							</div>
+						|| ''}
+				</div> 
 	}
-}
-
-GigDetailsPage.propTypes = {
-	ticketsByGig: PropTypes.object, // map gig._id = status
-	onJoin: PropTypes.func, 
-	onLeave: PropTypes.func, 
 }

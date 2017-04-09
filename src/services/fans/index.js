@@ -10,9 +10,10 @@ module.exports = function() {
   const options = {
     Model: Ticket,
     paginate: {
-      default: 5000,
-      max: 250000
-    }
+      default: 10,
+      max: 250
+    },
+    lean: true
   };
 
   // Initialize our service with any options it requires

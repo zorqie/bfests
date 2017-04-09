@@ -7,10 +7,10 @@ function checkUnique(options) {
 	// TODO make fields configurable
 	return function(hook) {
 		console.log("Hooking: ", hook.method)
-		if(hook.method==='create') {
+		if(hook.method==='create' && hook.data.email) {
 			// data is what we're trying to create			
 			var data = hook.data
-			return Promise.resolve().then(() => UserModel.count({email: data.email}))
+			return Promise.resolve(UserModel.count({email: data.email}))
 				.then(c => {
 					if(c > 0) {
 						throw new errors.NotAcceptable({
@@ -22,8 +22,6 @@ function checkUnique(options) {
 				}); 
 		
 		} else {
-			var query = params.query
-			console.log("We shouldn't be hooking here", query)
 			return hook
 		}
 	};

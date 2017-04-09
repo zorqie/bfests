@@ -25,7 +25,7 @@ const userSections = [
 	},
 	{
 		text: "My performances",
-		path: "/performances",
+		path: "/my-gigs",
 		role: "performer",
 	},
 	{

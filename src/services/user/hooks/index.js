@@ -18,7 +18,7 @@ exports.before = {
     auth.restrictToAuthenticated(),
     // auth.restrictToOwner({ ownerField: '_id' })
     auth.restrictToRoles({
-        roles: ['sysadmin', 'master'],
+        roles: ['sysadmin', 'master', 'performer'],
         owner: true,
         ownerField: '_id'
     })
@@ -35,7 +35,6 @@ exports.before = {
   ],
   patch: [
     auth.verifyToken(),
-    auth.populateUser(),
     auth.restrictToAuthenticated(),
     // auth.restrictToOwner({ ownerField: '_id' })
     // allow only sysadmin and owner to modify
@@ -47,7 +46,6 @@ exports.before = {
   ],
   remove: [
     auth.verifyToken(),
-    auth.populateUser(),
     auth.restrictToAuthenticated(),
     // auth.restrictToOwner({ ownerField: '_id' })
     auth.restrictToRoles({

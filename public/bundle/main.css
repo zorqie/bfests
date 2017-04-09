@@ -19,7 +19,20 @@ html, body, * {
 .gig-duration::after {
 	content: ')' !important;
 }
-
+.gig-fans span {
+	display: inline-block;
+	width: 8em;
+	max-width: 8em;
+	font-size: smaller;
+	background-color: rgba(0,0,0,0.12);
+	/*border: 1px solid white;*/
+	border-radius: 0.75em;
+	padding: 0.25em 0.5em;
+	margin: 4px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
 .gig-acts a {
 	color: inherit !important;
 	white-space: nowrap !important;
@@ -97,9 +110,17 @@ table.gig-schedule thead tr th a {
 .sch-Performance {
 	background-color: rgba(0,160,255,0.05)
 }
+.sch-My-Performance {
+	background-color: rgba(0,160,255,0.5)
+}
+
 .sch-Workshop {
 	background-color: rgba(255,127,0,0.05)
 }
+.sch-My-Workshop {
+	background-color: rgba(255,127,0,0.5)
+}
+
 .sch-Volunteer {
 	background-color: rgba(127,255,0,0.05)
 }

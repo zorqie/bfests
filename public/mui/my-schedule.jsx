@@ -23,6 +23,16 @@ const JobHeader = ({job, span}) =>
 		<Link to={'/sites/'+job._id}>{job.name}</Link>
 	</th>
 
+function SlotCell({slot, job}) {
+	const starts = slot && slot.show && slot.show.starts
+	const c = `j-shift sch-${slot.shift.type} ` 
+		+ (slot && slot.show && (slot.show.starts ? 'j-start ' : '') 
+		+ (slot.show.ends ? 'j-end' : ''))
+	return slot 
+		&& <td className={c}>{starts && tspan(job, slot.shift)}</td> 
+		|| <td key={hour+i}> </td>
+}
+
 const HourRow = ({hour, jobs}) => 
 	<tr>
 		<td>{hour}:00</td>
@@ -30,11 +40,7 @@ const HourRow = ({hour, jobs}) =>
 			return hours[hour] && 
 				sequence(span).map(i => {
 					const slot = hours[hour][i]
-					const starts = slot && slot.show && slot.show.starts
-					const c = `j-shift sch-${slot.shift.type} ` + (slot && slot.show && (slot.show.starts ? 'j-start ' : '') + (slot.show.ends ? 'j-end' : ''))
-					return slot 
-						&& <td key={hour+i} className={c}>{starts && tspan(job, slot.shift)}</td> 
-						|| <td key={hour+i}> </td>
+					return <SlotCell key={hour+i} slot={slot} job={job} />
 				})
 				|| <td key={job._id+hour} colSpan={span}> </td>
 		})}
@@ -58,12 +64,31 @@ const DayTable = ({date, jobs}) =>
 
 
 export default class VolunteerTable extends React.Component {
-	/*state = {
-		total: 0,
-		loaded: 0,
-		tickets: null,
-	}*/
+	state = {
+		stints: [],
+	}
 
+	componentDidMount() {
+		const {_id, roles} = app.get('user')
+		if(roles && roles.indexOf('master')) {
+			app.service('acts').find({query: {user_id: _id}})
+			.then(acts => 
+				app.service('gigs').find({
+					query: {
+						act_id: {$in: acts.data.map(a => a._id)},
+						$sort: {start: 1}
+					}
+				})
+
+			)
+			.then(result => {
+				console.log("Got gigs", result)
+				const stints = result.data.map(gig => {return {status: 'Acting', gig: {...gig, type: 'My-'+gig.type}}})
+				this.setState({stints})
+			})
+			.catch(err => console.error)
+		}
+	}
 /*	componentWillMount() {
 		const {eventId} = this.props.params
 		if(eventId) {
@@ -92,18 +117,21 @@ export default class VolunteerTable extends React.Component {
 	}
 }*/
 
-	shouldComponentUpdate(nextProps) {
+	shouldComponentUpdate(nextProps, nextState) {
 		// console.log("THIS", this.props.tickets.length)
 		// console.log("NEXT --- ", nextProps.tickets.length)
-		return this.props.tickets.length !== nextProps.tickets.length
+		return this.props.tickets.length !== nextProps.tickets.length 
+			|| this.state.stints.length !== nextState.stints.length
 	}
 
 	render() {
 		// TODO rename jobs => sites (to refelct reality...)
 		const { tickets } = this.props
+		const { stints } = this.state
+		const all = stints.length ? tickets.concat(stints) : tickets
 		return <div>
-			{tickets.length 
-			&& sitesByDate(tickets.filter(t=>t.gig && t.gig.parent).sort(ticketStartTimeSort))
+			{all.length 
+			&& sitesByDate(all.filter(t=>t.gig && t.gig.parent).sort(ticketStartTimeSort))
 				.map( ({date, jobs}) => <DayTable key={date} date={date} jobs={jobs} /> )				
 			||  <p>Nothing to see here.</p>
 			}

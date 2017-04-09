@@ -35,6 +35,10 @@ function ShiftItem({shift, onSelect, actionButton}) {
 		/>
 }
 
+function Attendance({gig}) {
+	return gig.attending && <span style={{float:'right', fontSize:'smaller'}}>Attending: {gig.attending.length}</span>
+}
+
 export default class ActivityCard extends React.Component {
 
 	render() {
@@ -46,8 +50,10 @@ export default class ActivityCard extends React.Component {
 			<span style={styles.gigType}>{gig.type}</span> 
 			<h2>{gig.name}</h2>
 			<p>{gig.description}</p>
-			{gig.type!=='Volunteer'
+			{!shifts.length && <Attendance gig={gig} /> || ''}
+			{!shifts.length && gig.type!=='Volunteer'
 				&& <ActsList acts={gig.acts} onSelect={viewAct} title={actsTitle} />
+				|| ''
 			}
 			{shifts.map(shift => 
 				<ShiftItem 

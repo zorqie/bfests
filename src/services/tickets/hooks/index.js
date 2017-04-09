@@ -17,7 +17,13 @@ exports.before = {
 	create: [auth.associateCurrentUser({ as: 'owner_id' })],
 	update: [auth.associateCurrentUser({ as: 'owner_id' })],
 	patch: [auth.associateCurrentUser({ as: 'owner_id' })],
-	remove: []
+	remove: [/*
+	Can't use this because we use remove(null, {params}) and hook requires remove(id, ...)
+	auth.restrictToRoles({
+        roles: ['sysadmin'],
+        ownerField: 'owner_id',
+        owner: true
+    })*/]
 };
 
 // THIS DOESN'T work on client, the old-style hook does.
