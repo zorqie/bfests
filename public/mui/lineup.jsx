@@ -16,13 +16,14 @@ import styles from './styles'
 
 function days(tickets) {
 	// console.log("Teekets:", result)
+	const start = window.performance.now()
 	const formated = tickets.map(t => moment(t.gig.start).format('YYYY-MM-DD'))
 	// console.log("Formated", formated)
 	const unique = formated.filter((e, i, a) => a.indexOf(e)===i)
 	// console.log("Unique", unique)
 	const sorted = unique.sort()
 	const dates = sorted.map(s => moment(s, 'YYYY-MM-DD'))
-	console.log("DAYS:: ", dates)
+	console.log("DAYS:: ", window.performance.now() - start)
 	return dates
 }
 
@@ -40,7 +41,7 @@ export default class Lineup extends React.Component {
 				<Subheader>No events found. <Link to='/events'>Choose some</Link></Subheader> 
 				: ''
 			}
-			{ filtered && days(filtered).map(d =>
+			{ filtered && filtered.length && days(filtered).map(d =>
 				<List key={d}>
 					<Subheader style={styles.lineup.date}>{d.format('MMM D, dddd')}</Subheader>
 					<Divider/>
@@ -55,7 +56,10 @@ export default class Lineup extends React.Component {
 							/>
 					)}
 				</List>
-			)}
+
+				)
+				|| ''
+			}
 		</div>
 	}
 }

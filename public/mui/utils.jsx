@@ -9,14 +9,15 @@ export function viewAct(act) {
 	browserHistory.push('/acts/' + act._id)
 }
 
-
 export function isAttending(gig, tickets, status='Attending') {
 	return tickets && tickets[gig._id] === status
 }
 
 export const gigJoin = (gig, status='Attending') => {
+		const start = performance.now()
 		const ticket = {gig_id: gig._id, status}
 		app.service('tickets').create(ticket)
+		.then(t => console.log(t, "Created in ", performance.now() - start))
 		.catch(err => {
 			app.emit('error', err)
 			console.error("What could be wrong", err)
@@ -25,7 +26,6 @@ export const gigJoin = (gig, status='Attending') => {
 	}
 
 export const gigLeave = (gig, status='Attending') => {
-		// console.log("Util: Leaving gig", gig)
 		// TODO ensure status is string
 		app.service('tickets')
 		.remove(null, {

@@ -8,7 +8,7 @@ const auth = require('feathers-authentication').hooks;
 exports.before = {
   all: [
     // auth.verifyToken(),
-    auth.populateUser(),
+    // auth.populateUser(),
     // auth.restrictToAuthenticated()
   ],
   find: [
@@ -23,27 +23,31 @@ exports.before = {
   remove: [auth.verifyToken()]
 };
 
+const schema = {
+  service: 'gigs',
+  include: [{
+      service: 'acts',
+      nameAs: 'acts',
+      asArray: true,
+      parentField: 'act_id',
+      childField: '_id',
+    },
+    {
+      service: 'venues',
+      nameAs: 'venue',
+      parentField: 'venue_id',
+      childField: '_id',
+    }
+  ]  
+}
+
 exports.after = {
   all: [],
   find: [
-    hooks.populate('acts', {
-      service: 'acts',
-      field: 'act_id'  
-    }),
-    hooks.populate('venue', {
-      service: 'venues',
-      field: 'venue_id'  
-    })
+    hooks.populate({schema})
   ],
   get: [
-    hooks.populate('acts', {
-      service: 'acts',
-      field: 'act_id'  
-    }),
-    hooks.populate('venue', {
-      service: 'venues',
-      field: 'venue_id'  
-    })
+    hooks.populate({schema})
   ],
   create: [],
   update: [],

@@ -52,7 +52,7 @@ export const routes =
 			<Route path='gig/:gigId' component={GigDetailsPage} />
 			
 			<Route path='events' component={EventsList} />
-			<Route path='events/:eventId' component={EventPage} />
+			<Route path='events/:eventId(/:type)' component={EventPage} />
 			<Route path='volunteer/:eventId' component={EventVolunteerPage} />
 			<Route path='eventinfo/:eventId' component={EventInfo} />
 

@@ -1,7 +1,7 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
+const hooks = require('feathers-hooks-common');
 const auth = require('feathers-authentication').hooks;
 const checkUnique = require('./unique-hook')
 
@@ -56,10 +56,21 @@ exports.before = {
   ]
 };
 
+const schema = {
+  service: 'users',
+  include: [{
+      service: 'acts',
+      nameAs: 'acts',
+      asArray: true,
+      parentField: '_id',
+      childField: 'user_id'
+    }]
+}
+
 exports.after = {
   all: [hooks.remove('password', 'createdAt', 'updatedAt')],
   find: [],
-  get: [],
+  get: [hooks.populate({schema})],
   create: [],
   update: [],
   patch: [],

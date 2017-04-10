@@ -40,7 +40,7 @@ export default class GigDetailsPage extends React.Component {
 
 	fetchData = (params) => {
 		const gigId = params.gigId || this.props.params.gigId
-		console.log("Fetching ", gigId)
+		// console.log("Fetching ", gigId)
 		if(gigId) {
 			app.service('gigs').get(gigId)
 			.then(gig => {

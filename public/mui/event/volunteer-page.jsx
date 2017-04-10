@@ -142,10 +142,11 @@ export default class EventPage extends React.Component {
 			gigs: this.state.gigs.concat(gig),
 		})
 	}
-	gigPatched = gig => {
-		// console.log("Updated: ", gig);
+	gigPatched = patched => {
+		// console.log("Updated: ", patched);
 		// do something to reflect update
-		this.fetchData()
+		// this.fetchData()
+		this.setState({gigs: this.state.gigs.map(g => g._id===patched._id ? patched : g)})
 	}
 
 	render() {

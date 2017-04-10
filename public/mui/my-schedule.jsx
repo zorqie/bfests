@@ -82,7 +82,7 @@ export default class VolunteerTable extends React.Component {
 
 			)
 			.then(result => {
-				console.log("Got gigs", result)
+				console.log("Got my own gigs", result)
 				const stints = result.data.map(gig => {return {status: 'Acting', gig: {...gig, type: 'My-'+gig.type}}})
 				this.setState({stints})
 			})

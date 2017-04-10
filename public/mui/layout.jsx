@@ -72,22 +72,24 @@ export default class Layout extends React.Component {
 	}
 
 	loginListener = u => {
-		console.log("Authenticated", u)
+		this.fetchTickets()
+		u && console.log("Authenticated", u)
 		const user = app.get('user')
 		if(!this.state.user && user) {
 			this.setState({ user })
 		}
-		this.fetchTickets()
 	}
 
 	fetchTickets = () => {
+		const start = performance.now()
 		app.service('tickets').find()
 		.then(result => {
 				// store tickets as a Map of _id = ticket.status pairs
-			// console.log("Got tickets", result)
+			console.log("Got tickets in", performance.now() - start)
 			const ticketsByGig = result.data.reduce((o, t) => Object.assign(o, {[t.gig_id]:t.status}), {})
 			// console.log("Got by gig", result)
 			this.setState({ticketsByGig, tickets: result.data})
+			console.log("Done with tickets in", performance.now() - start)
 		})
 		.catch(err => console.error)
 	}
@@ -96,25 +98,23 @@ export default class Layout extends React.Component {
 	ticketCreated = t => {
 		const {user} = this.state
 		if(user && t.owner_id===user._id) {
-			console.log("Ticket created", t)
 			const {tickets, ticketsByGig} = this.state
 			Object.assign(ticketsByGig, {[t.gig_id]: t.status})
 			// roundtrip to populate gig ?!
-			// app.service('tickets').get(t._id)
-			// .then(ticket => this.setState({ticketsByGig, tickets: tickets.concat(ticket)}) )
+			// creat hooks fail... that's why
+			app.service('tickets').get(t._id)
+			.then(ticket => this.setState({ticketsByGig, tickets: tickets.concat(ticket)}) )
 			
-			// updateAttendance hook populates gig on create so no need for round-trip
-			this.setState({ticketsByGig, tickets: tickets.concat(t)})
+			console.log("Ticket created", t)
 		}
 	}
 	ticketRemoved = t => {
-		console.log("Ticket removed", t)
 		const {user} = this.state
 		if(user && t.owner_id===user._id) {
-			console.log("Ticket removed", t)
 			const {tickets, ticketsByGig} = this.state
 			Object.assign(ticketsByGig, {[t.gig_id]: null})
 			this.setState({ticketsByGig, tickets: tickets.filter(tk => tk._id!==t._id)})
+			console.log("Our ticket was removed", t)
 		}
 	}
 

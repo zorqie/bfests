@@ -65,6 +65,8 @@ export default class MyGigDetails extends React.Component {
 		// console.log("Hooked", this.state)
 		return <div>
 					<GigHeader gig={gig} />
+					<h2>{gig.name}</h2>
+					<p>{gig.description}</p>
 					{fans.length 
 						&&	<div className='gig-fans'>
 								<div>Attending: {total}</div>

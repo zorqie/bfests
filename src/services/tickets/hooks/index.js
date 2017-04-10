@@ -6,6 +6,25 @@ const hooks = require('feathers-hooks-common');
 const auth = require('feathers-authentication').hooks;
 const updateAttendance = require('./update-gig-hook')
 
+// THIS DOESN'T work on client unless lean:true
+const schema = {
+	service: 'tickets',
+	include: [{
+		service: 'gigs',
+		nameAs: 'gig',
+		parentField: 'gig_id',
+		childField: '_id',
+		include: [{
+			service: 'venues',
+			nameAs: 'venue',
+			parentField: 'venue_id',
+			childField: '_id'
+		}]
+	}]	
+}
+
+
+
 exports.before = {
 	all: [
 		auth.verifyToken(),
@@ -26,38 +45,20 @@ exports.before = {
     })*/]
 };
 
-// THIS DOESN'T work on client, the old-style hook does.
-const schema = {
-	service: 'tickets',
-	include: [{
-		service: 'gigs',
-		nameAs: 'gig',
-		parentField: 'gig_id',
-		childField: '_id',
-		include: [{
-			service: 'venues',
-			parentField: 'venue',
-			childField: '_id'
-		}]
-	}]	
-}
-
-const popGig = hooks.populate('gig', {
-			service: 'gigs',
-			field: 'gig_id'  
-		})
+const debag = hook => {console.log(hook); return hook};
 
 exports.after = {
 	all: [hooks.remove('createdAt', 'updatedAt')],
 	find: [
 		// hooks.populate({schema})
-		popGig
+		hooks.populate({schema})
 	],
 	get: [
-		hooks.remove('createdAt', 'updatedAt'),
-		popGig
+		hooks.populate({schema})
 	],
-	create: [updateAttendance(), popGig],
+	create: [
+		updateAttendance()
+	],
 	update: [],
 	patch: [],
 	remove: [updateAttendance()]

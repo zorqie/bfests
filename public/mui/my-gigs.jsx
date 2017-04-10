@@ -27,16 +27,16 @@ export default class PerformanceList extends React.Component {
 
 	fetchData = () => {
 		const my = app.get('user')
-		app.service('acts').find({query: {user_id: my._id}})
-		.then(acts => 
+
+		// app.service('acts').find({query: {user_id: my._id}})
+		// .then(acts => 
 			app.service('gigs').find({
 				query: {
-					act_id: {$in: acts.data.map(a => a._id)},
+					act_id: {$in: my.acts.map(a => a._id)},
 					$sort: {start: 1}
 				}
 			})
 			.then(result => {
-				// console.log("Teekets:", result)
 				const formated = result.data.map(g => moment(g.start).format('YYYY-MM-DD'))
 				// console.log("Formated", formated)
 				const unique = formated.filter((e, i, a) => a.indexOf(e)===i)
@@ -48,7 +48,7 @@ export default class PerformanceList extends React.Component {
 				// console.log("Dates", dates)
 				this.setState({gigs: result.data, dates, loading: false})
 			})
-		)
+		// )
 		.catch(err => console.error)
 	}
 
@@ -58,10 +58,9 @@ export default class PerformanceList extends React.Component {
 
 	render() {
 		const { dates, gigs, loading } = this.state
-		// console.log("LINEUP", this.state) 
-		// console.log(dates)
+		// console.log("MY gigging", this.state) 
 		return <div style={styles.lineup.container}>
-			{ loading && <CircularProgress />}
+			{ loading && <CircularProgress /> || ''}
 			{ !loading && gigs.length==0 ?
 				<div>No events found.</div> 
 				: ''

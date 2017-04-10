@@ -4,6 +4,9 @@ const globalHooks = require('../../../hooks');
 // const hooks = require('feathers-hooks');
 const hooks = require('feathers-hooks-common');
 const auth = require('feathers-authentication').hooks;
+const errors = require('feathers-errors');
+
+const refuse = hook => {throw new errors.MethodNotAllowed('Such behavior will not be tolerated.')}
 
 exports.before = {
 	all: [
@@ -13,10 +16,10 @@ exports.before = {
 	],
 	find: [],
 	get: [],
-	create: [],
+	create: [refuse],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [refuse]
 };
 
 // THIS DOESN'T work on client unless lean:true
