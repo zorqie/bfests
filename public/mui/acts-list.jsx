@@ -6,7 +6,7 @@ import {List, ListItem} from 'material-ui/List';
 import { Kspan } from './hacks.jsx'
 
 export default function ActsList ({ acts, compact, title, onSelect, onEdit, onDelete }) {
-	return <List>
+	return <div>
 		{acts.length && title || ''}
 		{acts.map(act => 
 			<ListItem 
@@ -20,5 +20,5 @@ export default function ActsList ({ acts, compact, title, onSelect, onEdit, onDe
 				</Kspan>}
 			/>
 		)}
-	</List>
+	</div>
 }

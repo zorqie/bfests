@@ -19,8 +19,10 @@ import EventInfo from './mui/event/info.jsx'
 
 import GigDetailsPage from './mui/gig-details-page.jsx'
 import Lineup from './mui/lineup.jsx'
+import MyAct from './mui/my-act.jsx'
 import MyGigs from './mui/my-gigs.jsx'
 import MyGigDetails from './mui/my-gig-details.jsx'
+import MyProfile from './mui/my-profile.jsx'
 import Passes from './mui/passes.jsx'
 import QrPage from './mui/qr-check.jsx'
 import SitePage from './mui/site-details-page.jsx'
@@ -50,6 +52,7 @@ export const routes =
 			
 			<Route path='acts/:actId' component={ActDetailsPage} />
 			<Route path='gig/:gigId' component={GigDetailsPage} />
+			<Route path='sites/:venueId' component={SitePage} />
 			
 			<Route path='events' component={EventsList} />
 			<Route path='events/:eventId(/:type)' component={EventPage} />
@@ -60,17 +63,16 @@ export const routes =
 			
 			<Route path='training/:eventId' component={EventTrainingPage} />
 
-			
 			<Route path='schedule/:eventId(/:type)' component={EventSchedule} />
-			<Route path='my-schedule(/:eventId)' component={MySchedule} />
 			
-			<Route path='sites/:venueId' component={SitePage} />
-
-			<Route path='lineup' component={Lineup} />
-			<Route path='tasks' component={Tasks} />
-
 			<Route path='my-gigs' component={MyGigs} />
 			<Route path='my-gigs/:gigId' component={MyGigDetails} />
+
+			<Route path='my-act/:actId' component={MyAct} />
+			<Route path='my-lineup' component={Lineup} />
+			<Route path='my-profile' component={MyProfile} />
+			<Route path='my-schedule(/:eventId)' component={MySchedule} />
+			<Route path='my-tasks' component={Tasks} />
 
 			<Route path='passes(/:eventId)' component={Passes} />
 

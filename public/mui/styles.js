@@ -24,6 +24,12 @@ const styles = {
 		
 	},
 
+	extraFields: {
+		borderTop: '1px solid rgba(0,0,0,0.1)', 
+		marginTop: '1em',
+		paddingTop: '1em',
+	},
+
 	scheduleDate: {
 		fontFamily: 'Roboto, sans-serif',
 		fontWeight: 300,

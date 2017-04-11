@@ -16,12 +16,16 @@ const hasRole = (user, role) => {
 
 const userSections = [
 	{
+		text: "My profile",
+		path: "/my-profile",
+	},
+	{
 		text: "My lineup",
-		path: "/lineup",
+		path: "/my-lineup",
 	},
 	{
 		text: "My tasks",
-		path: "/tasks",
+		path: "/my-tasks",
 	},
 	{
 		text: "My performances",
@@ -30,7 +34,7 @@ const userSections = [
 	},
 	{
 		text: "My workshops",
-		path: "/workshops",
+		path: "/my-workshops",
 		role: "master",
 	},
 	// {
