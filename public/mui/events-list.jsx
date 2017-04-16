@@ -21,7 +21,7 @@ const styles = {
 	}
 }
 
-const viewEvent = e => browserHistory.push('/events/'+e._id)
+const viewEvent = e => browserHistory.push('/grid/'+e._id)
 
 const EventTitle = ({event, auth}) =>
 	<span>

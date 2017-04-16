@@ -100,7 +100,7 @@ export default class MyProfile extends React.Component{
 
 	componentDidMount() {
 		const user = app.get('user')
-		this.setState({profile: {...user, extra: user.extra || {}}})
+		this.setState({profile: {...user, name: user.name || user.facebook.name,  extra: user.extra || {}}})
 	}
 
 	handleExtraChange = (e, ev, i, val) => {

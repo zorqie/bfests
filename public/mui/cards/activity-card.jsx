@@ -46,10 +46,12 @@ export default class ActivityCard extends React.Component {
 		// console.log("CARD props", this.props)
 		const status = gig.type==='Volunteer' ? 'Volunteering' : 'Attending'
 		const actsTitle = gig.type==='Workshop' ? 'Led by:' : gig.type==='Performance' ? 'Featuring: ' : ''
-		return gig._id && <div>
-			<span style={styles.gigType}>{gig.type}</span> 
-			<h2>{gig.name}</h2>
-			<p>{gig.description}</p>
+		return gig._id && <div>			
+			<div style={{marginBottom: '1em'}}>
+				<span style={styles.gigType}>{gig.type}</span> 
+				<h2>{gig.name}</h2>
+				<p>{gig.description}</p>
+			</div>
 			{!shifts.length && <Attendance gig={gig} /> || ''}
 			{!shifts.length && gig.type!=='Volunteer'
 				&& <ActsList acts={gig.acts} onSelect={viewAct} title={actsTitle} />

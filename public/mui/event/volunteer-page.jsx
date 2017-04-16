@@ -57,6 +57,12 @@ const checkTickets = (event, tickets) => {
 	}
 }
 
+const isAttending = (gig, tickets, status) => 
+	tickets && tickets.find(t => 
+		t.status === status
+		&& (t.gig._id === gig._id || t.gig.parent===gig._id)
+	)
+
 const isVolunteering = (gig, tickets) => tickets[gig._id] === "Volunteering" 
 
 export default class EventPage extends React.Component {
@@ -120,6 +126,20 @@ export default class EventPage extends React.Component {
 			}
 		})
 	}
+// TODO move these outside "this"
+	handleGigLeave = gig => {
+		app.service('gigs').find({query: {parent: gig._id}})
+		.then(result => {
+			if(result.total) {
+				// has children
+				this.viewGigDetails(gig)
+			} else {
+				console.log("No more volunteering!")
+				gigLeave(gig, 'Volunteering')
+			}
+		})
+	}
+
 	
 	viewGigDetails = gig => {
 		browserHistory.push('/gig/'+gig._id)
@@ -151,7 +171,7 @@ export default class EventPage extends React.Component {
 
 	render() {
 		const {loading, gig, dialog, event} = this.state
-		const {tickets, ticketsByGig} = this.props
+		const {tickets} = this.props
 		// console.log("Volunteerizing: ", this.props)
 		const title = <b>{event.name}</b>
 
@@ -179,11 +199,11 @@ export default class EventPage extends React.Component {
 							onTouchTap={this.viewGigDetails.bind(this, gig)}
 							secondaryText={<GigTimespan gig={gig} />} 
 							rightIconButton={
-								isVolunteering(gig, ticketsByGig) ?
+								isAttending(gig, tickets, 'Volunteering') ?
 								<FlatButton 
 									icon={minusBox}
 									title="Leave" 
-									onTouchTap={gigLeave.bind(this, gig, 'Volunteering')}
+									onTouchTap={this.handleGigLeave.bind(this, gig)}
 								/>
 								:
 								<FlatButton 

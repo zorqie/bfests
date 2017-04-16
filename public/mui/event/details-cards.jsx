@@ -1,12 +1,12 @@
 import React from 'react'
 import {Link, browserHistory} from 'react-router'
 
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
 import CircularProgress from 'material-ui/CircularProgress'
 import FlatButton from 'material-ui/FlatButton'
 import {GridList, GridTile} from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton';
 import {List, ListItem} from 'material-ui/List'
+import Paper from 'material-ui/Paper'
 import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 import Star from 'material-ui/svg-icons/toggle/star';
 
@@ -19,34 +19,6 @@ import EventActions from './actions.jsx'
 import { gigJoin, gigLeave, viewGig } from '../utils.jsx'
 import { plusOutline, minusBox } from '../icons.jsx'
 import { Kspan } from '../hacks.jsx'
-
-// TODO move to styles
-const styles = {
-	root: {
-		display: 'flex',
-		flexWrap: 'wrap',
-		justifyContent: 'space-around',
-	},
-	head: {
-		minWidth: '70%', 
-		width: 'calc((800px - 100%) * 1000)',
-		maxWidth: '1200px',
-		padding: '16px',
-	},
-	gridList: {
-		minWidth: '70%', 
-		width: 'calc((800px - 100%) * 1000)',
-		maxWidth: '1200px',
-		height: '100%',
-		paddingBottom: '2em',
-		overflowY: 'auto',
-	},
-	gridTile: {
-		// minWidth: '10em',
-		// maxWidth: '100%',
-	}
-}
-
 
 const isAttending = (gig, tickets, status) => 
 	tickets && tickets.find(t => 
@@ -160,36 +132,37 @@ export default class EventGrid extends React.Component {
 
 		// console.log("GIGGGINGING: ", tickets);
 
-		return event._id && <div style={styles.root}>
-			    <div style={styles.head}>
+		return event._id && <div className='evt-cards'>
+			    <div className='evt-header'>
 			    	<h2>{event.name}</h2>
 			    	<GigTimespan gig={event} showRelative={true}/>
 			    	<EventActions event={event} tickets={tickets} route={this.props.route.path} />
 			    </div>
 				{gigs.length 
-					&& <GridList style={styles.gridList} padding={16}>
+					&& <div className='gig-cards'>
 						{gigs.map(gig => 
-							<GridTile 
-								key={gig._id} 
-								style={styles.gridTile}
-								title={<Link style={{color: 'inherit'}} to={`/gig/${gig._id}`}>{gig.name}</Link>} 
-								subtitle={gig.description}
-								titlePosition="top"
-								titleBackground="linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
-								actionIcon={
-									<IconButton touch={true} onTouchTap={gigToggle.bind(this, gig, tickets, status)}>
-										{isAttending(gig, tickets, status) 
-											? <Star color="white" />
-											: <StarBorder color="white" />
-										}
-									</IconButton>
-								}
+							<Paper key={gig._id} className='gig-card'>
 								
-							>
-								<img src={'/img/' + gig._id + '_tile.jpg'} />
-							</GridTile>
+								<div className='gig-title'>
+									<h2><Link style={{color: 'inherit'}} to={`/gig/${gig._id}`}>{gig.name}</Link></h2>
+									<p>{gig.description}</p>
+								</div>
+	
+									{/*<IconButton touch={true} onTouchTap={gigToggle.bind(this, gig, tickets, status)}>
+																			{isAttending(gig, tickets, status) 
+																				? <Star  />
+																				: <StarBorder  />
+																			}
+																		</IconButton>*/}
+							
+							
+								<div className='gig-img'>
+									<img src={'/img/' + gig._id + '_tile.jpg'} />
+								</div>
+							
+							</Paper>
 						)}
-					</GridList>
+					</div>
 				|| <CircularProgress />}
 			</div>
 			|| null

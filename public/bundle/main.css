@@ -7,6 +7,46 @@ html, body, * {
 	background-position: -64px -534px;
 	background-blend-mode: multiply;
 }
+
+.evt-header {
+	display: block;
+	position: relative;
+	margin: 1em auto;
+	text-align: left;
+	min-width: 100%;
+	width: calc(800px - 100%) * 1000 !important;
+	max-width: 1200px;
+}
+
+.gig-cards {
+	column-count: calc(100% / 300px);
+	column-gap: 16px;
+}
+.gig-card {
+	display: inline-block;
+	text-align: left;
+	width: 100%;
+}
+.gig-card .gig-title {
+	padding: 16px;
+}
+.gig-title a {
+	text-decoration: none;
+	color: inherit;
+}
+.gig-title * {
+	overflow-x: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.gig-img {
+	width: 100%;
+}
+.gig-img img {
+	width: 100%;
+}
+
+/**/
 .gig-duration {
 }
 .gig-duration, .gig-relative {
